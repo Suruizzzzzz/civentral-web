@@ -52,8 +52,9 @@ if ($method !== 'POST') {
     ], 405);
 }
 
-$input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
-$identifier = strtolower(trim($input['email'] ?? $input['identifier'] ?? $input['mobile_number'] ?? ''));
+$rawInput = file_get_contents('php://input');
+$input = json_decode($rawInput, true) ?? $_POST;
+$identifier = strtolower(trim($input['email'] ?? $input['identifier'] ?? $input['mobile_number'] ?? $_POST['email'] ?? $_POST['identifier'] ?? $_POST['mobile_number'] ?? ''));
 
 if (empty($identifier)) {
     respond([
@@ -63,8 +64,11 @@ if (empty($identifier)) {
 }
 
 try {
-    $sql = "SELECT citizen_user_id, status FROM citizen_users WHERE LOWER(email) = LOWER(:val) OR mobile_number = :val LIMIT 1";
-    $users = $db->query($sql, ['val' => $identifier]);
+    $sql = "SELECT citizen_user_id, status FROM citizen_users WHERE LOWER(email) = LOWER(:email_val) OR mobile_number = :mobile_val LIMIT 1";
+    $users = $db->query($sql, [
+        'email_val' => $identifier,
+        'mobile_val' => $identifier
+    ]);
 
     if (!empty($users)) {
         respond([
@@ -84,7 +88,7 @@ try {
     error_log("Check Account Error: " . $e->getMessage());
     respond([
         'status' => 'error',
-        'message' => 'Database error during account check.'
+        'message' => 'Database error during account check: ' . $e->getMessage()
     ], 500);
 }
 ?>
