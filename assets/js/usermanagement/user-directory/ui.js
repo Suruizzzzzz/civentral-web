@@ -165,7 +165,12 @@ function renderTable(usersList = systemUsers) {
       </div>
     `;
     if (user.profile_picture && user.profile_picture !== 'default-avatar.png') {
-      avatarHTML = `<img src="${user.profile_picture}" alt="${fullName}" class="h-9 w-9 rounded-xl object-cover border border-slate-200 shadow-xs shrink-0">`;
+      let pic = user.profile_picture;
+      if (!pic.startsWith('http') && !pic.startsWith('data:')) {
+        const bPath = window.civentralBasePath || '../../';
+        pic = bPath + pic.replace(/^\/+/, '');
+      }
+      avatarHTML = `<img src="${pic}" alt="${fullName}" class="h-9 w-9 rounded-xl object-cover border border-slate-200 shadow-xs shrink-0">`;
     }
 
     const tr = document.createElement('tr');

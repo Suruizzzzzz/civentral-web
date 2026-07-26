@@ -119,11 +119,22 @@ try {
             ], 401);
         }
 
-        $firstName = trim($data['first_name'] ?? '');
-        $middleName = trim($data['middle_name'] ?? '');
-        $lastName = trim($data['last_name'] ?? '');
-        $email = strtolower(trim($data['email'] ?? ''));
-        $mobileNumber = trim($data['mobile_number'] ?? '');
+        // 1. Fetch current user record from database as baseline
+        $existingUsers = $db->query("SELECT * FROM users WHERE user_id = :uid LIMIT 1", ['uid' => $targetUserId]);
+        if (empty($existingUsers)) {
+            respond([
+                'status' => 'error',
+                'message' => 'User account record not found.'
+            ], 404);
+        }
+        $currentUserRec = $existingUsers[0];
+
+        // 2. Resolve field values (use provided value if set & non-empty, otherwise retain existing DB record value)
+        $firstName  = (isset($data['first_name']) && trim($data['first_name']) !== '') ? trim($data['first_name']) : $currentUserRec['first_name'];
+        $middleName = isset($data['middle_name']) ? trim($data['middle_name']) : $currentUserRec['middle_name'];
+        $lastName   = (isset($data['last_name']) && trim($data['last_name']) !== '') ? trim($data['last_name']) : $currentUserRec['last_name'];
+        $email      = (isset($data['email']) && trim($data['email']) !== '') ? strtolower(trim($data['email'])) : $currentUserRec['email'];
+        $mobileNumber = isset($data['mobile_number']) ? trim($data['mobile_number']) : $currentUserRec['mobile_number'];
 
         if (empty($firstName) || empty($lastName) || empty($email)) {
             respond([
@@ -139,20 +150,22 @@ try {
             ], 400);
         }
 
-        // Email Uniqueness Check (Excluding self)
-        $dupEmail = $db->query(
-            "SELECT user_id FROM users WHERE LOWER(email) = LOWER(:email) AND user_id != :uid LIMIT 1",
-            ['email' => $email, 'uid' => $targetUserId]
-        );
-        if (!empty($dupEmail)) {
-            respond([
-                'status' => 'error',
-                'message' => 'This email address is already in use by another user.'
-            ], 400);
+        // Email Uniqueness Check (Excluding self if email was modified)
+        if (strtolower($email) !== strtolower($currentUserRec['email'])) {
+            $dupEmail = $db->query(
+                "SELECT user_id FROM users WHERE LOWER(email) = LOWER(:email) AND user_id != :uid LIMIT 1",
+                ['email' => $email, 'uid' => $targetUserId]
+            );
+            if (!empty($dupEmail)) {
+                respond([
+                    'status' => 'error',
+                    'message' => 'This email address is already in use by another user.'
+                ], 400);
+            }
         }
 
-        // Mobile Uniqueness Check (Excluding self)
-        if (!empty($mobileNumber)) {
+        // Mobile Uniqueness Check (Excluding self if mobile was modified)
+        if (!empty($mobileNumber) && $mobileNumber !== $currentUserRec['mobile_number']) {
             $dupMobile = $db->query(
                 "SELECT user_id FROM users WHERE mobile_number = :mobile AND user_id != :uid LIMIT 1",
                 ['mobile' => $mobileNumber, 'uid' => $targetUserId]
@@ -165,21 +178,62 @@ try {
             }
         }
 
+        // 3. Handle profile picture upload / reset
+        $profilePicture = $currentUserRec['profile_picture'];
+
+        if (isset($data['profile_picture'])) {
+            $picData = trim($data['profile_picture']);
+
+            if (empty($picData) || $picData === 'default-avatar.png') {
+                $profilePicture = 'default-avatar.png';
+            } else if (preg_match('/^data:image\/(\w+);base64,/', $picData, $type)) {
+                $dataPart = substr($picData, strpos($picData, ',') + 1);
+                $typeExt = strtolower($type[1]);
+                if (in_array($typeExt, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+                    if ($typeExt === 'jpeg') $typeExt = 'jpg';
+                    $decodedData = base64_decode($dataPart);
+                    if ($decodedData !== false) {
+                        $uploadDir = __DIR__ . '/../../uploads/avatars/';
+                        if (!file_exists($uploadDir)) {
+                            @mkdir($uploadDir, 0777, true);
+                        }
+                        $filename = 'avatar_' . $targetUserId . '_' . time() . '.' . $typeExt;
+                        $filePath = $uploadDir . $filename;
+                        if (file_put_contents($filePath, $decodedData)) {
+                            $profilePicture = 'uploads/avatars/' . $filename;
+                        }
+                    }
+                }
+            } else {
+                $profilePicture = $picData;
+            }
+        }
+
         $updatePayload = [
             'first_name' => $firstName,
             'middle_name' => $middleName ?: null,
             'last_name' => $lastName,
             'email' => $email,
             'mobile_number' => $mobileNumber ?: null,
+            'profile_picture' => $profilePicture,
             'updated_at' => date('Y-m-d H:i:s')
         ];
 
         $db->update('users', $updatePayload, ['user_id' => $targetUserId]);
 
+        // Update position if position_name supplied and user has position_id
+        if (!empty($data['position_name']) && !empty($currentUserRec['position_id'])) {
+            $db->update('positions', [
+                'position_name' => trim($data['position_name']),
+                'updated_at' => date('Y-m-d H:i:s')
+            ], ['position_id' => $currentUserRec['position_id']]);
+        }
+
         // Update Session State
         $_SESSION['first_name'] = $firstName;
         $_SESSION['last_name'] = $lastName;
         $_SESSION['email'] = $email;
+        $_SESSION['profile_picture'] = $profilePicture;
 
         // Audit Trail
         try {

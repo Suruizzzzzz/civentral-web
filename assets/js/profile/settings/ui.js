@@ -8,9 +8,14 @@ function populateProfileUI() {
   
   const avatarImg = document.getElementById('avatarPreview');
   if (avatarImg) {
-    avatarImg.src = (userProfile.profile_picture && userProfile.profile_picture !== 'default-avatar.png')
-      ? userProfile.profile_picture
-      : defaultAvatar;
+    let pic = userProfile.profile_picture || 'default-avatar.png';
+    if (pic !== 'default-avatar.png' && !pic.startsWith('http') && !pic.startsWith('data:')) {
+      const bPath = window.civentralBasePath || '../../';
+      pic = bPath + pic.replace(/^\/+/, '');
+    } else if (pic === 'default-avatar.png') {
+      pic = defaultAvatar;
+    }
+    avatarImg.src = pic;
   }
 
   // Sidebar card

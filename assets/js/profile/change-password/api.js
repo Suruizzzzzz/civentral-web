@@ -12,9 +12,14 @@ async function fetchUserAccountProfile() {
     const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(userProfileData.full_name || 'User')}&background=EEF5FF&color=176B87&bold=true&size=128`;
     const avatarEl = document.getElementById('pwAccountAvatar');
     if (avatarEl) {
-      avatarEl.src = (userProfileData.profile_picture && userProfileData.profile_picture !== 'default-avatar.png')
-        ? userProfileData.profile_picture
-        : defaultAvatar;
+      let pic = userProfileData.profile_picture || 'default-avatar.png';
+      if (pic !== 'default-avatar.png' && !pic.startsWith('http') && !pic.startsWith('data:')) {
+        const bPath = window.civentralBasePath || '../../';
+        pic = bPath + pic.replace(/^\/+/, '');
+      } else if (pic === 'default-avatar.png') {
+        pic = defaultAvatar;
+      }
+      avatarEl.src = pic;
     }
 
     const nameEl = document.getElementById('pwAccountName');

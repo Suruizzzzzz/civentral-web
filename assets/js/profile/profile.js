@@ -19,7 +19,12 @@ async function fetchUserProfile() {
     const initialsEl = document.getElementById('profileAvatarInitials');
     if (u.profile_picture && u.profile_picture !== 'default-avatar.png') {
       if (imgEl && initialsEl) {
-        imgEl.src = u.profile_picture;
+        let pic = u.profile_picture;
+        if (!pic.startsWith('http') && !pic.startsWith('data:')) {
+          const bPath = window.civentralBasePath || '../../';
+          pic = bPath + pic.replace(/^\/+/, '');
+        }
+        imgEl.src = pic;
         imgEl.classList.remove('hidden');
         initialsEl.classList.add('hidden');
       }

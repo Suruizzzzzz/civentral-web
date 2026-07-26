@@ -31,6 +31,8 @@ async function saveSettings() {
   }
 
   const payload = {
+    first_name: userProfile ? (userProfile.first_name || '') : '',
+    last_name: userProfile ? (userProfile.last_name || '') : '',
     mobile_number: phoneVal,
     email: emailVal,
     position_name: posVal
