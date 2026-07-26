@@ -136,7 +136,7 @@
       <!-- Vice Mayor -->
       <div class="bg-white border border-slate-200 rounded-2xl p-6 text-center space-y-4 shadow-xs">
         <div class="h-28 w-28 rounded-full border-2 border-brand-medium mx-auto overflow-hidden bg-slate-100">
-          <img src="assets/images/vice.jpg" alt="Vice Mayor Karina Teh" class="w-full h-full object-cover object-top">
+          <img src="assets/images/Vice.jpg" alt="Vice Mayor Karina Teh" class="w-full h-full object-cover object-top">
         </div>
         <div>
           <h4 class="font-extrabold text-slate-900 text-base">Hon. Karina Teh-Limsico</h4>
