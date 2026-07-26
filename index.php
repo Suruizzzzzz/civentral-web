@@ -164,30 +164,125 @@
     </div>
   </section>
 
-  <!-- Announcement -->
-  <section id="announcements" class="py-16 sm:py-20 bg-slate-100 border-y border-slate-200 px-4 sm:px-6">
-    <div class="max-w-7xl mx-auto space-y-8 sm:space-y-12">
-      <div>
-        <span class="text-xs font-bold uppercase tracking-wider text-brand-medium" id="newsBadge">Bulletin Board</span>
-        <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight" id="newsTitle">Active Circulars & Public Memos</h2>
+  <!-- Announcements Section (Simple Picture Top, Caption Bottom) -->
+  <section id="announcements" class="py-16 sm:py-24 bg-slate-100/80 border-y border-slate-200/80 px-4 sm:px-6">
+    <div class="max-w-7xl mx-auto space-y-10 sm:space-y-12">
+      <!-- Section Header -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200/60 pb-6">
+        <div class="space-y-2">
+          <span class="text-xs font-bold uppercase tracking-widest text-brand-dark bg-white border border-brand-border/60 px-3.5 py-1 rounded-full shadow-2xs" id="newsBadge">Bulletin Board</span>
+          <h2 class="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight" id="newsTitle">Active Circulars & Public Memos</h2>
+          <p class="text-xs sm:text-sm text-slate-500 max-w-2xl leading-relaxed">
+            Official municipal announcements, weather advisories, emergency alerts, tax payment deadlines, and public notices.
+          </p>
+        </div>
+        <div class="shrink-0">
+          <span class="inline-flex items-center gap-2 text-xs font-extrabold text-slate-700 bg-white border border-slate-200 px-4 py-2 rounded-xl shadow-2xs">
+            <span class="relative flex h-2.5 w-2.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            </span>
+            Live LGU Announcements
+          </span>
+        </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white border border-slate-200 rounded-xl p-5 space-y-3 shadow-xs">
-          <span class="text-[10px] font-bold bg-blue-100 text-blue-700 px-2 py-0.5 rounded uppercase">Taxation</span>
-          <h4 class="font-bold text-slate-900 text-base leading-snug">Business Permit Renewal Automations</h4>
-          <p class="text-xs text-slate-500">File clearance registrations and verify municipal updates securely inside your online profile track fields.</p>
+      <!-- Announcements Cards Grid (Picture Top, Caption Bottom) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        
+        <!-- Announcement 1: Weather Advisory & Class Suspension -->
+        <div class="bg-white border border-slate-200/90 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col group">
+          <!-- Picture (Top) -->
+          <div class="relative overflow-hidden bg-slate-900 aspect-video">
+            <img src="assets/images/weather_advisory.png" alt="Weather Advisory Announcement" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <span class="absolute top-3 left-3 bg-red-600 text-white text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-md shadow-md animate-pulse">
+              <i class="fa-solid fa-triangle-exclamation mr-1"></i> Weather Advisory
+            </span>
+          </div>
+
+          <!-- Caption (Bottom) -->
+          <div class="p-6 space-y-3 flex-1 flex flex-col justify-between">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between text-[11px] text-slate-400 font-semibold">
+                <span class="text-red-600 font-bold flex items-center gap-1"><i class="fa-solid fa-cloud-showers-heavy"></i> Heavy Rainfall Warning</span>
+                <span>Jul 26, 2026</span>
+              </div>
+              <h3 class="font-extrabold text-slate-900 text-base leading-snug group-hover:text-red-600 transition-colors">
+                Suspension of Classes Due to Heavy Rains & Monsoon Weather
+              </h3>
+              <p class="text-xs text-slate-500 leading-relaxed">
+                Classes in ALL LEVELS (Public & Private) in Caloocan City are suspended today due to heavy rainfall and thunderstorm advisories. Stay safe indoors and monitor official LGU channels.
+              </p>
+            </div>
+            <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-red-600">
+              <span>Emergency Hotline: 911</span>
+              <i class="fa-solid fa-phone text-xs"></i>
+            </div>
+          </div>
         </div>
-        <div class="bg-white border border-slate-200 rounded-xl p-5 space-y-3 shadow-xs">
-          <span class="text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded uppercase">Social Aid</span>
-          <h4 class="font-bold text-slate-900 text-base leading-snug">AICS Financial Assistance Distributions</h4>
-          <p class="text-xs text-slate-500">Verified educational distributions and medical subsidy allocations are open for tracking updates.</p>
+
+        <!-- Announcement 2: Business Permit Renewal -->
+        <div class="bg-white border border-slate-200/90 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col group">
+          <!-- Picture (Top) -->
+          <div class="relative overflow-hidden bg-slate-900 aspect-video">
+            <img src="assets/images/bplo_advisory.png" alt="Business Permit Renewal Announcement" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <span class="absolute top-3 left-3 bg-blue-600 text-white text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-md shadow-md">
+              <i class="fa-solid fa-file-invoice-dollar mr-1"></i> BPLO Tax Notice
+            </span>
+          </div>
+
+          <!-- Caption (Bottom) -->
+          <div class="p-6 space-y-3 flex-1 flex flex-col justify-between">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between text-[11px] text-slate-400 font-semibold">
+                <span class="text-blue-600 font-bold flex items-center gap-1"><i class="fa-solid fa-briefcase"></i> Business Permits</span>
+                <span>Jul 25, 2026</span>
+              </div>
+              <h3 class="font-extrabold text-slate-900 text-base leading-snug group-hover:text-blue-600 transition-colors">
+                2026 Business Permit Renewal & Tax Clearance Schedule
+              </h3>
+              <p class="text-xs text-slate-500 leading-relaxed">
+                Online business permit renewal and tax assessment filing is open via the Civentral portal. File early to avail of early-bird municipal tax discounts.
+              </p>
+            </div>
+            <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-blue-600">
+              <span>View Online Clearance</span>
+              <i class="fa-solid fa-arrow-right text-xs"></i>
+            </div>
+          </div>
         </div>
-        <div class="bg-white border border-slate-200 rounded-xl p-5 space-y-3 shadow-xs">
-          <span class="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded uppercase">Scholarships</span>
-          <h4 class="font-bold text-slate-900 text-base leading-snug">City University Open Scholarship List</h4>
-          <p class="text-xs text-slate-500">Application windows are open for new incoming academic terms via the central student tracking module.</p>
+
+        <!-- Announcement 3: AICS Social Assistance Payout -->
+        <div class="bg-white border border-slate-200/90 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col group">
+          <!-- Picture (Top) -->
+          <div class="relative overflow-hidden bg-slate-900 aspect-video">
+            <img src="assets/images/aics_advisory.png" alt="AICS Aid Announcement" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <span class="absolute top-3 left-3 bg-emerald-600 text-white text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-md shadow-md">
+              <i class="fa-solid fa-hand-holding-dollar mr-1"></i> Social Welfare
+            </span>
+          </div>
+
+          <!-- Caption (Bottom) -->
+          <div class="p-6 space-y-3 flex-1 flex flex-col justify-between">
+            <div class="space-y-2">
+              <div class="flex items-center justify-between text-[11px] text-slate-400 font-semibold">
+                <span class="text-emerald-600 font-bold flex items-center gap-1"><i class="fa-solid fa-heart"></i> CSWDO Aid</span>
+                <span>Jul 24, 2026</span>
+              </div>
+              <h3 class="font-extrabold text-slate-900 text-base leading-snug group-hover:text-emerald-600 transition-colors">
+                AICS Educational & Medical Financial Aid Distribution
+              </h3>
+              <p class="text-xs text-slate-500 leading-relaxed">
+                Verified beneficiary payout schedules for District 1, 2, and 3 residents are active. Check your portal profile for schedule slots and claim details.
+              </p>
+            </div>
+            <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-emerald-600">
+              <span>View Payout Venue</span>
+              <i class="fa-solid fa-arrow-right text-xs"></i>
+            </div>
+          </div>
         </div>
+
       </div>
     </div>
   </section>
@@ -195,98 +290,192 @@
   <!-- Services -->
   <section id="features" class="py-16 sm:py-24 px-4 sm:px-6 max-w-7xl mx-auto space-y-12">
     <div class="text-center space-y-3 max-w-2xl mx-auto">
-      <h2 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight" id="servicesTitle">Unified Department Public Services</h2>
+      <span class="text-xs font-bold uppercase tracking-widest text-brand-dark bg-brand-light px-3.5 py-1 rounded-full border border-brand-border/60">Digital Municipal Services</span>
+      <h2 class="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight" id="servicesTitle">Unified Department Public Services</h2>
+      <p class="text-xs sm:text-sm text-slate-500 max-w-xl mx-auto leading-relaxed">
+        Integrated municipal digital pathways providing transparent service accessibility, online tracking, and streamlined departmental processing for all Caloocan residents.
+      </p>
     </div>
+
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      <!-- 1 -->
-      <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4 shadow-xs">
-        <div class="space-y-2">
-          <div class="h-8 w-8 rounded bg-brand-light flex items-center justify-center text-brand-dark"><i class="fa-solid fa-users text-xs"></i></div>
-          <h4 class="font-bold text-slate-900 text-sm">Citizen Identity Registry</h4>
-          <p class="text-xs text-slate-500">Population profiling setups and official civic information master databases.</p>
+      <!-- 1. Citizen Identity Registry -->
+      <div class="bg-white border border-slate-200/80 hover:border-brand-medium/60 rounded-2xl p-6 flex flex-col justify-between space-y-4 shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300">
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="h-10 w-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shadow-2xs">
+              <i class="fa-solid fa-id-card text-sm"></i>
+            </div>
+            <span class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200/60">Civil Registry</span>
+          </div>
+          <h4 class="font-extrabold text-slate-900 text-base">Citizen Identity Registry</h4>
+          <p class="text-xs text-slate-500 leading-relaxed">Population profiling setups, official civic information master databases, and digital residency verification.</p>
         </div>
-        <a href="#download-app" class="w-full text-center py-2 bg-brand-light hover:bg-brand-medium/20 text-brand-dark font-bold text-xs rounded-lg transition border border-brand-border/60">Download App to Apply</a>
+        <div class="pt-2 border-t border-slate-100 flex flex-wrap gap-1.5">
+          <span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">Digital ID</span>
+          <span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">Instant Verification</span>
+        </div>
       </div>
-      <!-- 2 -->
-      <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4 shadow-xs">
-        <div class="space-y-2">
-          <div class="h-8 w-8 rounded bg-brand-light flex items-center justify-center text-brand-dark"><i class="fa-solid fa-file-signature text-xs"></i></div>
-          <h4 class="font-bold text-slate-900 text-sm">Permit Clearance Controls</h4>
-          <p class="text-xs text-slate-500">Online assessment processing tracks for structural development and commercial business licensing.</p>
+
+      <!-- 2. Permit Clearance Controls -->
+      <div class="bg-white border border-slate-200/80 hover:border-emerald-500/60 rounded-2xl p-6 flex flex-col justify-between space-y-4 shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300">
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="h-10 w-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shadow-2xs">
+              <i class="fa-solid fa-file-signature text-sm"></i>
+            </div>
+            <span class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60">BPLO & Permits</span>
+          </div>
+          <h4 class="font-extrabold text-slate-900 text-base">Permit Clearance Controls</h4>
+          <p class="text-xs text-slate-500 leading-relaxed">Online assessment processing tracks for structural development and commercial business licensing.</p>
         </div>
-        <a href="#download-app" class="w-full text-center py-2 bg-brand-light hover:bg-brand-medium/20 text-brand-dark font-bold text-xs rounded-lg transition border border-brand-border/60">Download App to Apply</a>
+        <div class="pt-2 border-t border-slate-100 flex flex-wrap gap-1.5">
+          <span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">Business Permit</span>
+          <span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">Clearance Filing</span>
+        </div>
       </div>
-      <!-- 3 -->
-      <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4 shadow-xs">
-        <div class="space-y-2">
-          <div class="h-8 w-8 rounded bg-brand-light flex items-center justify-center text-brand-dark"><i class="fa-solid fa-hand-holding-heart text-xs"></i></div>
-          <h4 class="font-bold text-slate-900 text-sm">Social Welfare System</h4>
-          <p class="text-xs text-slate-500">AICS assistance coordination paths alongside senior citizen support services management.</p>
+
+      <!-- 3. Social Welfare System -->
+      <div class="bg-white border border-slate-200/80 hover:border-amber-500/60 rounded-2xl p-6 flex flex-col justify-between space-y-4 shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300">
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="h-10 w-10 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shadow-2xs">
+              <i class="fa-solid fa-hand-holding-heart text-sm"></i>
+            </div>
+            <span class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200/60">CSWDO Aid</span>
+          </div>
+          <h4 class="font-extrabold text-slate-900 text-base">Social Welfare System</h4>
+          <p class="text-xs text-slate-500 leading-relaxed">AICS financial assistance coordination paths alongside senior citizen & PWD support services management.</p>
         </div>
-        <a href="#download-app" class="w-full text-center py-2 bg-brand-light hover:bg-brand-medium/20 text-brand-dark font-bold text-xs rounded-lg transition border border-brand-border/60">Download App to Apply</a>
+        <div class="pt-2 border-t border-slate-100 flex flex-wrap gap-1.5">
+          <span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">AICS Assistance</span>
+          <span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">Senior & PWD Aid</span>
+        </div>
       </div>
-      <!-- 4 -->
-      <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4 shadow-xs">
-        <div class="space-y-2">
-          <div class="h-8 w-8 rounded bg-brand-light flex items-center justify-center text-brand-dark"><i class="fa-solid fa-heart-pulse text-xs"></i></div>
-          <h4 class="font-bold text-slate-900 text-sm">Health & Sanitation Management</h4>
-          <p class="text-xs text-slate-500">Municipal health center documentation networks and sanitation inspection registry systems.</p>
+
+      <!-- 4. Health & Sanitation Management -->
+      <div class="bg-white border border-slate-200/80 hover:border-rose-500/60 rounded-2xl p-6 flex flex-col justify-between space-y-4 shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300">
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="h-10 w-10 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 shadow-2xs">
+              <i class="fa-solid fa-heart-pulse text-sm"></i>
+            </div>
+            <span class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200/60">City Health</span>
+          </div>
+          <h4 class="font-extrabold text-slate-900 text-base">Health & Sanitation</h4>
+          <p class="text-xs text-slate-500 leading-relaxed">Municipal health center documentation networks and sanitary inspection clearance registry systems.</p>
         </div>
-        <a href="#download-app" class="w-full text-center py-2 bg-brand-light hover:bg-brand-medium/20 text-brand-dark font-bold text-xs rounded-lg transition border border-brand-border/60">Download App to Apply</a>
+        <div class="pt-2 border-t border-slate-100 flex flex-wrap gap-1.5">
+          <span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">Health Permits</span>
+          <span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">Sanitary Clearance</span>
+        </div>
       </div>
-      <!-- 5 -->
-      <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4 shadow-xs">
-        <div class="space-y-2">
-          <div class="h-8 w-8 rounded bg-brand-light flex items-center justify-center text-brand-dark"><i class="fa-solid fa-graduation-cap text-xs"></i></div>
-          <h4 class="font-bold text-slate-900 text-sm">Education & Scholarships</h4>
-          <p class="text-xs text-slate-500">Application verification portals for students and institutional support asset allocation metrics.</p>
+
+      <!-- 5. Education & Scholarships -->
+      <div class="bg-white border border-slate-200/80 hover:border-indigo-500/60 rounded-2xl p-6 flex flex-col justify-between space-y-4 shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300">
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="h-10 w-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-2xs">
+              <i class="fa-solid fa-graduation-cap text-sm"></i>
+            </div>
+            <span class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200/60">Scholarships</span>
+          </div>
+          <h4 class="font-extrabold text-slate-900 text-base">Education & Scholarships</h4>
+          <p class="text-xs text-slate-500 leading-relaxed">Application verification portals for students and institutional support asset allocation metrics.</p>
         </div>
-        <a href="#download-app" class="w-full text-center py-2 bg-brand-light hover:bg-brand-medium/20 text-brand-dark font-bold text-xs rounded-lg transition border border-brand-border/60">Download App to Apply</a>
+        <div class="pt-2 border-t border-slate-100 flex flex-wrap gap-1.5">
+          <span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">Academic Aid</span>
+          <span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">Student Grants</span>
+        </div>
       </div>
-      <!-- 6 -->
-      <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4 shadow-xs">
-        <div class="space-y-2">
-          <div class="h-8 w-8 rounded bg-brand-light flex items-center justify-center text-brand-dark"><i class="fa-solid fa-triangle-exclamation text-xs"></i></div>
-          <h4 class="font-bold text-slate-900 text-sm">Disaster Risk Reduction (DRRM)</h4>
-          <p class="text-xs text-slate-500">Real-time emergency broadcast notification paths and center hazard layout registers.</p>
+
+      <!-- 6. Disaster Risk Reduction (DRRM) -->
+      <div class="bg-white border border-slate-200/80 hover:border-red-500/60 rounded-2xl p-6 flex flex-col justify-between space-y-4 shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300">
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="h-10 w-10 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center text-red-600 shadow-2xs">
+              <i class="fa-solid fa-shield-halved text-sm"></i>
+            </div>
+            <span class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-red-50 text-red-700 border border-red-200/60">DRRMO Command</span>
+          </div>
+          <h4 class="font-extrabold text-slate-900 text-base">Disaster Risk Reduction</h4>
+          <p class="text-xs text-slate-500 leading-relaxed">Real-time emergency broadcast notification paths, weather updates, and hazard layout registers.</p>
         </div>
-        <a href="#download-app" class="w-full text-center py-2 bg-brand-light hover:bg-brand-medium/20 text-brand-dark font-bold text-xs rounded-lg transition border border-brand-border/60">Download App to Apply</a>
+        <div class="pt-2 border-t border-slate-100 flex flex-wrap gap-1.5">
+          <span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">911 Emergency</span>
+          <span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">Hazard Alerts</span>
+        </div>
       </div>
-      <!-- 7 -->
-      <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4 shadow-xs">
-        <div class="space-y-2">
-          <div class="h-8 w-8 rounded bg-brand-light flex items-center justify-center text-brand-dark"><i class="fa-solid fa-map-location-dot text-xs"></i></div>
-          <h4 class="font-bold text-slate-900 text-sm">Urban Planning & Zoning</h4>
-          <p class="text-xs text-slate-500">Zoning assessment structural matrices and infrastructure project development coordination.</p>
+
+      <!-- 7. Urban Planning & Zoning -->
+      <div class="bg-white border border-slate-200/80 hover:border-cyan-500/60 rounded-2xl p-6 flex flex-col justify-between space-y-4 shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300">
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="h-10 w-10 rounded-xl bg-cyan-50 border border-cyan-100 flex items-center justify-center text-cyan-700 shadow-2xs">
+              <i class="fa-solid fa-map-location-dot text-sm"></i>
+            </div>
+            <span class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-cyan-50 text-cyan-800 border border-cyan-200/60">Zoning & CPDO</span>
+          </div>
+          <h4 class="font-extrabold text-slate-900 text-base">Urban Planning & Zoning</h4>
+          <p class="text-xs text-slate-500 leading-relaxed">Zoning assessment structural matrices and infrastructure project development coordination.</p>
         </div>
-        <a href="#download-app" class="w-full text-center py-2 bg-brand-light hover:bg-brand-medium/20 text-brand-dark font-bold text-xs rounded-lg transition border border-brand-border/60">Download App to Apply</a>
+        <div class="pt-2 border-t border-slate-100 flex flex-wrap gap-1.5">
+          <span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">Locational Clearance</span>
+          <span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">Site Inspection</span>
+        </div>
       </div>
-      <!-- 8 -->
-      <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4 shadow-xs">
-        <div class="space-y-2">
-          <div class="h-8 w-8 rounded bg-brand-light flex items-center justify-center text-brand-dark"><i class="fa-solid fa-cash-register text-xs"></i></div>
-          <h4 class="font-bold text-slate-900 text-sm">Treasury & Revenue Processing</h4>
-          <p class="text-xs text-slate-500">Digital bookkeeping for tax collection loops, fee payments, and financial invoicing pipelines.</p>
+
+      <!-- 8. Treasury & Revenue Processing -->
+      <div class="bg-white border border-slate-200/80 hover:border-teal-500/60 rounded-2xl p-6 flex flex-col justify-between space-y-4 shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300">
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="h-10 w-10 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center text-teal-700 shadow-2xs">
+              <i class="fa-solid fa-cash-register text-sm"></i>
+            </div>
+            <span class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-teal-50 text-teal-800 border border-teal-200/60">City Treasury</span>
+          </div>
+          <h4 class="font-extrabold text-slate-900 text-base">Treasury & Revenue</h4>
+          <p class="text-xs text-slate-500 leading-relaxed">Digital bookkeeping for tax collection loops, real property tax, and electronic fee processing.</p>
         </div>
-        <a href="#download-app" class="w-full text-center py-2 bg-brand-light hover:bg-brand-medium/20 text-brand-dark font-bold text-xs rounded-lg transition border border-brand-border/60">Download App to Apply</a>
+        <div class="pt-2 border-t border-slate-100 flex flex-wrap gap-1.5">
+          <span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">Real Property Tax</span>
+          <span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">Online Payments</span>
+        </div>
       </div>
-      <!-- 9 -->
-      <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4 shadow-xs sm:col-span-2 lg:col-span-1">
-        <div class="space-y-2">
-          <div class="h-8 w-8 rounded bg-brand-light flex items-center justify-center text-brand-dark"><i class="fa-solid fa-bus text-xs"></i></div>
-          <h4 class="font-bold text-slate-900 text-sm">Transport & Mobility Control</h4>
-          <p class="text-xs text-slate-500">Franchise database registries and municipal traffic regulation tracking structures.</p>
+
+      <!-- 9. Transport & Mobility Control -->
+      <div class="bg-white border border-slate-200/80 hover:border-purple-500/60 rounded-2xl p-6 flex flex-col justify-between space-y-4 shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300">
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="h-10 w-10 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-700 shadow-2xs">
+              <i class="fa-solid fa-bus text-sm"></i>
+            </div>
+            <span class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-purple-50 text-purple-800 border border-purple-200/60">Traffic & CPO</span>
+          </div>
+          <h4 class="font-extrabold text-slate-900 text-base">Transport & Mobility</h4>
+          <p class="text-xs text-slate-500 leading-relaxed">Tricycle franchise database registries and municipal traffic regulation tracking structures.</p>
         </div>
-        <a href="#download-app" class="w-full text-center py-2 bg-brand-light hover:bg-brand-medium/20 text-brand-dark font-bold text-xs rounded-lg transition border border-brand-border/60">Download App to Apply</a>
+        <div class="pt-2 border-t border-slate-100 flex flex-wrap gap-1.5">
+          <span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">Tricycle Franchise</span>
+          <span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">Traffic Memos</span>
+        </div>
       </div>
-      <!-- 10 -->
-      <div class="bg-white border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4 shadow-xs sm:col-span-2 lg:col-span-2 xl:col-span-1">
-        <div class="space-y-2">
-          <div class="h-8 w-8 rounded bg-brand-light flex items-center justify-center text-brand-dark"><i class="fa-solid fa-warehouse text-xs"></i></div>
-          <h4 class="font-bold text-slate-900 text-sm">Public Asset Management</h4>
-          <p class="text-xs text-slate-500">Facility configuration reservation grids and infrastructure inventory tracker setups.</p>
+
+      <!-- 10. Public Asset Management -->
+      <div class="bg-white border border-slate-200/80 hover:border-sky-500/60 rounded-2xl p-6 flex flex-col justify-between space-y-4 shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300">
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="h-10 w-10 rounded-xl bg-sky-50 border border-sky-100 flex items-center justify-center text-sky-700 shadow-2xs">
+              <i class="fa-solid fa-warehouse text-sm"></i>
+            </div>
+            <span class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full bg-sky-50 text-sky-800 border border-sky-200/60">Public Assets</span>
+          </div>
+          <h4 class="font-extrabold text-slate-900 text-base">Public Asset Management</h4>
+          <p class="text-xs text-slate-500 leading-relaxed">Facility configuration reservation grids and municipal infrastructure inventory tracker setups.</p>
         </div>
-        <a href="#download-app" class="w-full text-center py-2 bg-brand-light hover:bg-brand-medium/20 text-brand-dark font-bold text-xs rounded-lg transition border border-brand-border/60">Download App to Apply</a>
+        <div class="pt-2 border-t border-slate-100 flex flex-wrap gap-1.5">
+          <span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">Venue Reservation</span>
+          <span class="text-[10px] font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">Public Grounds</span>
+        </div>
       </div>
     </div>
   </section>

@@ -1,5 +1,5 @@
   </div>
 
-  <script src="../assets/js/dashboard.js"></script>
+  <script src="<?php echo $basePath ?? '../'; ?>assets/js/dashboard.js"></script>
 </body>
 </html>

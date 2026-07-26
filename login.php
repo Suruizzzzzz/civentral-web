@@ -64,7 +64,7 @@
             <input 
               type="text" 
               id="employeeId" 
-              placeholder="ID 1111-ADMIN-2011" 
+              placeholder="e.g. SADM-2026-001 or email" 
               required
               class="w-full pl-11 pr-4 py-3 bg-white border border-gray-300 rounded-lg text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-brand-medium focus:ring-1 focus:ring-brand-medium transition"
             />
@@ -133,6 +133,63 @@
           DEPT ACCESS ONLY - UNAUTHORIZED USE IS LOGGED & PROSECUTABLE UNDER RA 8792
         </p>
       </div>
+
+    </div>
+  </div>
+
+  <!-- 2FA OTP Verification Modal -->
+  <div id="otpModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs transition-all duration-300 opacity-0">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 p-6 sm:p-8 transform scale-95 transition-all duration-300 border border-slate-100 relative">
+      
+      <!-- Close / Back Button -->
+      <button type="button" onclick="closeOtpModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition cursor-pointer">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+
+      <div class="text-center space-y-3 mb-6">
+        <div class="h-14 w-14 rounded-2xl bg-brand-light border border-brand-border flex items-center justify-center text-brand-dark mx-auto shadow-xs">
+          <i class="fa-solid fa-shield-halved text-2xl"></i>
+        </div>
+        <h3 class="text-xl font-black text-slate-800 tracking-tight">Two-Factor Verification</h3>
+        <p class="text-xs text-slate-500 max-w-xs mx-auto leading-relaxed">
+          We sent a 6-digit security code to <strong id="otpMaskedEmail" class="text-brand-dark font-mono">your email</strong>.
+        </p>
+      </div>
+
+      <!-- OTP Form -->
+      <form id="otpForm" onsubmit="handleVerifyOTP(event)" class="space-y-6">
+        
+        <!-- 6 Input boxes -->
+        <div class="flex justify-between items-center gap-2 max-w-xs mx-auto">
+          <input type="text" maxlength="1" pattern="[0-9]*" inputmode="numeric" class="otp-input w-11 h-12 text-center text-xl font-bold font-mono text-brand-dark bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/20 focus:outline-none transition" required autofocus />
+          <input type="text" maxlength="1" pattern="[0-9]*" inputmode="numeric" class="otp-input w-11 h-12 text-center text-xl font-bold font-mono text-brand-dark bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/20 focus:outline-none transition" required />
+          <input type="text" maxlength="1" pattern="[0-9]*" inputmode="numeric" class="otp-input w-11 h-12 text-center text-xl font-bold font-mono text-brand-dark bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/20 focus:outline-none transition" required />
+          <input type="text" maxlength="1" pattern="[0-9]*" inputmode="numeric" class="otp-input w-11 h-12 text-center text-xl font-bold font-mono text-brand-dark bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/20 focus:outline-none transition" required />
+          <input type="text" maxlength="1" pattern="[0-9]*" inputmode="numeric" class="otp-input w-11 h-12 text-center text-xl font-bold font-mono text-brand-dark bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/20 focus:outline-none transition" required />
+          <input type="text" maxlength="1" pattern="[0-9]*" inputmode="numeric" class="otp-input w-11 h-12 text-center text-xl font-bold font-mono text-brand-dark bg-slate-50 border border-slate-300 rounded-xl focus:bg-white focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/20 focus:outline-none transition" required />
+        </div>
+
+        <div id="otpAlert" class="hidden text-xs text-center p-3 rounded-lg border"></div>
+
+        <button 
+          type="submit" 
+          id="btnVerifyOtp"
+          class="w-full py-3 px-4 bg-brand-medium hover:bg-opacity-90 text-white font-bold rounded-xl text-sm transition shadow-sm focus:outline-none cursor-pointer flex items-center justify-center gap-2"
+        >
+          <span>Verify & Complete Sign In</span>
+        </button>
+
+        <div class="text-center pt-2">
+          <p class="text-xs text-slate-500">
+            Didn't receive the code? 
+            <button type="button" id="btnResendOtp" onclick="handleResendOTP()" class="font-bold text-brand-dark hover:underline cursor-pointer focus:outline-none">
+              Resend Code
+            </button>
+            <span id="resendTimerText" class="text-slate-400 font-semibold hidden ml-1"></span>
+          </p>
+        </div>
+
+      </form>
 
     </div>
   </div>

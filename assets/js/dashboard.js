@@ -9,17 +9,19 @@
 
     // DROPDOWN
     function toggleDropdown(id, chevronId) {
-      if (isCollapsed) return; 
+      if (typeof isCollapsed !== 'undefined' && isCollapsed) return; 
 
       const dropdown = document.getElementById(id);
       const chevron = document.getElementById(chevronId);
+      if (!dropdown) return;
       
-      const dropdowns = ['userDropdown', 'roleDropdown', 'deptDropdown', 'citizenDropdown', 'auditDropdown'];
-      const chevrons = ['userChevron', 'roleChevron', 'deptChevron', 'citizenChevron', 'auditChevron'];
+      const dropdowns = ['userDropdown', 'roleDropdown', 'deptDropdown', 'citizenDropdown', 'scholarshipDropdown', 'auditDropdown'];
+      const chevrons = ['userChevron', 'roleChevron', 'deptChevron', 'citizenChevron', 'scholarshipChevron', 'auditChevron'];
       
       dropdowns.forEach((d, i) => {
         if (d !== id) {
-          document.getElementById(d).classList.add('hidden');
+          const otherEl = document.getElementById(d);
+          if (otherEl) otherEl.classList.add('hidden');
           const otherChevron = document.getElementById(chevrons[i]);
           if (otherChevron) otherChevron.classList.remove('rotate-180');
         }
