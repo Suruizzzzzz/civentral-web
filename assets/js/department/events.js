@@ -4,5 +4,7 @@ document.querySelectorAll('[id$="Modal"]').forEach(modal => {
     if (e.target === this) closeModal(this.id);
   });
 });
-
-searchInput.addEventListener('input', filterDepts);
+const deptSearchInput = document.getElementById('searchInput') || (typeof searchInput !== 'undefined' ? searchInput : null);
+if (deptSearchInput) {
+  deptSearchInput.addEventListener('input', filterDepts);
+}

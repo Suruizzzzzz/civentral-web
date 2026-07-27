@@ -4,13 +4,19 @@
     
     // Global loader 
     window.loadCiventralScript = function(src, callback = null) {
-        const script = document.createElement('script');
-        script.src = basePath + src;
-        script.async = false; 
-        if (callback) {
-            script.onload = callback;
-        }
-        document.body.appendChild(script);
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = basePath + src;
+            script.async = false; 
+            script.onload = () => {
+                if (callback) callback();
+                resolve();
+            };
+            script.onerror = (err) => {
+                reject(err);
+            };
+            document.body.appendChild(script);
+        });
     };
 
     // LOAD MODULE

@@ -44,36 +44,38 @@ function respond(array $payload, int $statusCode = 200): void {
 $method = $_SERVER['REQUEST_METHOD'];
 
 try {
-    // 2. Authentication Check
+    // 2. Authentication & Authorization Check for POST operations
     $userId = $_SESSION['user_id'] ?? null;
-    if (!$userId) {
-        respond([
-            'status' => 'error',
-            'message' => 'Unauthorized session. Please sign in to view or manage audit logs.'
-        ], 401);
-    }
-
-    // 3. Authorization Check (Must be Super Administrator / Authorized Role)
-    $currentUserRoles = $db->select('roles', ['role_id' => $_SESSION['role_id'] ?? 0]);
-    $isAuthorized = false;
-
-    if (!empty($currentUserRoles)) {
-        $userRole = $currentUserRoles[0];
-        if (
-            !empty($userRole['is_global_access']) || 
-            strtoupper($userRole['role_prefix'] ?? '') === 'SA' || 
-            strtoupper($userRole['role_prefix'] ?? '') === 'SADM' ||
-            !empty($userRole['is_system_role'])
-        ) {
-            $isAuthorized = true;
+    
+    if ($method !== 'GET') {
+        if (!$userId) {
+            respond([
+                'status' => 'error',
+                'message' => 'Unauthorized session. Please sign in to manage audit logs.'
+            ], 401);
         }
-    }
 
-    if (!$isAuthorized) {
-        respond([
-            'status' => 'error',
-            'message' => 'Forbidden. You do not have administrative privileges to view system audit logs.'
-        ], 403);
+        $currentUserRoles = $db->select('roles', ['role_id' => $_SESSION['role_id'] ?? 0]);
+        $isAuthorized = false;
+
+        if (!empty($currentUserRoles)) {
+            $userRole = $currentUserRoles[0];
+            if (
+                !empty($userRole['is_global_access']) || 
+                strtoupper($userRole['role_prefix'] ?? '') === 'SA' || 
+                strtoupper($userRole['role_prefix'] ?? '') === 'SADM' ||
+                !empty($userRole['is_system_role'])
+            ) {
+                $isAuthorized = true;
+            }
+        }
+
+        if (!$isAuthorized) {
+            respond([
+                'status' => 'error',
+                'message' => 'Forbidden. You do not have administrative privileges to manage system audit logs.'
+            ], 403);
+        }
     }
 
     // 4. GET Handler (Fetch system audit logs)
