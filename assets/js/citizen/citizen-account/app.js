@@ -8,7 +8,9 @@ window.loadCiventralScript('assets/js/citizen/citizen-account/modal.js');
 window.loadCiventralScript('assets/js/citizen/citizen-account/events.js', () => {
 
     function initCitizenAccountModule() {
-        if (typeof renderControlTable === 'function') {
+        if (typeof fetchControlCitizens === 'function') {
+            fetchControlCitizens();
+        } else if (typeof renderControlTable === 'function') {
             renderControlTable();
         }
         if (typeof updateControlStats === 'function') {

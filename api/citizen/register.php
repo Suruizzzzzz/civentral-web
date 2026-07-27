@@ -118,7 +118,7 @@ try {
             'email' => $email,
             'mobile_number' => $mobileNumber,
             'password' => $hashedPass,
-            'status' => 'Pending',
+            'status' => 'Active',
             'registry_completed' => 0,
             'failed_attempts' => 0,
             'biometric_enabled' => 0,

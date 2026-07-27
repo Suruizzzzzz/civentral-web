@@ -2,6 +2,47 @@
 
 var ctrlCitizens = [];
 
+async function fetchControlCitizens() {
+  try {
+    const endpoints = [
+      '/api/citizen/get-accounts.php',
+      '/civentral/api/citizen/get-accounts.php',
+      '../../api/citizen/get-accounts.php'
+    ];
+    
+    let response = null;
+    for (const ep of endpoints) {
+      try {
+        const res = await fetch(ep);
+        if (res.ok) {
+          response = res;
+          break;
+        }
+      } catch (e) {}
+    }
+
+    if (!response) {
+      throw new Error('Failed to reach get-accounts endpoint');
+    }
+
+    const result = await response.json();
+    if (result.status === 'success') {
+      ctrlCitizens = result.data;
+      if (typeof renderControlTable === 'function') {
+        renderControlTable(ctrlCitizens);
+      }
+      if (typeof updateControlStats === 'function') {
+        updateControlStats();
+      }
+    } else {
+      if (typeof showToast === 'function') showToast(result.message || 'Failed to load account records.', true);
+    }
+  } catch (error) {
+    console.error('Error fetching citizen accounts:', error);
+    if (typeof showToast === 'function') showToast('An error occurred while loading account records.', true);
+  }
+}
+
 // CSV EXPORT LOG TIMELINE
 function exportControlCsv() {
   const searchInput = document.getElementById('ctrlSearchInput');

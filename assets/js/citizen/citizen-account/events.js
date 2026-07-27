@@ -56,7 +56,7 @@ function triggerStateChange(citId, selectEl) {
 }
 
 // B. EXECUTE AND CONFIRM ACTION
-function handleConfirmStateChange(e) {
+async function handleConfirmStateChange(e) {
   e.preventDefault();
 
   const mTargetId = document.getElementById('stateTargetId');
@@ -93,12 +93,39 @@ function handleConfirmStateChange(e) {
     nextFlagged = true;
   }
 
-  // Update object states
+  // Send update to database API
+  try {
+    const endpoints = [
+      '/api/citizen/update-status.php',
+      '/civentral/api/citizen/update-status.php',
+      '../../api/citizen/update-status.php'
+    ];
+    for (const ep of endpoints) {
+      try {
+        const res = await fetch(ep, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            db_id: cit.db_id,
+            citizen_id: cit.id,
+            action: action,
+            reason: reason
+          })
+        });
+        if (res.ok) break;
+      } catch (e) {}
+    }
+  } catch (err) {
+    console.error('Error updating status on server:', err);
+  }
+
+  // Update local object states
   cit.status = nextStatus;
   cit.violations = nextViolations;
   cit.flagged = nextFlagged;
 
   // Add timeline record
+  if (!Array.isArray(cit.timeline)) cit.timeline = [];
   cit.timeline.unshift({
     action: `Status updated to ${nextStatus}`,
     admin: "Superadmin",
