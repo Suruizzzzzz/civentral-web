@@ -5,6 +5,28 @@ var mockCitizens = [];
 // STATE MANAGEMENT
 window.pendingCitizenId = null;
 
+async function fetchCitizens() {
+  try {
+    // We use absolute path to ensure it always hits the correct endpoint
+    const response = await fetch('/civentral/api/citizen/get-directory.php');
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const result = await response.json();
+    if (result.status === 'success') {
+      mockCitizens = result.data;
+      if (typeof renderCitizens === 'function') {
+        renderCitizens(mockCitizens);
+      }
+    } else {
+      if (typeof showToast === 'function') showToast(result.message || 'Failed to fetch citizens.', true);
+    }
+  } catch (error) {
+    console.error('Error fetching citizens:', error);
+    if (typeof showToast === 'function') showToast('An error occurred while fetching citizens.', true);
+  }
+}
+
 function exportCitizensCsv() {
   const citizenSearchInput = document.getElementById('citizenSearch');
   const statusFilterSelect = document.getElementById('statusFilter');

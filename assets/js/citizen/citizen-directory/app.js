@@ -8,7 +8,9 @@ window.loadCiventralScript('assets/js/citizen/citizen-directory/modal.js');
 window.loadCiventralScript('assets/js/citizen/citizen-directory/events.js', () => {
 
     function initCitizenDirectoryModule() {
-        if (typeof renderCitizens === 'function') {
+        if (typeof fetchCitizens === 'function') {
+            fetchCitizens(); // This will fetch data and then call renderCitizens
+        } else if (typeof renderCitizens === 'function') {
             renderCitizens();
         }
 
