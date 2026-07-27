@@ -1,5 +1,9 @@
 <?php
 
+if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+    session_start();
+}
+
 // Load Database Config
 $configPath = __DIR__ . '/../config/database.php';
 if (file_exists($configPath)) {
@@ -24,7 +28,7 @@ $authService = new \App\Services\AuthService();
 
 // Support dynamic basePath if defined before requiring bootstrap.php
 $currentBasePath = $basePath ?? '../';
-$sessionTimeout = new \App\Middleware\SessionTimeout(300, $currentBasePath);
+$sessionTimeout = new \App\Middleware\SessionTimeout(1800, $currentBasePath);
 $sessionTimeout->handle();
 
 // Initialize Repositories
