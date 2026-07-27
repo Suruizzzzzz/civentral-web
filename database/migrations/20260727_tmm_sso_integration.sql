@@ -146,35 +146,6 @@ WHERE role.role_prefix IN (
     'TMMTRAFFIC', 'TMMINSPECT', 'TMMPARK'
 );
 
--- The existing Transport Administrator is the TMM department administrator.
-UPDATE roles role
-JOIN departments department ON department.department_code = 'TMM'
-SET role.department_id = department.department_id,
-    role.status = 'Active',
-    role.is_global_access = 0,
-    role.is_superadmin = 0
-WHERE role.role_prefix = 'TA';
-
-INSERT INTO positions (department_id, position_name, status)
-SELECT department.department_id, 'Transport Administrator', 'Active'
-FROM departments department
-WHERE department.department_code = 'TMM'
-  AND NOT EXISTS (
-      SELECT 1
-      FROM positions existing
-      WHERE existing.department_id = department.department_id
-        AND existing.position_name = 'Transport Administrator'
-  );
-
-UPDATE users user
-JOIN roles role ON role.role_id = user.role_id AND role.role_prefix = 'TA'
-JOIN departments department ON department.department_code = 'TMM'
-JOIN positions position
-  ON position.department_id = department.department_id
- AND position.position_name = 'Transport Administrator'
-SET user.position_id = position.position_id,
-    user.updated_at = CURRENT_TIMESTAMP;
-
 -- Every TMM role can open the dashboard.
 INSERT INTO role_permissions (role_id, permission_id, granted_by)
 SELECT role.role_id, permission.permission_id, NULL
@@ -197,7 +168,7 @@ FROM roles role
 CROSS JOIN permissions permission
 JOIN resources resource ON resource.resource_id = permission.resource_id
 JOIN modules module ON module.module_id = resource.module_id
-WHERE role.role_prefix IN ('TMMADMIN', 'TA')
+WHERE role.role_prefix = 'TMMADMIN'
   AND module.module_name = 'Transport & Mobility Management'
   AND NOT EXISTS (
       SELECT 1 FROM role_permissions existing
@@ -212,7 +183,7 @@ FROM roles role
 CROSS JOIN permissions permission
 JOIN resources resource ON resource.resource_id = permission.resource_id
 JOIN actions action ON action.action_id = permission.action_id
-WHERE role.role_prefix IN ('TMMADMIN', 'TA')
+WHERE role.role_prefix = 'TMMADMIN'
   AND LOWER(resource.resource_name) IN ('users account', 'account status')
   AND action.action_name IN ('View', 'Create', 'Edit')
   AND NOT EXISTS (

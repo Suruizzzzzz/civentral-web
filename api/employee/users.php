@@ -34,9 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../config/mailer.php';
-require_once __DIR__ . '/../../src/Services/TmmAccountPolicy.php';
-
-use App\Services\TmmAccountPolicy;
 
 // Response Helper
 function respond(array $payload, int $statusCode = 200): void {
@@ -71,11 +68,9 @@ try {
     $isSuperAdminOrGlobal = false;
     $userDepartmentId = null;
     $userDepartmentName = null;
-    $currentRolePrefix = '';
 
     if (!empty($currentUserInfo)) {
         $userRow = $currentUserInfo[0];
-        $currentRolePrefix = strtoupper(trim((string) ($userRow['role_prefix'] ?? '')));
         $userDepartmentId = !empty($userRow['department_id']) ? (int)$userRow['department_id'] : null;
         $userDepartmentName = $userRow['department_name'] ?? null;
 
@@ -247,17 +242,6 @@ try {
         if ($action === 'get_roles_by_dept') {
             $targetDeptId = filter_var($_GET['department_id'] ?? null, FILTER_VALIDATE_INT);
             $rolesList = $getDepartmentRoles($targetDeptId ?: $userDepartmentId);
-            $visiblePrefixes = TmmAccountPolicy::visibleRolePrefixes($currentRolePrefix, $isSuperAdminOrGlobal);
-            if ($visiblePrefixes !== null) {
-                $rolesList = array_values(array_filter(
-                    $rolesList,
-                    static fn (array $role): bool => in_array(
-                        strtoupper((string) ($role['role_prefix'] ?? '')),
-                        $visiblePrefixes,
-                        true,
-                    ),
-                ));
-            }
             respond([
                 'status' => 'success',
                 'roles' => $rolesList
@@ -349,17 +333,6 @@ try {
 
         $initialTargetDept = $isSuperAdminOrGlobal ? null : $userDepartmentId;
         $roles = $getDepartmentRoles($initialTargetDept);
-        $visiblePrefixes = TmmAccountPolicy::visibleRolePrefixes($currentRolePrefix, $isSuperAdminOrGlobal);
-        if ($visiblePrefixes !== null) {
-            $roles = array_values(array_filter(
-                $roles,
-                static fn (array $role): bool => in_array(
-                    strtoupper((string) ($role['role_prefix'] ?? '')),
-                    $visiblePrefixes,
-                    true,
-                ),
-            ));
-        }
 
         $deptSql = "SELECT department_id, department_code, department_name FROM departments WHERE status = 'Active' ORDER BY department_name ASC";
         $departments = $db->query($deptSql) ?: [];
@@ -455,40 +428,6 @@ try {
             ], 400);
         }
 
-        $targetRoles = $db->select('roles', ['role_id' => $roleId]);
-        if (empty($targetRoles)) {
-            respond([
-                'status' => 'error',
-                'message' => 'The selected role does not exist.'
-            ], 422);
-        }
-        $targetRole = $targetRoles[0];
-        $targetRoleDepartmentId = isset($targetRole['department_id'])
-            ? (int) $targetRole['department_id']
-            : null;
-
-        if ($targetRoleDepartmentId !== null && $targetRoleDepartmentId !== $departmentId) {
-            respond([
-                'status' => 'error',
-                'message' => 'The selected role does not belong to the assigned department.'
-            ], 403);
-        }
-
-        if (!TmmAccountPolicy::canAssignRole(
-            $currentRolePrefix,
-            $isSuperAdminOrGlobal,
-            (string) ($targetRole['role_prefix'] ?? ''),
-            !empty($targetRole['is_superadmin']),
-            !empty($targetRole['is_global_access']),
-        )) {
-            respond([
-                'status' => 'error',
-                'message' => $currentRolePrefix === 'TA'
-                    ? 'Transport Administrators may create only the five operational TMM staff roles.'
-                    : 'You are not allowed to assign the selected administrative role.'
-            ], 403);
-        }
-
         // Department Scope Security Checks
         if (!$isSuperAdminOrGlobal) {
             if ($departmentId !== $userDepartmentId) {
@@ -498,6 +437,27 @@ try {
                 ], 403);
             }
 
+            $targetRoles = $db->select('roles', ['role_id' => $roleId]);
+            if (!empty($targetRoles)) {
+                $targetRole = $targetRoles[0];
+                if (!empty($targetRole['is_superadmin']) || !empty($targetRole['is_global_access']) || in_array(strtoupper($targetRole['role_prefix'] ?? ''), ['SA', 'SADM'])) {
+                    respond([
+                        'status' => 'error',
+                        'message' => 'Forbidden. Department Administrators cannot assign Super Admin or global access roles.'
+                    ], 403);
+                }
+            }
+        } else {
+            $targetRoles = $db->select('roles', ['role_id' => $roleId]);
+            if (!empty($targetRoles)) {
+                $targetRole = $targetRoles[0];
+                if (!empty($targetRole['is_superadmin']) || intval($targetRole['is_superadmin'] ?? 0) === 1) {
+                    respond([
+                        'status' => 'error',
+                        'message' => 'Superadmin accounts must be provisioned via System Security Console.'
+                    ], 403);
+                }
+            }
         }
 
         // Email Uniqueness Check

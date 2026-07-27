@@ -12,7 +12,7 @@ include '../includes/header.php';
     <main class="flex-1 p-6 md:p-8 max-w-7xl mx-auto space-y-8 overflow-y-auto">
       
       <div class="bg-gradient-to-r from-brand-dark to-slate-900 text-white rounded-2xl p-6 shadow-md border border-brand-dark/40 space-y-2">
-        <h1 class="text-xl sm:text-2xl font-black tracking-tight">Welcome, <?php echo htmlspecialchars((string) ($headerUser['full_name'] ?? 'Civentral User')); ?>!</h1>
+        <h1 class="text-xl sm:text-2xl font-black tracking-tight">Welcome, Superadmin!</h1>
         <p class="text-xs text-brand-light/80 max-w-2xl leading-relaxed">
           Operational infrastructure management console running. Select a module branch from the central network gateway below to coordinate data entries across district subfolders.
         </p>
