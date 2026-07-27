@@ -8,7 +8,7 @@ window.pendingCitizenId = null;
 async function fetchCitizens() {
   try {
     // We use absolute path to ensure it always hits the correct endpoint
-    const response = await fetch('/civentral/api/citizen/get-directory.php');
+    const response = await fetch('/api/citizen/get-directory.php');
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
