@@ -1,6 +1,10 @@
 <?php
 
-if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+if (!ob_get_level()) {
+    ob_start();
+}
+
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 

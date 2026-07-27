@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $basePath = '../../';
 include '../../includes/header.php';
 include '../../includes/sidebar.php';
