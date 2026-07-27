@@ -12,6 +12,7 @@ use Throwable;
 final class TmmSsoService
 {
     private const ROLE_MAP = [
+        'TA' => 'system_admin',
         'TMMADMIN' => 'system_admin',
         'TMMRECORD' => 'records_officer',
         'TMMFRANCH' => 'franchise_officer',
