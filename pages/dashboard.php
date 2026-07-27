@@ -1,4 +1,11 @@
-<?php include '../includes/header.php'; ?>
+<?php
+$configuredTmmUrl = trim((string) getenv('TMM_APP_URL'));
+$tmmApplicationUrl = rtrim(
+    $configuredTmmUrl !== '' ? $configuredTmmUrl : 'https://transport.civentral.tech',
+    '/',
+) . '/auth/login.php';
+include '../includes/header.php';
+?>
 
 <?php include '../includes/sidebar.php'; ?>
 
@@ -109,7 +116,7 @@
           </div>
         </a>
 
-        <a href="modules/transport/index.php" class="bg-white border border-slate-200 hover:border-brand-medium rounded-xl p-5 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-md group transition">
+        <a href="<?php echo htmlspecialchars($tmmApplicationUrl, ENT_QUOTES, 'UTF-8'); ?>" class="bg-white border border-slate-200 hover:border-brand-medium rounded-xl p-5 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-md group transition">
           <div class="space-y-3">
             <div class="h-9 w-9 rounded-lg bg-brand-light border border-brand-border flex items-center justify-center text-brand-dark transition group-hover:bg-brand-medium group-hover:text-white">
               <i class="fa-solid fa-bus text-sm"></i>

@@ -1,4 +1,11 @@
-function togglePasswordVisibility() {
+function civentralLoginDestination() {
+      const returnTo = new URLSearchParams(window.location.search).get('return_to');
+      return returnTo && returnTo.startsWith('/') && !returnTo.startsWith('//')
+        ? returnTo
+        : 'pages/dashboard.php';
+    }
+
+    function togglePasswordVisibility() {
       const passwordInput = document.getElementById('password');
       const passwordIcon = document.getElementById('passwordIcon');
       
@@ -82,7 +89,7 @@ function togglePasswordVisibility() {
             submitBtn.innerHTML = '<span class="inline-flex items-center justify-center gap-2"><img src="assets/images/spinner.svg" class="h-4 w-4 inline" alt="loading"> Entering Dashboard...</span>';
           }
           setTimeout(() => {
-            window.location.href = 'pages/dashboard.php';
+            window.location.href = civentralLoginDestination();
           }, 1200);
         } else if (data.status === 'maintenance') {
           showStatusAlert('maintenance', data.message);
@@ -106,7 +113,7 @@ function togglePasswordVisibility() {
             submitBtn.innerHTML = '<span class="inline-flex items-center justify-center gap-2"><img src="assets/images/spinner.svg" class="h-4 w-4 inline" alt="loading"> Entering Dashboard...</span>';
           }
           setTimeout(() => {
-            window.location.href = 'pages/dashboard.php';
+            window.location.href = civentralLoginDestination();
           }, 1200);
         } else {
           showStatusAlert('error', 'Login failed. Invalid credentials or network error.');
@@ -232,7 +239,7 @@ function togglePasswordVisibility() {
             verifyBtn.innerHTML = '<span class="inline-flex items-center gap-2"><img src="assets/images/spinner.svg" class="h-4 w-4 inline" alt="loading"> Entering Dashboard...</span>';
           }
           setTimeout(() => {
-            window.location.href = 'pages/dashboard.php';
+            window.location.href = civentralLoginDestination();
           }, 1000);
         } else {
           showOtpAlert(data.message || 'Verification failed.');
