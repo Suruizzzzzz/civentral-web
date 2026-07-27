@@ -1,7 +1,21 @@
 // CITIZEN DIRECTORY UI
 
+function updateMetrics(allList = mockCitizens) {
+  const metricTotal = document.getElementById('metricTotal');
+  const metricActive = document.getElementById('metricActive');
+  const metricInactive = document.getElementById('metricInactive');
+  const metricLocked = document.getElementById('metricLocked');
+
+  if (metricTotal) metricTotal.innerText = allList.length;
+  if (metricActive) metricActive.innerText = allList.filter(c => c.status === 'Active').length;
+  if (metricInactive) metricInactive.innerText = allList.filter(c => c.status === 'Inactive' || c.status === 'Pending').length;
+  if (metricLocked) metricLocked.innerText = allList.filter(c => c.status === 'Locked').length;
+}
+
 // RENDER DATATABLE
 function renderCitizens(list = mockCitizens) {
+  updateMetrics();
+
   const citizenTbody = document.getElementById('citizenTableBody');
   if (!citizenTbody) return;
   citizenTbody.innerHTML = '';
