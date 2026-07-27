@@ -1,9 +1,22 @@
 <?php
+require_once __DIR__ . '/../src/bootstrap.php';
+require_once __DIR__ . '/../src/Services/TmmAccountPolicy.php';
+
+use App\Services\TmmAccountPolicy;
+
 $configuredTmmUrl = trim((string) getenv('TMM_APP_URL'));
 $tmmApplicationUrl = rtrim(
     $configuredTmmUrl !== '' ? $configuredTmmUrl : 'https://transport.civentral.tech',
     '/',
-) . '/auth/login.php';
+) . '/dashboard.php';
+
+$currentRolePrefix = strtoupper(trim((string) ($headerUser['role_prefix'] ?? '')));
+
+if (in_array($currentRolePrefix, TmmAccountPolicy::OPERATIONAL_ROLE_PREFIXES, true)) {
+    header('Location: ' . $tmmApplicationUrl, true, 302);
+    exit;
+}
+
 include '../includes/header.php';
 ?>
 
