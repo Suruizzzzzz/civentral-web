@@ -32,6 +32,13 @@ include '../../includes/sidebar.php';
       <div class="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-xs space-y-3">
         <h3 class="text-xs font-black uppercase tracking-wider text-slate-700">Access Roles</h3>
         
+        <!-- Department Filter Dropdown -->
+        <div>
+          <select id="roleDepartmentFilter" onchange="if(typeof renderRoleSelector === 'function') renderRoleSelector()" class="w-full px-3 py-2 border border-slate-200 rounded-xl text-xs bg-slate-50/50 text-slate-700 focus:bg-white focus:outline-none focus:border-brand-medium transition cursor-pointer">
+            <option value="ALL">All Departments</option>
+          </select>
+        </div>
+
         <!-- Search Input -->
         <div class="relative">
           <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>

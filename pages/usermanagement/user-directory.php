@@ -408,6 +408,32 @@ include '../../includes/sidebar.php';
       </div>
     </form>
   </div>
+<!-- CONFIRM ARCHIVE USER MODAL -->
+<div id="archiveModal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/60 backdrop-blur-xs">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden transform scale-95 transition-all duration-300">
+    <div class="p-6 space-y-4 text-center">
+      <div class="h-14 w-14 rounded-2xl bg-amber-50 border border-amber-100 text-amber-600 flex items-center justify-center mx-auto text-xl shadow-2xs">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <div class="space-y-1">
+        <h3 class="text-base font-black text-slate-900 tracking-tight">Archive User Account?</h3>
+        <p id="archiveTargetUserName" class="text-xs font-bold text-brand-dark">User Account</p>
+      </div>
+      <div class="bg-amber-50/80 border border-amber-200/80 rounded-xl p-3.5 text-left text-xs leading-relaxed text-amber-800 flex items-start gap-2.5">
+        <i class="fa-solid fa-circle-exclamation text-amber-600 text-sm mt-0.5 shrink-0"></i>
+        <span>Archiving this user profile will revoke active session access and soft-delete the user account across CIVENTRAL services.</span>
+      </div>
+      <div class="pt-2 flex items-center justify-end gap-2.5">
+        <button type="button" onclick="closeModal('archiveModal')" class="w-1/2 py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold rounded-xl text-xs transition cursor-pointer">
+          Cancel
+        </button>
+        <button type="button" onclick="confirmArchiveUser()" class="w-1/2 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-xs transition shadow-xs cursor-pointer flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-box-archive text-xs"></i>
+          <span>Confirm Archive</span>
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- 4. LOGIN HISTORY MODAL -->

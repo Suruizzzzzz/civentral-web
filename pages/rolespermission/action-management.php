@@ -615,7 +615,7 @@ function openArchiveActionModal(id) {
   const targetNameEl = document.getElementById('archiveTargetName');
   if (targetNameEl) targetNameEl.textContent = `Action: ${act.name}`;
 
-  showModalOverlay('actionModal', 'actionModalCard');
+  showModalOverlay('archiveModal', 'archiveModalCard');
 }
 
 function closeArchiveModal() {

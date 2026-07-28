@@ -1,13 +1,18 @@
 <?php
 $basePath = '../../';
-include '../../includes/header.php';
+require_once __DIR__ . '/../../src/bootstrap.php';
 
 // Access Control: Only Superadmins can manage Access Boundaries
 if (empty($headerUser['is_superadmin'])) {
-    header("Location: ../dashboard.php");
+    if (!headers_sent()) {
+        header("Location: ../dashboard.php");
+    } else {
+        echo '<script>window.location.href="../dashboard.php";</script>';
+    }
     exit;
 }
 
+include '../../includes/header.php';
 include '../../includes/sidebar.php';
 ?>
 

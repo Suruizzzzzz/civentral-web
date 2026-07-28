@@ -264,12 +264,12 @@ try {
             $updatePayload['is_global_access'] = !empty($data['is_global_access']) ? 1 : 0;
         }
         
-        if (isset($data['status']) && in_array($data['status'], ['Active', 'Inactive'])) {
+        if (isset($data['status']) && in_array($data['status'], ['Active', 'Inactive', 'Archived'])) {
             // Prevent deactivating system role
-            if (!empty($targetRole['is_system_role']) && $data['status'] === 'Inactive') {
+            if (!empty($targetRole['is_system_role']) && in_array($data['status'], ['Inactive', 'Archived'])) {
                 respond([
                     'status' => 'error',
-                    'message' => 'System critical roles cannot be deactivated.'
+                    'message' => 'System critical roles cannot be deactivated or archived.'
                 ], 403);
             }
             $updatePayload['status'] = $data['status'];
@@ -303,7 +303,7 @@ try {
         if (!$canDeleteRole) {
             respond([
                 'status' => 'error',
-                'message' => 'Forbidden. You do not have permission to delete system roles.'
+                'message' => 'Forbidden. You do not have permission to delete or archive system roles.'
             ], 403);
         }
         $roleId = filter_var($_GET['role_id'] ?? $data['role_id'] ?? null, FILTER_VALIDATE_INT);
@@ -332,20 +332,23 @@ try {
         ) {
             respond([
                 'status' => 'error',
-                'message' => 'System critical roles cannot be deleted.'
+                'message' => 'System critical roles cannot be archived.'
             ], 403);
         }
 
-        $db->delete('roles', ['role_id' => $roleId]);
+        $db->update('roles', [
+            'status' => 'Archived',
+            'updated_at' => date('Y-m-d H:i:s')
+        ], ['role_id' => $roleId]);
 
         // Audit Trail
         try {
             $db->insert('audit_logs', [
                 'actor_user_id' => $userId,
-                'action' => 'Delete Role',
+                'action' => 'Archive Role',
                 'target_table' => 'roles',
                 'target_id' => (string)$roleId,
-                'description' => "Deleted role ID {$roleId}",
+                'description' => "Archived role ID {$roleId}",
                 'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
                 'request_method' => 'DELETE',
                 'request_uri' => $_SERVER['REQUEST_URI'] ?? '/api/employee/roles.php',
@@ -356,7 +359,7 @@ try {
 
         respond([
             'status' => 'success',
-            'message' => 'Role deleted successfully.'
+            'message' => 'Role archived successfully.'
         ]);
     }
 

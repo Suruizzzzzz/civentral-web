@@ -84,7 +84,7 @@ try {
     $canDeleteAction = $isSuperAdmin || in_array('DELETE', $userGrantedActions);
 
     if ($method === 'GET') {
-        $actions = $db->query("SELECT action_id, action_name FROM actions ORDER BY action_id ASC");
+        $actions = $db->query("SELECT action_id, action_name, description, status, created_at, updated_at FROM actions ORDER BY action_id ASC");
         respond([
             'status' => 'success',
             'data' => $actions ?: [],
@@ -108,6 +108,9 @@ try {
         }
 
         $actionName = trim($data['action_name'] ?? '');
+        $description = trim($data['description'] ?? '');
+        $status = in_array($data['status'] ?? '', ['Active', 'Inactive', 'Archived']) ? $data['status'] : 'Active';
+
         if (empty($actionName)) {
             respond([
                 'status' => 'error',
@@ -123,7 +126,13 @@ try {
             ], 400);
         }
 
-        $newId = $db->insert('actions', ['action_name' => $actionName]);
+        $newId = $db->insert('actions', [
+            'action_name' => $actionName,
+            'description' => $description ?: null,
+            'status' => $status,
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s')
+        ]);
 
         respond([
             'status' => 'success',
@@ -141,16 +150,21 @@ try {
         }
 
         $actionId = filter_var($data['action_id'] ?? null, FILTER_VALIDATE_INT);
-        $actionName = trim($data['action_name'] ?? '');
 
-        if (!$actionId || empty($actionName)) {
+        if (!$actionId) {
             respond([
                 'status' => 'error',
-                'message' => 'Valid action_id and action_name are required.'
+                'message' => 'Valid action_id is required.'
             ], 400);
         }
 
-        $db->update('actions', ['action_name' => $actionName], ['action_id' => $actionId]);
+        $updatePayload = ['updated_at' => date('Y-m-d H:i:s')];
+
+        if (isset($data['action_name'])) $updatePayload['action_name'] = trim($data['action_name']);
+        if (isset($data['description'])) $updatePayload['description'] = trim($data['description']);
+        if (isset($data['status']) && in_array($data['status'], ['Active', 'Inactive', 'Archived'])) $updatePayload['status'] = $data['status'];
+
+        $db->update('actions', $updatePayload, ['action_id' => $actionId]);
 
         respond([
             'status' => 'success',
@@ -174,11 +188,14 @@ try {
             ], 400);
         }
 
-        $db->delete('actions', ['action_id' => $actionId]);
+        $db->update('actions', [
+            'status' => 'Archived',
+            'updated_at' => date('Y-m-d H:i:s')
+        ], ['action_id' => $actionId]);
 
         respond([
             'status' => 'success',
-            'message' => 'Action verb deleted successfully.'
+            'message' => 'Action verb archived successfully.'
         ]);
     }
 

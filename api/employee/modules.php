@@ -182,7 +182,12 @@ try {
 
         if (isset($data['module_name'])) $updatePayload['module_name'] = trim($data['module_name']);
         if (isset($data['description'])) $updatePayload['description'] = trim($data['description']);
-        if (isset($data['status']) && in_array($data['status'], ['Active', 'Inactive'])) $updatePayload['status'] = $data['status'];
+        if (isset($data['status']) && in_array($data['status'], ['Active', 'Inactive', 'Archived'])) {
+            $updatePayload['status'] = $data['status'];
+            if ($data['status'] === 'Archived') {
+                $db->update('resources', ['status' => 'Archived', 'updated_at' => date('Y-m-d H:i:s')], ['module_id' => $moduleId]);
+            }
+        }
 
         $db->update('modules', $updatePayload, ['module_id' => $moduleId]);
 
@@ -225,16 +230,25 @@ try {
             ], 400);
         }
 
-        $db->delete('modules', ['module_id' => $moduleId]);
+        $db->update('modules', [
+            'status' => 'Archived',
+            'updated_at' => date('Y-m-d H:i:s')
+        ], ['module_id' => $moduleId]);
+
+        // Cascade archive all child resources under this module
+        $db->update('resources', [
+            'status' => 'Archived',
+            'updated_at' => date('Y-m-d H:i:s')
+        ], ['module_id' => $moduleId]);
 
         // Audit Trail
         try {
             $db->insert('audit_logs', [
                 'actor_user_id' => $userId,
-                'action' => 'Delete Module',
+                'action' => 'Archive Module',
                 'target_table' => 'modules',
                 'target_id' => (string)$moduleId,
-                'description' => "Deleted module ID {$moduleId}",
+                'description' => "Archived module ID {$moduleId} and all child resources",
                 'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
                 'request_method' => 'DELETE',
                 'request_uri' => $_SERVER['REQUEST_URI'] ?? '/api/employee/modules.php',
@@ -245,7 +259,7 @@ try {
 
         respond([
             'status' => 'success',
-            'message' => 'Module deleted successfully.'
+            'message' => 'Module and all child resources archived successfully.'
         ]);
     }
 

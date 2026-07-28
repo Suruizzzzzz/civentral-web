@@ -103,7 +103,12 @@ try {
 
     if ($method === 'GET') {
         if ($isSuperAdmin) {
-            $roles = $db->query("SELECT role_id, role_name, role_prefix, is_global_access, description, status, is_system_role FROM roles ORDER BY role_id ASC");
+            $roles = $db->query("
+                SELECT r.role_id, r.role_name, r.role_prefix, r.is_global_access, r.description, r.status, r.is_system_role, r.department_id, d.department_name 
+                FROM roles r
+                LEFT JOIN departments d ON r.department_id = d.department_id 
+                ORDER BY r.role_id ASC
+            ");
         } else if ($userDeptId) {
             if (empty($userDeptName)) {
                 $dRow = $db->query("SELECT department_name FROM departments WHERE department_id = :did", ['did' => $userDeptId]);
@@ -117,8 +122,9 @@ try {
             });
 
             $sql = "
-                SELECT DISTINCT r.role_id, r.role_name, r.role_prefix, r.is_global_access, r.description, r.status, r.is_system_role
+                SELECT DISTINCT r.role_id, r.role_name, r.role_prefix, r.is_global_access, r.description, r.status, r.is_system_role, r.department_id, d.department_name
                 FROM roles r
+                LEFT JOIN departments d ON r.department_id = d.department_id
                 LEFT JOIN role_department_access rda ON r.role_id = rda.role_id
                 WHERE (r.department_id = :did OR rda.department_id = :did2
             ";
@@ -134,18 +140,26 @@ try {
 
             $roles = $db->query($sql, $params);
         } else {
-            $roles = $db->query("SELECT role_id, role_name, role_prefix, is_global_access, description, status, is_system_role FROM roles WHERE is_global_access = 0 ORDER BY role_id ASC");
+            $roles = $db->query("
+                SELECT r.role_id, r.role_name, r.role_prefix, r.is_global_access, r.description, r.status, r.is_system_role, r.department_id, d.department_name 
+                FROM roles r
+                LEFT JOIN departments d ON r.department_id = d.department_id
+                WHERE r.is_global_access = 0 
+                ORDER BY r.role_id ASC
+            ");
         }
 
-        $modules = $db->query("SELECT module_id, module_name, description, status FROM modules ORDER BY module_id ASC");
-        $resources = $db->query("SELECT resource_id, module_id, resource_name, resource_route, status FROM resources ORDER BY resource_id ASC");
-        $actions = $db->query("SELECT action_id, action_name FROM actions ORDER BY action_id ASC");
+        $departments = $db->query("SELECT department_id, department_code, department_name FROM departments WHERE status = 'Active' ORDER BY department_name ASC") ?: [];
+        $modules = $db->query("SELECT module_id, module_name, description, status FROM modules WHERE status != 'Archived' OR status IS NULL ORDER BY module_id ASC");
+        $resources = $db->query("SELECT resource_id, module_id, resource_name, resource_route, status FROM resources WHERE status != 'Archived' OR status IS NULL ORDER BY resource_id ASC");
+        $actions = $db->query("SELECT action_id, action_name FROM actions WHERE status != 'Archived' OR status IS NULL ORDER BY action_id ASC");
         $permissions = $db->query("SELECT permission_id, resource_id, action_id, permission_key, status FROM permissions");
         $rolePermissions = $db->query("SELECT role_permission_id, role_id, permission_id, granted_by, granted_at FROM role_permissions");
 
         respond([
             'status' => 'success',
             'roles' => $roles ?: [],
+            'departments' => $departments ?: [],
             'modules' => $modules ?: [],
             'resources' => $resources ?: [],
             'actions' => $actions ?: [],

@@ -172,3 +172,55 @@ function openHistoryModal(userId) {
 
   openModal('historyModal');
 }
+
+// ARCHIVE USER ACCOUNT MODAL
+var archiveTargetUserId = null;
+
+function openArchiveUserModal(userId) {
+  const isSuperAdmin = currentUserScope ? !!currentUserScope.is_superadmin : false;
+  const grantedActions = currentUserScope ? (currentUserScope.granted_actions || []) : [];
+  const canDelete = isSuperAdmin || grantedActions.includes('DELETE');
+
+  if (!canDelete) {
+    if (typeof showToast === 'function') showToast('Forbidden. View-only access level cannot delete or archive user accounts.', true);
+    return;
+  }
+
+  const user = systemUsers.find(u => u.user_id === userId);
+  if (!user) return;
+
+  archiveTargetUserId = userId;
+  const fullName = typeof getUserFullName === 'function' ? getUserFullName(user) : '';
+  const targetNameEl = document.getElementById('archiveTargetUserName');
+  if (targetNameEl) targetNameEl.innerText = `User: ${fullName} (${user.employee_id})`;
+
+  openModal('archiveModal');
+}
+
+async function confirmArchiveUser() {
+  if (!archiveTargetUserId) return;
+  const targetId = archiveTargetUserId;
+  archiveTargetUserId = null;
+  closeModal('archiveModal');
+
+  try {
+    const response = await fetch(`../../api/employee/users.php?user_id=${targetId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const result = await response.json();
+
+    if (result.status === 'success') {
+      if (typeof showToast === 'function') showToast(result.message || 'User account archived successfully.');
+      if (typeof fetchSystemUsers === 'function') await fetchSystemUsers();
+    } else {
+      if (typeof showToast === 'function') showToast(result.message || 'Failed to archive user account.', true);
+    }
+  } catch (err) {
+    console.error('Error archiving user:', err);
+    if (typeof showToast === 'function') showToast('Failed to archive user account IN DATABASE.', true);
+  }
+}
+
+window.openArchiveUserModal = openArchiveUserModal;
+window.confirmArchiveUser = confirmArchiveUser;

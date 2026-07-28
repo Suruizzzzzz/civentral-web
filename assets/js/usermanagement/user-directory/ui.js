@@ -124,6 +124,7 @@ function renderTable(usersList = systemUsers) {
   const isSuperAdmin = currentUserScope ? !!currentUserScope.is_superadmin : false;
   const grantedActions = currentUserScope ? (currentUserScope.granted_actions || []) : [];
   const canEdit = isSuperAdmin || grantedActions.includes('EDIT');
+  const canDelete = isSuperAdmin || grantedActions.includes('DELETE');
 
   usersList.forEach(user => {
     const fullName = getUserFullName(user);
@@ -214,6 +215,10 @@ function renderTable(usersList = systemUsers) {
           <button onclick="if(typeof openHistoryModal === 'function') openHistoryModal(${user.user_id})" class="text-slate-400 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-100 p-1.5 rounded-lg border border-transparent transition cursor-pointer" title="Security Audit Log">
             <i class="fa-solid fa-clock-rotate-left text-xs"></i>
           </button>
+          ${canDelete ? `
+          <button onclick="if(typeof openArchiveUserModal === 'function') openArchiveUserModal(${user.user_id})" class="text-slate-400 hover:text-amber-600 hover:bg-amber-50 hover:border-amber-100 p-1.5 rounded-lg border border-transparent transition cursor-pointer ${user.status === 'Archived' ? 'opacity-40 cursor-not-allowed' : ''}" ${user.status === 'Archived' ? 'disabled' : ''} title="Archive User Account">
+            <i class="fa-solid fa-box-archive text-xs"></i>
+          </button>` : ''}
         </div>
       </td>
     `;

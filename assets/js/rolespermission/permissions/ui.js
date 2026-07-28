@@ -32,16 +32,38 @@ function isActionSupportedForResource(resObj, actObj) {
 }
 
 // RENDER ROLE SELECTION SIDEBAR
-function renderRoleSelector(filterQuery = '') {
+function renderRoleSelector(filterQuery = null) {
   const roleListContainer = document.getElementById('roleSelectorList');
+  const roleSearchInput = document.getElementById('roleSearchInput');
+  const deptFilterSelect = document.getElementById('roleDepartmentFilter');
   if (!roleListContainer) return;
   roleListContainer.innerHTML = '';
-  const query = filterQuery.toLowerCase().trim();
 
-  const filteredRoles = rolesData.filter(r => (r.role_name || '').toLowerCase().includes(query));
+  const query = (filterQuery !== null ? filterQuery : (roleSearchInput ? roleSearchInput.value : '')).toLowerCase().trim();
+  const selectedDept = deptFilterSelect ? deptFilterSelect.value : 'ALL';
+
+  const filteredRoles = rolesData.filter(r => {
+    const roleName = (r.role_name || '').toLowerCase();
+    const rolePrefix = (r.role_prefix || '').toLowerCase();
+    const deptName = (r.department_name || '').toLowerCase();
+
+    const matchesSearch = query === '' || roleName.includes(query) || rolePrefix.includes(query) || deptName.includes(query);
+
+    let matchesDept = true;
+    if (selectedDept !== 'ALL') {
+      const targetDeptId = parseInt(selectedDept);
+      if (!isNaN(targetDeptId)) {
+        matchesDept = (r.department_id === targetDeptId);
+      } else {
+        matchesDept = deptName.includes(selectedDept.toLowerCase());
+      }
+    }
+
+    return matchesSearch && matchesDept;
+  });
 
   if (filteredRoles.length === 0) {
-    roleListContainer.innerHTML = '<p class="text-[11px] text-slate-400 text-center py-2 font-semibold">No roles found</p>';
+    roleListContainer.innerHTML = '<p class="text-[11px] text-slate-400 text-center py-2 font-semibold">No roles found matching filter</p>';
     return;
   }
 
@@ -56,8 +78,11 @@ function renderRoleSelector(filterQuery = '') {
     btn.type = 'button';
     btn.className = `w-full text-left px-3 py-2.5 rounded-lg text-xs transition cursor-pointer flex items-center justify-between ${activeClasses}`;
     btn.innerHTML = `
-      <span>${roleObj.role_name}</span>
-      <i class="fa-solid fa-chevron-right text-[8px] opacity-60"></i>
+      <div class="flex flex-col min-w-0 pr-2">
+        <span class="truncate">${roleObj.role_name}</span>
+        ${roleObj.department_name ? `<span class="text-[9px] text-slate-400 font-medium truncate">${roleObj.department_name}</span>` : ''}
+      </div>
+      <i class="fa-solid fa-chevron-right text-[8px] opacity-60 shrink-0"></i>
     `;
     btn.onclick = () => { if (typeof selectRole === 'function') selectRole(roleObj.role_id); };
     roleListContainer.appendChild(btn);

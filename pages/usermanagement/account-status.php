@@ -10,7 +10,11 @@ $canAccessAccountStatus = !empty($headerUser['is_superadmin']) ||
                           }));
 
 if (!$canAccessAccountStatus) {
-    header("Location: ../dashboard.php");
+    if (!headers_sent()) {
+        header("Location: ../dashboard.php");
+    } else {
+        echo '<script>window.location.href="../dashboard.php";</script>';
+    }
     exit;
 }
 

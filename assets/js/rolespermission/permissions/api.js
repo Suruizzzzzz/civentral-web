@@ -1,8 +1,9 @@
 // PERMISSIONS DATABASE API
 
-var rolesData = [];       // Live roles FROM DATABASE
-var modulesData = [];     // Live modules and nested resources FROM DATABASE
-var actionsData = [];     // Live actions FROM DATABASE
+var rolesData = [];           // Live roles FROM DATABASE
+var roleDepartmentsData = []; // Live departments FROM DATABASE
+var modulesData = [];         // Live modules and nested resources FROM DATABASE
+var actionsData = [];         // Live actions FROM DATABASE
 var currentUserScope = null;
 
 window.selectedRoleId = null;
@@ -20,11 +21,26 @@ async function fetchPermissionsData() {
     if (result.status === 'success') {
       currentUserScope = result.current_user || null;
       rolesData = result.roles || [];
+      roleDepartmentsData = result.departments || [];
       actionsData = result.actions || [];
       const dbModules = result.modules || [];
       const dbResources = result.resources || [];
       const dbPermissions = result.permissions || [];
       const dbRolePermissions = result.role_permissions || [];
+
+      // Populate Department Filter Select Dropdown
+      const deptFilterSelect = document.getElementById('roleDepartmentFilter');
+      if (deptFilterSelect) {
+        const currentVal = deptFilterSelect.value || 'ALL';
+        deptFilterSelect.innerHTML = '<option value="ALL">All Departments</option>';
+        roleDepartmentsData.forEach(d => {
+          const opt = document.createElement('option');
+          opt.value = d.department_id;
+          opt.textContent = d.department_name;
+          deptFilterSelect.appendChild(opt);
+        });
+        deptFilterSelect.value = currentVal;
+      }
 
       // Build modulesData with nested resources
       modulesData = dbModules.map(m => {

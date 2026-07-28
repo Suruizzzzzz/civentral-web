@@ -5,7 +5,11 @@ function isModuleMasterChecked(moduleObj, rolePermissions) {
   if (!moduleObj.resources || moduleObj.resources.length === 0) return false;
   return moduleObj.resources.every(res => {
     const resourcePerms = rolePermissions[res.id] || [];
-    return actionsData.length > 0 && actionsData.every(action => resourcePerms.includes(action.action_id));
+    const supportedActions = (actionsData || []).filter(act => 
+      typeof isActionSupportedForResource === 'function' ? isActionSupportedForResource(res, act) : true
+    );
+    if (supportedActions.length === 0) return false;
+    return supportedActions.every(action => resourcePerms.includes(action.action_id));
   });
 }
 

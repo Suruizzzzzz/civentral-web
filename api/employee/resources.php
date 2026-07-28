@@ -179,6 +179,77 @@ try {
 
         $newId = $db->insert('resources', $insertPayload);
 
+        // Auto-grant permissions for the new resource to creator & Super Admin roles
+        try {
+            $allActions = $db->query("SELECT action_id FROM actions") ?: [];
+            
+            // 1. Identify target role IDs (Creator role + Super Administrator / Global Access roles)
+            $targetRoleIds = [];
+            if (!empty($_SESSION['role_id'])) {
+                $targetRoleIds[] = (int)$_SESSION['role_id'];
+            }
+
+            $superRoles = $db->query("
+                SELECT role_id 
+                FROM roles 
+                WHERE is_superadmin = 1 
+                   OR is_global_access = 1 
+                   OR UPPER(role_prefix) IN ('SA', 'SADM') 
+                   OR LOWER(role_name) IN ('super administrator', 'superadmin')
+            ") ?: [];
+
+            foreach ($superRoles as $sr) {
+                if (!empty($sr['role_id'])) {
+                    $targetRoleIds[] = (int)$sr['role_id'];
+                }
+            }
+
+            $targetRoleIds = array_unique($targetRoleIds);
+
+            // 2. Create permissions rows for each action & grant to target roles
+            foreach ($allActions as $actRow) {
+                $actId = (int)$actRow['action_id'];
+                $permKey = "res_{$newId}_act_{$actId}";
+
+                // Check existing permission row
+                $existingPerm = $db->query(
+                    "SELECT permission_id FROM permissions WHERE resource_id = :rid AND action_id = :aid",
+                    ['rid' => $newId, 'aid' => $actId]
+                );
+
+                if (!empty($existingPerm)) {
+                    $permId = (int)$existingPerm[0]['permission_id'];
+                } else {
+                    $permId = $db->insert('permissions', [
+                        'resource_id' => $newId,
+                        'action_id' => $actId,
+                        'permission_key' => $permKey,
+                        'status' => 'Active',
+                        'created_at' => date('Y-m-d H:i:s')
+                    ]);
+                }
+
+                if ($permId) {
+                    foreach ($targetRoleIds as $rId) {
+                        $existingRp = $db->query(
+                            "SELECT role_permission_id FROM role_permissions WHERE role_id = :rid AND permission_id = :pid",
+                            ['rid' => $rId, 'pid' => $permId]
+                        );
+                        if (empty($existingRp)) {
+                            $db->insert('role_permissions', [
+                                'role_id' => $rId,
+                                'permission_id' => $permId,
+                                'granted_by' => $userId,
+                                'granted_at' => date('Y-m-d H:i:s')
+                            ]);
+                        }
+                    }
+                }
+            }
+        } catch (Throwable $permEx) {
+            error_log("Auto-grant permissions error: " . $permEx->getMessage());
+        }
+
         // Audit Trail
         try {
             $db->insert('audit_logs', [
@@ -228,7 +299,7 @@ try {
         if (isset($data['resource_name'])) $updatePayload['resource_name'] = trim($data['resource_name']);
         if (isset($data['resource_route'])) $updatePayload['resource_route'] = trim($data['resource_route']);
         if (isset($data['description'])) $updatePayload['description'] = trim($data['description']);
-        if (isset($data['status']) && in_array($data['status'], ['Active', 'Inactive'])) $updatePayload['status'] = $data['status'];
+        if (isset($data['status']) && in_array($data['status'], ['Active', 'Inactive', 'Archived'])) $updatePayload['status'] = $data['status'];
 
         $db->update('resources', $updatePayload, ['resource_id' => $resourceId]);
 
@@ -271,16 +342,19 @@ try {
             ], 400);
         }
 
-        $db->delete('resources', ['resource_id' => $resourceId]);
+        $db->update('resources', [
+            'status' => 'Archived',
+            'updated_at' => date('Y-m-d H:i:s')
+        ], ['resource_id' => $resourceId]);
 
         // Audit Trail
         try {
             $db->insert('audit_logs', [
                 'actor_user_id' => $userId,
-                'action' => 'Delete Resource',
+                'action' => 'Archive Resource',
                 'target_table' => 'resources',
                 'target_id' => (string)$resourceId,
-                'description' => "Deleted resource ID {$resourceId}",
+                'description' => "Archived resource ID {$resourceId}",
                 'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
                 'request_method' => 'DELETE',
                 'request_uri' => $_SERVER['REQUEST_URI'] ?? '/api/employee/resources.php',
@@ -291,7 +365,7 @@ try {
 
         respond([
             'status' => 'success',
-            'message' => 'Resource deleted successfully.'
+            'message' => 'Resource archived successfully.'
         ]);
     }
 
