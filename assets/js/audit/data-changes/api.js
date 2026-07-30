@@ -28,6 +28,10 @@ window.civAudit.dataChanges.api = {
 
         if (window.civAudit.dataChanges.ui) {
           window.civAudit.dataChanges.ui.populateModuleDropdown();
+        }
+        if (window.civAudit.dataChanges.filters) {
+          window.civAudit.dataChanges.filters.applyFilters();
+        } else if (window.civAudit.dataChanges.ui) {
           window.civAudit.dataChanges.ui.renderMutationLogs(this.auditLogsData);
         }
       } else {

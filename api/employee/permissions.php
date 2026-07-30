@@ -33,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../src/Services/AuditLogger.php';
 
 // Response Helper
 function respond(array $payload, int $statusCode = 200): void {
@@ -278,20 +279,13 @@ try {
             }
 
             // E. Record Audit Trail
-            try {
-                $db->insert('audit_logs', [
-                    'actor_user_id' => $userId,
-                    'action' => 'Update Role Permissions Matrix',
-                    'target_table' => 'roles',
-                    'target_id' => (string)$roleId,
-                    'description' => "Updated permissions matrix for role \"{$targetRole['role_name']}\" (" . count($grantedPermIds) . " permissions granted)",
-                    'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
-                    'request_method' => 'POST',
-                    'request_uri' => $_SERVER['REQUEST_URI'] ?? '/api/employee/permissions.php',
-                    'browser' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown',
-                    'status' => 'Success'
-                ]);
-            } catch (Throwable $auditEx) {}
+            \App\Services\AuditLogger::log([
+                'action'        => 'Update Role Permissions Matrix',
+                'target_table'  => 'roles',
+                'target_id'     => (string)$roleId,
+                'description'   => "Updated permissions matrix for role \"{$targetRole['role_name']}\" (" . count($grantedPermIds) . " permissions granted)",
+                'actor_user_id' => $userId
+            ]);
 
             $pdo->commit();
 

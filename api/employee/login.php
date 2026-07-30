@@ -34,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../config/mailer.php';
+require_once __DIR__ . '/../../src/Services/AuditLogger.php';
 
 // Response Helper
 function respond(array $payload, int $statusCode = 200): void {
@@ -162,20 +163,13 @@ try {
             sendSystemEmail($user['email'], $userName, "Your CIVENTRAL Verification Code: {$otpCode}", $emailBody);
 
             // Audit Trail
-            try {
-                $db->insert('audit_logs', [
-                    'actor_user_id' => $activeUserId,
-                    'action' => 'Initiate 2FA Login',
-                    'target_table' => 'users',
-                    'target_id' => (string)$activeUserId,
-                    'description' => "OTP code generated and sent to {$maskedEmail}",
-                    'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
-                    'request_method' => 'POST',
-                    'request_uri' => $_SERVER['REQUEST_URI'] ?? '/api/employee/login.php',
-                    'browser' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown',
-                    'status' => 'Success'
-                ]);
-            } catch (Throwable $auditEx) {}
+            \App\Services\AuditLogger::log([
+                'action'        => 'Initiate 2FA Login',
+                'target_table'  => 'users',
+                'target_id'     => (string)$activeUserId,
+                'description'   => "OTP code generated and sent to {$maskedEmail}",
+                'actor_user_id' => $activeUserId
+            ]);
 
             respond([
                 'status' => 'otp_required',

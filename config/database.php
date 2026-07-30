@@ -22,6 +22,8 @@ if (!function_exists('loadEnv')) {
 
 loadEnv(__DIR__ . '/../.env');
 
+date_default_timezone_set('Asia/Manila');
+
 class Database {
     private static $instance = null;
     private $pdo;
@@ -43,6 +45,7 @@ class Database {
 
         try {
             $this->pdo = new PDO($dsn, $user, $pass, $options);
+            $this->pdo->exec("SET time_zone = '+08:00';");
         } catch (\PDOException $e) {
             // Attempt to connect without dbname to create DB if needed
             try {

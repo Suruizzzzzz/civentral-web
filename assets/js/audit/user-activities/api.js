@@ -51,13 +51,13 @@ window.civAudit.userActivities.api = {
           const deptName = log.departments?.department_name || 'General Services';
           const moduleName = log.modules?.module_name || 'System Portal';
 
-          const rawDate = log.created_at || new Date().toISOString();
-          const dtObj = new Date(rawDate);
-          const dateISO = dtObj.toISOString().split('T')[0];
+          const rawDate = log.created_at || '';
+          const dtObj = new Date(rawDate.includes('T') ? rawDate : rawDate.replace(' ', 'T') + '+08:00');
+          const dateISO = rawDate.split(' ')[0] || '';
           
-          const timePart = dtObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-          const datePart = dtObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-          const dateTimeStr = `${datePart} at ${timePart}`;
+          const timePart = !isNaN(dtObj.getTime()) ? dtObj.toLocaleTimeString('en-US', { timeZone: 'Asia/Manila', hour: '2-digit', minute: '2-digit', hour12: true }) : '';
+          const datePart = !isNaN(dtObj.getTime()) ? dtObj.toLocaleDateString('en-US', { timeZone: 'Asia/Manila', month: 'short', day: 'numeric', year: 'numeric' }) : (rawDate.split(' ')[0] || '');
+          const dateTimeStr = timePart ? `${datePart} at ${timePart}` : datePart;
 
           let payloadObj = log.context_json;
           if (typeof payloadObj === 'string') {

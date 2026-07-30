@@ -14,6 +14,10 @@ window.civAudit.dataChanges.modal = {
     const oldVal = row.getAttribute('data-old');
     const newVal = row.getAttribute('data-new');
     const reason = row.getAttribute('data-reason');
+    const ip = row.getAttribute('data-ip') || '127.0.0.1';
+    const method = row.getAttribute('data-method') || 'POST';
+    const uri = row.getAttribute('data-uri') || '/api';
+    const browser = row.getAttribute('data-browser') || 'Browser';
     const oldJson = row.getAttribute('data-old-json');
     const newJson = row.getAttribute('data-new-json');
 
@@ -27,6 +31,10 @@ window.civAudit.dataChanges.modal = {
     const elOldV = document.getElementById('modalOldValue');
     const elNewV = document.getElementById('modalNewValue');
     const elReason = document.getElementById('modalReason');
+    const elIp = document.getElementById('modalIp');
+    const elMethod = document.getElementById('modalMethod');
+    const elUri = document.getElementById('modalUri');
+    const elBrowser = document.getElementById('modalBrowser');
     const elOldJ = document.getElementById('modalOldJson');
     const elNewJ = document.getElementById('modalNewJson');
 
@@ -36,13 +44,24 @@ window.civAudit.dataChanges.modal = {
     if (elMod) elMod.innerText = mod;
     if (elRec) elRec.innerText = record;
 
-    if (elFldOld) elFldOld.innerText = `${field}:`;
-    if (elFldNew) elFldNew.innerText = `${field}:`;
+    if (elIp) elIp.innerText = ip;
+    if (elMethod) elMethod.innerText = method;
+    if (elUri) {
+      elUri.innerText = uri;
+      elUri.title = uri;
+    }
+    if (elBrowser) {
+      elBrowser.innerText = browser;
+      elBrowser.title = browser;
+    }
+
+    if (elFldOld) elFldOld.innerText = `${field} (Pre):`;
+    if (elFldNew) elFldNew.innerText = `${field} (Post):`;
 
     if (elOldV) elOldV.innerText = oldVal;
     if (elNewV) {
       elNewV.innerText = newVal;
-      if (newVal !== 'Success') {
+      if (newVal === 'Failed' || newVal === 'Archived' || newVal === 'Deleted') {
         elNewV.className = 'text-xs font-bold text-rose-800 bg-rose-50 border border-rose-100 px-2 py-0.5 rounded';
       } else {
         elNewV.className = 'text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded';
@@ -74,5 +93,11 @@ window.civAudit.dataChanges.modal = {
         modal.classList.add('hidden');
       }, 150);
     }
+  }
+};
+
+window.closeMutationModal = function() {
+  if (window.civAudit && window.civAudit.dataChanges && window.civAudit.dataChanges.modal) {
+    window.civAudit.dataChanges.modal.closeMutationModal();
   }
 };

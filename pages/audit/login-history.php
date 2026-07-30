@@ -27,6 +27,44 @@ include '../../includes/sidebar.php';
         Track real-time system entries, monitor session lifetimes, and catch unauthorized authentication compromises.
       </p>
     </div>
+
+    <!-- Action Controls -->
+    <div class="flex items-center gap-3 shrink-0">
+      <button onclick="refreshLogs()" class="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 font-bold rounded-xl text-xs tracking-wide transition shadow-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0f172a]/20">
+        <i class="fa-solid fa-rotate text-slate-400"></i>
+        <span>Refresh Log</span>
+      </button>
+
+      <button onclick="printData()" class="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 font-bold rounded-xl text-xs tracking-wide transition shadow-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0f172a]/20">
+        <i class="fa-solid fa-print text-slate-400"></i>
+        <span>Print / PDF</span>
+      </button>
+
+      <!-- Export Dropdown -->
+      <div class="relative inline-block text-left" id="exportDropdownContainer">
+        <button id="exportDropdownBtn" onclick="toggleExportDropdown(event)" 
+          class="inline-flex items-center justify-center gap-2.5 px-3.5 py-2.5 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 font-bold rounded-xl text-xs tracking-wide transition shadow-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0f172a]/20">
+          <i class="fa-solid fa-file-export text-slate-400"></i>
+          <span>Export Logs</span>
+          <i class="fa-solid fa-chevron-down text-[9px] text-slate-400"></i>
+        </button>
+        <!-- Dropdown Card -->
+        <div id="exportDropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg py-1 z-50 text-xs text-slate-600 transition-all transform scale-95 origin-top-right">
+          <a href="#" onclick="exportLogs('PDF', event)" class="flex items-center gap-2.5 px-4 py-2.5 hover:bg-slate-50 text-slate-700 transition font-bold">
+            <i class="fa-solid fa-file-pdf text-red-500 text-sm"></i>
+            <span>Export to PDF</span>
+          </a>
+          <a href="#" onclick="exportLogs('Excel', event)" class="flex items-center gap-2.5 px-4 py-2.5 hover:bg-slate-50 text-slate-700 transition font-bold">
+            <i class="fa-solid fa-file-excel text-emerald-600 text-sm"></i>
+            <span>Export to Excel</span>
+          </a>
+          <a href="#" onclick="exportLogs('CSV', event)" class="flex items-center gap-2.5 px-4 py-2.5 hover:bg-slate-50 text-slate-700 transition font-bold">
+            <i class="fa-solid fa-file-csv text-emerald-500 text-sm"></i>
+            <span>Download CSV</span>
+          </a>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Quick-Glance Security Metrics Ribbon (4 Columns) -->
@@ -233,12 +271,12 @@ include '../../includes/sidebar.php';
     </div>
   </div>
 
-  <!-- Session Profile Inspector Modal -->
-  <div id="sessionDetailsModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 transition-all duration-300">
-    <div id="modalCard" class="bg-white border border-slate-200 shadow-2xl rounded-2xl w-full max-w-xl overflow-hidden flex flex-col transform scale-95 opacity-0 transition-all duration-300">
+  <!-- Session Inspector Modal -->
+  <div id="sessionInspectorModal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[9999] overflow-y-auto p-4 sm:p-6 flex items-center justify-center transition-all duration-300">
+    <div id="modalCard" class="bg-white border border-slate-200 shadow-2xl rounded-2xl w-full max-w-xl max-h-[85vh] my-auto overflow-hidden flex flex-col transform scale-95 opacity-0 transition-all duration-300">
       
       <!-- Modal Header -->
-      <div class="px-6 py-4 border-b border-slate-200/80 bg-slate-50 flex items-center justify-between">
+      <div class="px-5 py-3.5 sm:px-6 sm:py-4 border-b border-slate-200/80 bg-slate-50 flex items-center justify-between shrink-0">
         <div class="flex items-center gap-3">
           <div class="h-9 w-9 rounded-xl bg-slate-950 flex items-center justify-center text-white text-sm shadow-sm bg-slate-900">
             <i class="fa-solid fa-key"></i>
@@ -248,13 +286,10 @@ include '../../includes/sidebar.php';
             <span id="modalLogId" class="font-mono text-[10px] font-black text-slate-400 uppercase">#LOG-45091</span>
           </div>
         </div>
-        <button onclick="closeSessionModal()" class="h-8 w-8 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/50 flex items-center justify-center transition focus:outline-none cursor-pointer">
-          <i class="fa-solid fa-xmark text-sm"></i>
-        </button>
       </div>
 
       <!-- Modal Body -->
-      <div class="p-6 space-y-5 overflow-y-auto max-h-[70vh] custom-scrollbar">
+      <div class="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1 custom-scrollbar">
         <!-- Event Status Header Banner -->
         <div id="modalStatusBanner" class="p-4 rounded-xl flex items-center gap-3">
           <div id="modalStatusIconContainer" class="h-8 w-8 rounded-lg flex items-center justify-center shrink-0">
@@ -336,7 +371,7 @@ include '../../includes/sidebar.php';
       </div>
 
       <!-- Modal Footer -->
-      <div class="px-6 py-4 border-t border-slate-200/80 bg-slate-50 flex items-center justify-end gap-3">
+      <div class="px-6 py-4 border-t border-slate-200/80 bg-slate-50 flex items-center justify-end gap-3 shrink-0">
         <button onclick="closeSessionModal()" class="px-4 py-2 border border-slate-200 text-slate-700 hover:bg-slate-100 font-bold rounded-xl text-xs tracking-wide transition cursor-pointer focus:outline-none">
           Close Inspector
         </button>
@@ -350,6 +385,7 @@ include '../../includes/sidebar.php';
 
 </main>
 
+<script src="../../assets/js/audit/audit-export.js"></script>
 <script src="../../assets/js/audit/login-history.js"></script>
 
 <?php include '../../includes/footer.php'; ?>

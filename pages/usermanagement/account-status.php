@@ -130,16 +130,13 @@ include '../../includes/sidebar.php';
 <!-- MODALS SECTION -->
 
 <!-- 1. DEACTIVATION CONFIRMATION MODAL -->
-<div id="deactivateModal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/60 backdrop-blur-xs">
-  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden transform scale-95 transition-all duration-300">
+<div id="deactivateModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/70 backdrop-blur-sm">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[85vh] my-auto overflow-y-auto transform scale-95 transition-all duration-300">
     <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
       <div class="flex items-center space-x-2">
         <i class="fa-solid fa-user-slash text-brand-medium"></i>
         <h3 class="font-extrabold text-sm tracking-tight uppercase">Confirm Deactivation</h3>
       </div>
-      <button onclick="closeModal('deactivateModal')" class="text-slate-400 hover:text-white transition cursor-pointer text-sm">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
     </div>
     <div class="p-6 space-y-4">
       <div class="flex items-start gap-3">
@@ -160,16 +157,13 @@ include '../../includes/sidebar.php';
 </div>
 
 <!-- 2. LOCK/UNLOCK SUSPENSION MODAL -->
-<div id="lockModal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/60 backdrop-blur-xs">
-  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden transform scale-95 transition-all duration-300">
+<div id="lockModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/70 backdrop-blur-sm">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[85vh] my-auto overflow-y-auto transform scale-95 transition-all duration-300">
     <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
       <div class="flex items-center space-x-2">
         <i id="lockModalIcon" class="fa-solid fa-lock-open text-brand-medium"></i>
         <h3 id="lockModalTitle" class="font-extrabold text-sm tracking-tight uppercase">Modify Access Lock</h3>
       </div>
-      <button onclick="closeModal('lockModal')" class="text-slate-400 hover:text-white transition cursor-pointer text-sm">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
     </div>
     <div class="p-6 space-y-4">
       <div class="flex items-start gap-3">
@@ -190,16 +184,13 @@ include '../../includes/sidebar.php';
 </div>
 
 <!-- 3. ARCHIVE/RESTORE CONFIRMATION MODAL -->
-<div id="archiveModal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/60 backdrop-blur-xs">
-  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden transform scale-95 transition-all duration-300">
+<div id="archiveModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/70 backdrop-blur-sm">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[85vh] my-auto overflow-y-auto transform scale-95 transition-all duration-300">
     <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
       <div class="flex items-center space-x-2">
         <i id="archiveModalIcon" class="fa-solid fa-box-archive text-brand-medium"></i>
         <h3 id="archiveModalTitle" class="font-extrabold text-sm tracking-tight uppercase">Archive Staff Profile</h3>
       </div>
-      <button onclick="closeModal('archiveModal')" class="text-slate-400 hover:text-white transition cursor-pointer text-sm">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
     </div>
     <div class="p-6 space-y-4">
       <div class="flex items-start gap-3">

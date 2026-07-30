@@ -144,11 +144,11 @@ include '../../includes/sidebar.php';
 </main>
 
 <!-- MODAL 1: CREATE / EDIT MODULE MODAL -->
-<div id="moduleModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs opacity-0 pointer-events-none transition-all duration-300">
-  <div class="bg-white border border-slate-200 rounded-2xl shadow-xl w-full max-w-lg overflow-hidden transform scale-95 transition-all duration-300" id="moduleModalCard">
+<div id="moduleModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 bg-slate-900/70 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300">
+  <div class="bg-white border border-slate-200 rounded-2xl shadow-xl w-full max-w-lg max-h-[85vh] my-auto overflow-hidden flex flex-col transform scale-95 transition-all duration-300" id="moduleModalCard">
     
     <!-- Modal Header -->
-    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+    <div class="px-5 py-3.5 sm:px-6 sm:py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 shrink-0">
       <div class="flex items-center gap-2.5">
         <div class="h-8 w-8 rounded-xl bg-brand-light border border-brand-border flex items-center justify-center text-brand-dark font-bold text-xs">
           <i class="fa-solid fa-cubes"></i>
@@ -158,13 +158,10 @@ include '../../includes/sidebar.php';
           <p class="text-[10px] text-slate-400 font-medium">Configure module parameters and status.</p>
         </div>
       </div>
-      <button type="button" onclick="closeModuleModal()" class="h-8 w-8 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center transition cursor-pointer">
-        <i class="fa-solid fa-xmark text-sm"></i>
-      </button>
     </div>
 
     <!-- Modal Form -->
-    <form id="moduleForm" onsubmit="handleSaveModule(event)" class="p-6 space-y-4">
+    <form id="moduleForm" onsubmit="handleSaveModule(event)" class="p-4 sm:p-6 space-y-4 overflow-y-auto custom-scrollbar flex-1">
       <input type="hidden" id="formModuleId" value="">
 
       <!-- Module Name -->
@@ -245,8 +242,8 @@ include '../../includes/sidebar.php';
 </div>
 
 <!-- MODAL 2: CONFIRM ARCHIVE MODAL -->
-<div id="archiveModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs opacity-0 pointer-events-none transition-all duration-300">
-  <div class="bg-white border border-slate-200 rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform scale-95 transition-all duration-300" id="archiveModalCard">
+<div id="archiveModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 bg-slate-900/70 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300">
+  <div class="bg-white border border-slate-200 rounded-2xl shadow-xl w-full max-w-md max-h-[85vh] my-auto overflow-y-auto transform scale-95 transition-all duration-300" id="archiveModalCard">
     <div class="p-6 space-y-4 text-center">
       
       <!-- Warning Icon -->

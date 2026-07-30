@@ -163,16 +163,13 @@ include '../../includes/sidebar.php';
 </main>
 
 <!-- ACCOUNT CREATION SUCCESS MODAL -->
-<div id="successModal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/60 backdrop-blur-xs">
-  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden transform scale-95 transition-all duration-300">
+<div id="successModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/70 backdrop-blur-sm">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[85vh] my-auto overflow-y-auto transform scale-95 transition-all duration-300">
     <div class="bg-emerald-600 text-white px-6 py-4 flex items-center justify-between">
       <div class="flex items-center space-x-2">
         <i class="fa-solid fa-circle-check text-white text-base"></i>
         <h3 class="font-extrabold text-sm tracking-tight uppercase">Account Successfully Created</h3>
       </div>
-      <button onclick="closeSuccessModal()" class="text-emerald-100 hover:text-white transition cursor-pointer text-sm">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
     </div>
     <div class="p-6 space-y-4 text-xs">
       <div class="bg-emerald-50 border border-emerald-100 text-emerald-800 p-4 rounded-xl space-y-1">

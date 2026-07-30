@@ -165,16 +165,13 @@ include '../../includes/sidebar.php';
 <!-- MODALS SECTION -->
 
 <!-- CHANGE ACCOUNT MODAL -->
-<div id="stateChangeModal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/60 backdrop-blur-xs">
-  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden transform scale-95 transition-all duration-300">
+<div id="stateChangeModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/70 backdrop-blur-sm">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[85vh] my-auto overflow-y-auto transform scale-95 transition-all duration-300">
     <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
       <div class="flex items-center space-x-2">
         <i id="stateModalIcon" class="fa-solid fa-user-gear text-brand-medium"></i>
         <h3 id="stateModalTitle" class="font-extrabold text-sm tracking-tight uppercase">Update Security state</h3>
       </div>
-      <button onclick="closeModal('stateChangeModal')" class="text-slate-400 hover:text-white transition cursor-pointer text-sm">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
     </div>
     <form id="stateForm" onsubmit="handleConfirmStateChange(event)">
       <input type="hidden" id="stateTargetId">
@@ -205,18 +202,15 @@ include '../../includes/sidebar.php';
 </div>
 
 <!-- SECURITY AUDIT MODAL -->
-<div id="timelineModal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/60 backdrop-blur-xs">
-  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden transform scale-95 transition-all duration-300">
-    <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
+<div id="timelineModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/70 backdrop-blur-sm">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[85vh] my-auto overflow-hidden flex flex-col transform scale-95 transition-all duration-300">
+    <div class="bg-slate-900 text-white px-5 py-3.5 sm:px-6 sm:py-4 flex items-center justify-between shrink-0">
       <div class="flex items-center space-x-2">
         <i class="fa-solid fa-clock-rotate-left text-brand-medium"></i>
         <h3 class="font-extrabold text-sm tracking-tight uppercase">Security Audit Trails</h3>
       </div>
-      <button onclick="closeModal('timelineModal')" class="text-slate-400 hover:text-white transition cursor-pointer text-sm">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
     </div>
-    <div class="p-6 space-y-4 max-h-[65vh] overflow-y-auto">
+    <div class="p-4 sm:p-6 space-y-4 flex-1 overflow-y-auto custom-scrollbar">
       <div class="border-b border-slate-100 pb-3">
         <h4 id="timelineCitizenName" class="font-extrabold text-sm text-slate-950">Juan Dela Cruz</h4>
         <span id="timelineCitizenId" class="text-[10px] font-bold text-slate-400 font-mono">CIT-2026-0599</span>
@@ -226,7 +220,7 @@ include '../../includes/sidebar.php';
 
       </div>
     </div>
-    <div class="bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-end">
+    <div class="bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-end shrink-0">
       <button onclick="closeModal('timelineModal')" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer">Close Log Trails</button>
     </div>
   </div>

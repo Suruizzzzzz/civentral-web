@@ -133,20 +133,17 @@ include '../../includes/sidebar.php';
 
 
 <!-- 1. CREATE / EDIT DEPARTMENT MODAL -->
-<div id="deptModal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/60 backdrop-blur-xs">
-  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden transform scale-95 transition-all duration-300">
-    <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
+<div id="deptModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/70 backdrop-blur-sm">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[85vh] my-auto overflow-hidden flex flex-col transform scale-95 transition-all duration-300">
+    <div class="bg-slate-900 text-white px-5 py-3.5 sm:px-6 sm:py-4 flex items-center justify-between shrink-0">
       <div class="flex items-center space-x-2">
         <i id="deptModalIcon" class="fa-solid fa-building text-brand-medium"></i>
         <h3 id="deptModalTitle" class="font-extrabold text-sm tracking-tight uppercase">Create Department</h3>
       </div>
-      <button onclick="closeModal('deptModal')" class="text-slate-400 hover:text-white transition cursor-pointer text-sm">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
     </div>
-    <form id="deptForm" onsubmit="handleSaveDept(event)">
+    <form id="deptForm" onsubmit="handleSaveDept(event)" class="flex flex-col flex-1 overflow-hidden">
       <input type="hidden" id="deptIdRef">
-      <div class="p-6 space-y-4">
+      <div class="p-4 sm:p-6 space-y-4 flex-1 overflow-y-auto custom-scrollbar">
         <!-- Department Name -->
         <div class="space-y-1.5">
           <label class="text-[10px] font-black text-slate-400 uppercase tracking-wider block">Department Name</label>
@@ -171,7 +168,7 @@ include '../../includes/sidebar.php';
           <textarea id="deptDesc" rows="3" placeholder="Describe the municipal operations handled by this department unit..." class="border border-slate-200 rounded-xl px-3 py-2.5 text-xs w-full focus:outline-none focus:border-brand-medium transition resize-none"></textarea>
         </div>
       </div>
-      <div class="bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-end space-x-2">
+      <div class="bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-end space-x-2 shrink-0">
         <button type="button" onclick="closeModal('deptModal')" class="border border-slate-200 bg-white hover:bg-slate-50 text-slate-650 font-bold cursor-pointer transition">Cancel</button>
         <button type="submit" class="bg-[#0f172a] hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold cursor-pointer transition shadow-xs">Save Department</button>
       </div>
@@ -180,18 +177,15 @@ include '../../includes/sidebar.php';
 </div>
 
 <!-- 2. VIEW DETAILS INFO MODAL -->
-<div id="viewDeptModal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/60 backdrop-blur-xs">
-  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 overflow-hidden transform scale-95 transition-all duration-300">
-    <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
+<div id="viewDeptModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/70 backdrop-blur-sm">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[85vh] my-auto overflow-hidden flex flex-col transform scale-95 transition-all duration-300">
+    <div class="bg-slate-900 text-white px-5 py-3.5 sm:px-6 sm:py-4 flex items-center justify-between shrink-0">
       <div class="flex items-center space-x-2">
         <i class="fa-solid fa-circle-info text-brand-medium"></i>
         <h3 class="font-extrabold text-sm tracking-tight uppercase">Department Parameters Summary</h3>
       </div>
-      <button onclick="closeModal('viewDeptModal')" class="text-slate-400 hover:text-white transition cursor-pointer text-sm">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
     </div>
-    <div class="p-6 space-y-5 max-h-[80vh] overflow-y-auto">
+    <div class="p-4 sm:p-6 space-y-5 flex-1 overflow-y-auto custom-scrollbar">
       
       <!-- Primary Title Header -->
       <div class="border-b border-slate-100 pb-3 space-y-1">
@@ -246,7 +240,7 @@ include '../../includes/sidebar.php';
         </div>
       </div>
     </div>
-    <div class="bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-end">
+    <div class="bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-end shrink-0">
       <button onclick="closeModal('viewDeptModal')" class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl text-xs font-bold cursor-pointer transition">Close Summary</button>
     </div>
   </div>

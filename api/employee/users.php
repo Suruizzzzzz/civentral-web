@@ -34,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../config/mailer.php';
+require_once __DIR__ . '/../../src/Services/AuditLogger.php';
 
 // Response Helper
 function respond(array $payload, int $statusCode = 200): void {
@@ -512,21 +513,17 @@ try {
 
         $newUserId = $db->insert('users', $insertPayload);
 
+        $newUserRow = $db->select('users', ['user_id' => $newUserId])[0] ?? $insertPayload;
+
         // Audit Trail Log
-        try {
-            $db->insert('audit_logs', [
-                'actor_user_id' => $userId,
-                'action' => 'Create User Account',
-                'target_table' => 'users',
-                'target_id' => (string)$newUserId,
-                'description' => "Created user account for {$firstName} {$lastName} ({$finalEmpId})",
-                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
-                'request_method' => 'POST',
-                'request_uri' => $_SERVER['REQUEST_URI'] ?? '/api/employee/users.php',
-                'browser' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown',
-                'status' => 'Success'
-            ]);
-        } catch (Throwable $auditEx) {}
+        \App\Services\AuditLogger::logMutation([
+            'action'        => 'Create User Account',
+            'target_table'  => 'users',
+            'target_id'     => (string)$newUserId,
+            'actor_user_id' => $userId,
+            'old_data'      => null,
+            'new_data'      => $newUserRow
+        ]);
 
         // Dispatch Welcome & Credentials Email to User
         $fullName = trim("{$firstName} {$lastName}");
@@ -639,21 +636,17 @@ try {
 
         $db->update('users', $updatePayload, ['user_id' => $targetUserId]);
 
+        $updatedUser = $db->select('users', ['user_id' => $targetUserId])[0] ?? $updatePayload;
+
         // Audit Trail
-        try {
-            $db->insert('audit_logs', [
-                'actor_user_id' => $userId,
-                'action' => 'Update User Account',
-                'target_table' => 'users',
-                'target_id' => (string)$targetUserId,
-                'description' => "Updated user account ID {$targetUserId} ({$targetUser['employee_id']})",
-                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
-                'request_method' => $method,
-                'request_uri' => $_SERVER['REQUEST_URI'] ?? '/api/employee/users.php',
-                'browser' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown',
-                'status' => 'Success'
-            ]);
-        } catch (Throwable $auditEx) {}
+        \App\Services\AuditLogger::logMutation([
+            'action'        => 'Update User Account',
+            'target_table'  => 'users',
+            'target_id'     => (string)$targetUserId,
+            'actor_user_id' => $userId,
+            'old_data'      => $targetUser,
+            'new_data'      => $updatedUser
+        ]);
 
         respond([
             'status' => 'success',
@@ -711,21 +704,17 @@ try {
             'updated_at' => date('Y-m-d H:i:s')
         ], ['user_id' => $targetUserId]);
 
+        $archivedUser = $db->select('users', ['user_id' => $targetUserId])[0] ?? $targetUser;
+
         // Audit Trail
-        try {
-            $db->insert('audit_logs', [
-                'actor_user_id' => $userId,
-                'action' => 'Archive User Account',
-                'target_table' => 'users',
-                'target_id' => (string)$targetUserId,
-                'description' => "Archived user account ID {$targetUserId} ({$targetUser['employee_id']})",
-                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
-                'request_method' => 'DELETE',
-                'request_uri' => $_SERVER['REQUEST_URI'] ?? '/api/employee/users.php',
-                'browser' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown',
-                'status' => 'Success'
-            ]);
-        } catch (Throwable $auditEx) {}
+        \App\Services\AuditLogger::logMutation([
+            'action'        => 'Archive User Account',
+            'target_table'  => 'users',
+            'target_id'     => (string)$targetUserId,
+            'actor_user_id' => $userId,
+            'old_data'      => $targetUser,
+            'new_data'      => $archivedUser
+        ]);
 
         respond([
             'status' => 'success',

@@ -33,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../src/Services/AuditLogger.php';
 
 // Response Helper
 function respond(array $payload, int $statusCode = 200): void {
@@ -204,21 +205,17 @@ try {
 
         $newId = $db->insert('roles', $insertPayload);
 
+        $newRole = $db->select('roles', ['role_id' => $newId])[0] ?? $insertPayload;
+
         // Audit Trail
-        try {
-            $db->insert('audit_logs', [
-                'actor_user_id' => $userId,
-                'action' => 'Create Role',
-                'target_table' => 'roles',
-                'target_id' => (string)$newId,
-                'description' => "Created role \"{$roleName}\" ({$rolePrefix})",
-                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
-                'request_method' => 'POST',
-                'request_uri' => $_SERVER['REQUEST_URI'] ?? '/api/employee/roles.php',
-                'browser' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown',
-                'status' => 'Success'
-            ]);
-        } catch (Throwable $auditEx) {}
+        \App\Services\AuditLogger::logMutation([
+            'action'        => 'Create Role',
+            'target_table'  => 'roles',
+            'target_id'     => (string)$newId,
+            'actor_user_id' => $userId,
+            'old_data'      => null,
+            'new_data'      => $newRole
+        ]);
 
         respond([
             'status' => 'success',
@@ -276,22 +273,17 @@ try {
         }
 
         $db->update('roles', $updatePayload, ['role_id' => $roleId]);
+        $newRole = $db->select('roles', ['role_id' => $roleId])[0] ?? $updatePayload;
 
         // Audit Trail
-        try {
-            $db->insert('audit_logs', [
-                'actor_user_id' => $userId,
-                'action' => 'Update Role',
-                'target_table' => 'roles',
-                'target_id' => (string)$roleId,
-                'description' => "Updated role ID {$roleId}",
-                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
-                'request_method' => $method,
-                'request_uri' => $_SERVER['REQUEST_URI'] ?? '/api/employee/roles.php',
-                'browser' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown',
-                'status' => 'Success'
-            ]);
-        } catch (Throwable $auditEx) {}
+        \App\Services\AuditLogger::logMutation([
+            'action'        => 'Update Role',
+            'target_table'  => 'roles',
+            'target_id'     => (string)$roleId,
+            'actor_user_id' => $userId,
+            'old_data'      => $targetRole,
+            'new_data'      => $newRole
+        ]);
 
         respond([
             'status' => 'success',
@@ -340,22 +332,17 @@ try {
             'status' => 'Archived',
             'updated_at' => date('Y-m-d H:i:s')
         ], ['role_id' => $roleId]);
+        $archivedRole = $db->select('roles', ['role_id' => $roleId])[0] ?? $targetRole;
 
         // Audit Trail
-        try {
-            $db->insert('audit_logs', [
-                'actor_user_id' => $userId,
-                'action' => 'Archive Role',
-                'target_table' => 'roles',
-                'target_id' => (string)$roleId,
-                'description' => "Archived role ID {$roleId}",
-                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
-                'request_method' => 'DELETE',
-                'request_uri' => $_SERVER['REQUEST_URI'] ?? '/api/employee/roles.php',
-                'browser' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown',
-                'status' => 'Success'
-            ]);
-        } catch (Throwable $auditEx) {}
+        \App\Services\AuditLogger::logMutation([
+            'action'        => 'Archive Role',
+            'target_table'  => 'roles',
+            'target_id'     => (string)$roleId,
+            'actor_user_id' => $userId,
+            'old_data'      => $targetRole,
+            'new_data'      => $archivedRole
+        ]);
 
         respond([
             'status' => 'success',

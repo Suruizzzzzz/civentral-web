@@ -102,18 +102,22 @@ window.civAudit.loginHistory.modal = {
     }
 
     // Show Modal
-    const modal = document.getElementById('sessionDetailsModal');
+    const modal = document.getElementById('sessionInspectorModal') || document.getElementById('sessionDetailsModal');
     const card = document.getElementById('modalCard');
     
-    modal.classList.remove('hidden');
-    setTimeout(() => {
-      card.classList.remove('scale-95', 'opacity-0');
-      card.classList.add('scale-100', 'opacity-100');
-    }, 10);
+    if (modal) {
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        if (card) {
+          card.classList.remove('scale-95', 'opacity-0');
+          card.classList.add('scale-100', 'opacity-100');
+        }
+      }, 10);
+    }
   },
 
   closeSessionModal() {
-    const modal = document.getElementById('sessionDetailsModal');
+    const modal = document.getElementById('sessionInspectorModal') || document.getElementById('sessionDetailsModal');
     const card = document.getElementById('modalCard');
     
     if (card) {

@@ -254,14 +254,14 @@ $canDelete = $isSuperAdmin || in_array('DELETE', $grantedActions) || in_array('R
 
 <!-- MODALS SECTION -->
 
-<!-- 1. CREATE / EDIT SCHOLARSHIP TYPE MODAL -->
-<div id="scholarshipModal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/60 backdrop-blur-xs">
-  <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-lg mx-4 overflow-hidden transform scale-95 transition-all duration-300 border border-slate-200 dark:border-slate-800">
+<!-- 1. CREATE / EDIT SCHOLARSHIP MODAL -->
+<div id="scholarshipModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/70 backdrop-blur-sm">
+  <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-lg max-h-[85vh] my-auto overflow-hidden flex flex-col transform scale-95 transition-all duration-300 border border-slate-200 dark:border-slate-800">
     
     <!-- Modal Header -->
-    <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/60">
+    <div class="px-5 py-3.5 sm:px-6 sm:py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/60 shrink-0">
       <div class="flex items-center gap-2.5">
-        <div class="h-8 w-8 rounded-xl bg-brand-light dark:bg-slate-800 border border-brand-border dark:border-slate-700 flex items-center justify-center text-brand-dark dark:text-cyan-400 font-bold text-xs">
+        <div class="h-8 w-8 rounded-xl bg-brand-light dark:bg-brand-dark/40 border border-brand-border flex items-center justify-center text-brand-dark dark:text-cyan-400 font-bold text-xs">
           <i id="modalHeaderIcon" class="fa-solid fa-graduation-cap"></i>
         </div>
         <div>
@@ -269,13 +269,10 @@ $canDelete = $isSuperAdmin || in_array('DELETE', $grantedActions) || in_array('R
           <p class="text-[10px] text-slate-400 font-medium">Configure municipal program metadata and classification track.</p>
         </div>
       </div>
-      <button type="button" onclick="closeModal('scholarshipModal')" class="h-8 w-8 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition cursor-pointer">
-        <i class="fa-solid fa-xmark text-sm"></i>
-      </button>
     </div>
 
     <!-- Form -->
-    <form id="scholarshipForm" onsubmit="handleSaveProgram(event)" class="p-6 space-y-4">
+    <form id="scholarshipForm" onsubmit="handleSaveProgram(event)" class="p-4 sm:p-6 space-y-4 flex-1 overflow-y-auto custom-scrollbar">
       <input type="hidden" id="programIdRef">
 
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -372,11 +369,11 @@ $canDelete = $isSuperAdmin || in_array('DELETE', $grantedActions) || in_array('R
 </div>
 
 <!-- 2. VIEW SCHOLARSHIP DETAILS MODAL -->
-<div id="viewModal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/60 backdrop-blur-xs">
-  <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-lg mx-4 overflow-hidden transform scale-95 transition-all duration-300 border border-slate-200 dark:border-slate-800 space-y-4">
+<div id="viewModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/70 backdrop-blur-sm">
+  <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-lg max-h-[85vh] my-auto overflow-hidden flex flex-col transform scale-95 transition-all duration-300 border border-slate-200 dark:border-slate-800">
     
     <!-- Modal Header -->
-    <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/60">
+    <div class="px-5 py-3.5 sm:px-6 sm:py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-950/60 shrink-0">
       <div class="flex items-center gap-2.5">
         <div class="h-8 w-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-100 dark:border-blue-800/50 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-xs">
           <i class="fa-solid fa-circle-info"></i>
@@ -386,13 +383,10 @@ $canDelete = $isSuperAdmin || in_array('DELETE', $grantedActions) || in_array('R
           <p class="text-[10px] text-slate-400 font-medium">Detailed municipal scholarship profile & system linkages.</p>
         </div>
       </div>
-      <button type="button" onclick="closeModal('viewModal')" class="h-8 w-8 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center transition cursor-pointer">
-        <i class="fa-solid fa-xmark text-sm"></i>
-      </button>
     </div>
 
     <!-- Content Details -->
-    <div class="p-6 space-y-4 text-xs">
+    <div class="p-4 sm:p-6 space-y-4 text-xs flex-1 overflow-y-auto custom-scrollbar">
       <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-950/80 p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-800">
         <div>
           <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider block">Registry Code</span>
@@ -437,7 +431,7 @@ $canDelete = $isSuperAdmin || in_array('DELETE', $grantedActions) || in_array('R
     </div>
 
     <!-- Modal Footer -->
-    <div class="bg-slate-50 dark:bg-slate-950/60 px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end">
+    <div class="bg-slate-50 dark:bg-slate-950/60 px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end shrink-0">
       <button type="button" onclick="closeModal('viewModal')" class="border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer">
         Close Overview
       </button>
@@ -447,17 +441,14 @@ $canDelete = $isSuperAdmin || in_array('DELETE', $grantedActions) || in_array('R
 </div>
 
 <!-- 3. ARCHIVE CONFIRMATION MODAL -->
-<div id="archiveConfirmModal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/60 backdrop-blur-xs">
-  <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden transform scale-95 transition-all duration-300 border border-slate-200 dark:border-slate-800">
+<div id="archiveConfirmModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/70 backdrop-blur-sm">
+  <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-md max-h-[85vh] my-auto overflow-y-auto transform scale-95 transition-all duration-300 border border-slate-200 dark:border-slate-800">
     
     <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
       <div class="flex items-center space-x-2">
         <i class="fa-solid fa-box-archive text-amber-400"></i>
         <h3 class="font-extrabold text-sm tracking-tight uppercase">Confirm Program Archival</h3>
       </div>
-      <button type="button" onclick="closeModal('archiveConfirmModal')" class="text-slate-400 hover:text-white transition cursor-pointer text-sm">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
     </div>
 
     <div class="p-6 space-y-4">

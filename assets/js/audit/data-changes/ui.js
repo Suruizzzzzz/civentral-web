@@ -119,44 +119,85 @@ window.civAudit.dataChanges.ui = {
 
     let html = '';
     const esc = window.escapeHtml || (s => s);
-
     const pageLogs = this.currentFilteredLogs.slice(startIdx, endIdx);
 
     pageLogs.forEach(log => {
       const mutId = `#MUT-${log.audit_id}`;
       const rawDate = log.created_at || '';
-      const dateObj = new Date(rawDate);
-      const dateStr = !isNaN(dateObj) ? dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
-      const timeStr = !isNaN(dateObj) ? dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '';
-      const isoDate = rawDate.split(' ')[0] || '';
+      
+      // Parse timestamp cleanly for Manila (+08:00) display
+      let dateStr = 'N/A';
+      let timeStr = '';
+      let isoDate = '';
+
+      if (rawDate) {
+        isoDate = rawDate.split(' ')[0] || '';
+        const dt = new Date(rawDate.includes('T') ? rawDate : rawDate.replace(' ', 'T') + '+08:00');
+        if (!isNaN(dt.getTime())) {
+          dateStr = dt.toLocaleDateString('en-US', { timeZone: 'Asia/Manila', month: 'short', day: 'numeric', year: 'numeric' });
+          timeStr = dt.toLocaleTimeString('en-US', { timeZone: 'Asia/Manila', hour: '2-digit', minute: '2-digit', hour12: true });
+        } else {
+          dateStr = rawDate.split(' ')[0] || 'N/A';
+          timeStr = rawDate.split(' ')[1] || '';
+        }
+      }
 
       let actorName = 'System / Automated';
       if (log.users) {
         actorName = `${log.users.first_name || ''} ${log.users.last_name || ''}`.trim() || log.users.email || 'User';
       }
 
-      const moduleName = (log.modules && log.modules.module_name) ? log.modules.module_name : (log.target_table || 'System');
+      const moduleName = (log.modules && log.modules.module_name) ? log.modules.module_name : (log.target_table ? log.target_table.toUpperCase() : 'System');
       const recordId = log.target_id ? `ID: ${log.target_id}` : (log.session_id ? `SESS-${log.session_id}` : 'REC-CORE');
-
       const actionField = log.action || 'Data Update';
       const isSuccess = (log.status || 'Success') === 'Success';
-      const oldVal = isSuccess ? (log.target_table ? `${log.target_table}` : 'Active') : 'Attempted';
-      const newVal = log.status || 'Success';
 
-      let oldJsonStr = '{}';
+      // Smart Delta parsing from context_json
+      let oldVal = 'None (New Record)';
+      let newVal = isSuccess ? 'Success' : 'Failed';
+      let oldJsonStr = 'null';
       let newJsonStr = '{}';
+
       if (log.context_json) {
         try {
           const parsed = typeof log.context_json === 'string' ? JSON.parse(log.context_json) : log.context_json;
-          if (parsed.old) oldJsonStr = JSON.stringify(parsed.old, null, 2);
-          if (parsed.new) newJsonStr = JSON.stringify(parsed.new, null, 2);
-          if (!parsed.old && !parsed.new) {
+          
+          const oldData = parsed.old_data || parsed.old || null;
+          const newData = parsed.new_data || parsed.new || null;
+          const changes = parsed.changes || null;
+
+          if (oldData) oldJsonStr = JSON.stringify(oldData, null, 2);
+          if (newData) newJsonStr = JSON.stringify(newData, null, 2);
+          if (!oldData && !newData) {
             newJsonStr = JSON.stringify(parsed, null, 2);
+          }
+
+          if (changes && typeof changes === 'object') {
+            const keys = Object.keys(changes);
+            if (keys.length > 0) {
+              const firstKey = keys[0];
+              const oldDiff = changes[firstKey]?.old ?? 'None';
+              const newDiff = changes[firstKey]?.new ?? 'None';
+              oldVal = `${firstKey}: ${oldDiff}`;
+              newVal = `${firstKey}: ${newDiff}`;
+              if (keys.length > 1) {
+                oldVal += ` (+${keys.length - 1} more)`;
+                newVal += ` (+${keys.length - 1} more)`;
+              }
+            }
+          } else if (oldData && !newData) {
+            oldVal = 'Record Present';
+            newVal = 'Archived / Deleted';
+          } else if (!oldData && newData) {
+            oldVal = 'None (New Record)';
+            newVal = 'Record Created';
           }
         } catch (e) {
           newJsonStr = JSON.stringify({ raw_context: log.context_json }, null, 2);
         }
       } else {
+        oldVal = log.target_table ? `${log.target_table} (State)` : 'Initial';
+        newVal = isSuccess ? 'Committed' : 'Failed';
         newJsonStr = JSON.stringify({
           audit_id: log.audit_id,
           action: log.action,
@@ -202,10 +243,10 @@ window.civAudit.dataChanges.ui = {
             <span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-black uppercase bg-slate-100 text-slate-700 border border-slate-200/50">${esc(actionField)}</span>
           </td>
           <td class="py-4 px-5">
-            <span class="inline-block bg-rose-50 text-rose-700 line-through px-2.5 py-1 rounded-lg border border-rose-100 font-mono text-[10px] font-semibold">${esc(oldVal)}</span>
+            <span class="inline-block bg-rose-50 text-rose-700 line-through px-2.5 py-1 rounded-lg border border-rose-100 font-mono text-[10px] font-semibold max-w-[140px] truncate" title="${esc(oldVal)}">${esc(oldVal)}</span>
           </td>
           <td class="py-4 px-5">
-            <span class="inline-block ${isSuccess ? 'bg-emerald-50 text-emerald-800 border-emerald-100' : 'bg-rose-50 text-rose-800 border-rose-100'} font-bold px-2.5 py-1 rounded-lg border font-mono text-[10px]">${esc(newVal)}</span>
+            <span class="inline-block ${isSuccess ? 'bg-emerald-50 text-emerald-800 border-emerald-100' : 'bg-rose-50 text-rose-800 border-rose-100'} font-bold px-2.5 py-1 rounded-lg border font-mono text-[10px] max-w-[140px] truncate" title="${esc(newVal)}">${esc(newVal)}</span>
           </td>
           <td class="py-4 px-5 text-slate-500 font-medium leading-relaxed max-w-xs truncate" title="${esc(log.description || '')}">${esc(log.description || 'No description.')}</td>
           <td class="py-4 px-5 text-center">

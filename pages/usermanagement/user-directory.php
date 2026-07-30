@@ -225,18 +225,15 @@ include '../../includes/sidebar.php';
 <!-- MODALSSSS -->
 
 <!--  VIEW PROFILE MODAL -->
-<div id="viewModal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/60 backdrop-blur-xs">
-  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 overflow-hidden transform scale-95 transition-all duration-300">
-    <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
+<div id="viewModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/70 backdrop-blur-sm">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[85vh] my-auto overflow-hidden flex flex-col transform scale-95 transition-all duration-300">
+    <div class="bg-slate-900 text-white px-5 py-3.5 sm:px-6 sm:py-4 flex items-center justify-between shrink-0">
       <div class="flex items-center space-x-2">
         <i class="fa-solid fa-id-card text-brand-medium"></i>
         <h3 class="font-extrabold text-sm tracking-tight uppercase">Staff Profile Details</h3>
       </div>
-      <button onclick="closeModal('viewModal')" class="text-slate-400 hover:text-white transition cursor-pointer text-sm">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
     </div>
-    <div class="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
+    <div class="p-4 sm:p-6 space-y-5 flex-1 overflow-y-auto custom-scrollbar">
       <!-- Profile -->
       <div class="flex items-center space-x-4 bg-slate-50 p-4 border border-slate-150 rounded-2xl">
         <div id="viewInitialsBox" class="h-16 w-16 rounded-2xl bg-brand-light text-brand-dark flex items-center justify-center font-black text-xl border border-brand-border shrink-0 overflow-hidden relative">
@@ -287,29 +284,26 @@ include '../../includes/sidebar.php';
         </div>
       </div>
     </div>
-    <div class="bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-end">
+    <div class="bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-end shrink-0">
       <button onclick="closeModal('viewModal')" class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2 rounded-xl text-xs font-bold cursor-pointer transition">Close Profile</button>
     </div>
   </div>
 </div>
 
 <!-- EDIT -->
-<div id="editModal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/60 backdrop-blur-xs">
-  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 overflow-hidden transform scale-95 transition-all duration-300">
-    <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
+<div id="editModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/70 backdrop-blur-sm">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[85vh] my-auto overflow-hidden flex flex-col transform scale-95 transition-all duration-300">
+    <div class="bg-slate-900 text-white px-5 py-3.5 sm:px-6 sm:py-4 flex items-center justify-between shrink-0">
       <div class="flex items-center space-x-2">
         <i class="fa-solid fa-user-pen text-brand-medium"></i>
         <h3 class="font-extrabold text-sm tracking-tight uppercase">Modify Staff Account</h3>
       </div>
-      <button onclick="closeModal('editModal')" class="text-slate-400 hover:text-white transition cursor-pointer text-sm">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
     </div>
-    <form id="editStaffForm" onsubmit="handleEditStaff(event)">
+    <form id="editStaffForm" onsubmit="handleEditStaff(event)" class="flex flex-col flex-1 overflow-hidden">
       <input type="hidden" id="editEmpIdRef">
       
       <!-- Input fields container -->
-      <div id="editFormFields" class="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+      <div id="editFormFields" class="p-4 sm:p-6 space-y-4 flex-1 overflow-y-auto custom-scrollbar">
         <div class="grid grid-cols-1 gap-4">
           <!-- Name -->
           <div class="space-y-1.5">
@@ -400,7 +394,7 @@ include '../../includes/sidebar.php';
       </div>
 
       <!-- Main Edit Modal Footer -->
-      <div id="editModalFooter" class="bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-between">
+      <div id="editModalFooter" class="bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-between shrink-0">
         <!-- Reset Password Button on Left -->
         <button type="button" onclick="triggerResetPassword()" class="text-rose-600 hover:bg-rose-50 border border-transparent hover:border-rose-100 px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
           <i class="fa-solid fa-key text-[10px]"></i>
@@ -414,8 +408,8 @@ include '../../includes/sidebar.php';
     </form>
   </div>
 <!-- CONFIRM ARCHIVE USER MODAL -->
-<div id="archiveModal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/60 backdrop-blur-xs">
-  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden transform scale-95 transition-all duration-300">
+<div id="archiveModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/70 backdrop-blur-sm">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[85vh] my-auto overflow-y-auto transform scale-95 transition-all duration-300">
     <div class="p-6 space-y-4 text-center">
       <div class="h-14 w-14 rounded-2xl bg-amber-50 border border-amber-100 text-amber-600 flex items-center justify-center mx-auto text-xl shadow-2xs">
         <i class="fa-solid fa-triangle-exclamation"></i>
@@ -442,18 +436,15 @@ include '../../includes/sidebar.php';
 </div>
 
 <!-- 4. LOGIN HISTORY MODAL -->
-<div id="historyModal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/60 backdrop-blur-xs">
-  <div class="bg-white rounded-2xl shadow-xl w-full max-w-xl mx-4 overflow-hidden transform scale-95 transition-all duration-300">
-    <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
+<div id="historyModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/70 backdrop-blur-sm">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-xl max-h-[85vh] my-auto overflow-hidden flex flex-col transform scale-95 transition-all duration-300">
+    <div class="bg-slate-900 text-white px-5 py-3.5 sm:px-6 sm:py-4 flex items-center justify-between shrink-0">
       <div class="flex items-center space-x-2">
         <i class="fa-solid fa-clock-rotate-left text-brand-medium"></i>
         <h3 class="font-extrabold text-sm tracking-tight uppercase">Security Login Audit</h3>
       </div>
-      <button onclick="closeModal('historyModal')" class="text-slate-400 hover:text-white transition cursor-pointer text-sm">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
     </div>
-    <div class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+    <div class="p-4 sm:p-6 space-y-4 flex-1 overflow-y-auto custom-scrollbar">
       <div class="space-y-1">
         <h4 id="historyStaffName" class="text-sm font-bold text-slate-900">Joshua Suruiz</h4>
         <p class="text-xs text-slate-500">Security history audits log all credentials verification attempts across active terminal hubs.</p>
@@ -475,12 +466,12 @@ include '../../includes/sidebar.php';
         </table>
       </div>
     </div>
-    <div class="bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-end">
+    <div class="bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-end shrink-0">
       <button onclick="closeModal('historyModal')" class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2 rounded-xl text-xs font-bold cursor-pointer transition">Close Audit</button>
     </div>
   </div>
 </div>
-\
+
 <div id="toast" class="fixed bottom-4 right-4 z-50 bg-slate-900 text-white text-xs font-bold px-4 py-3.5 rounded-xl shadow-lg flex items-center gap-3 transform translate-y-4 opacity-0 pointer-events-none transition-all duration-300">
   <div class="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[10px]">
     <i class="fa-solid fa-check"></i>

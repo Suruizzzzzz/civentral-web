@@ -23,9 +23,10 @@ window.civAudit.loginHistory.ui = {
 
   formatDateTime(isoStr) {
     if (!isoStr) return '—';
-    const d = new Date(isoStr);
+    const d = new Date(isoStr.includes('T') ? isoStr : isoStr.replace(' ', 'T') + '+08:00');
     if (isNaN(d.getTime())) return isoStr;
     return d.toLocaleString('en-US', {
+      timeZone: 'Asia/Manila',
       month: 'short',
       day: 'numeric',
       year: 'numeric',

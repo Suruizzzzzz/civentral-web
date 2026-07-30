@@ -61,3 +61,15 @@ window.civAudit.userActivities.filters = {
     }
   }
 };
+
+window.applyFilters = function() {
+  if (window.civAudit && window.civAudit.userActivities && window.civAudit.userActivities.filters) {
+    window.civAudit.userActivities.filters.applyFilters();
+  }
+};
+
+window.resetFilters = function() {
+  if (window.civAudit && window.civAudit.userActivities && window.civAudit.userActivities.filters) {
+    window.civAudit.userActivities.filters.resetFilters();
+  }
+};

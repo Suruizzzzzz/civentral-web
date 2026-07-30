@@ -33,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../src/Services/AuditLogger.php';
 
 // Response Helper
 function respond(array $payload, int $statusCode = 200): void {
@@ -105,20 +106,14 @@ try {
     $isPasswordValid = password_verify($currentPass, $user['password']) || ($currentPass === $user['password']);
     if (!$isPasswordValid) {
         // Audit log failed password change attempt
-        try {
-            $db->insert('audit_logs', [
-                'actor_user_id' => $activeUserId,
-                'action' => 'Change Password Failure',
-                'target_table' => 'users',
-                'target_id' => (string)$activeUserId,
-                'description' => 'Failed password change attempt: Incorrect current password provided.',
-                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
-                'request_method' => 'POST',
-                'request_uri' => $_SERVER['REQUEST_URI'] ?? '/api/employee/change-password.php',
-                'browser' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown',
-                'status' => 'Failed'
-            ]);
-        } catch (Throwable $auditEx) {}
+        \App\Services\AuditLogger::log([
+            'action'        => 'Change Password Failure',
+            'target_table'  => 'users',
+            'target_id'     => (string)$activeUserId,
+            'description'   => 'Failed password change attempt: Incorrect current password provided.',
+            'actor_user_id' => $activeUserId,
+            'status'        => 'Failed'
+        ]);
 
         respond([
             'status' => 'error',
@@ -159,23 +154,15 @@ try {
         'updated_at' => date('Y-m-d H:i:s')
     ], ['user_id' => $activeUserId]);
 
-    // 6. Non-blocking Audit Trail Log
-    try {
-        $db->insert('audit_logs', [
-            'actor_user_id' => $activeUserId,
-            'action' => 'Change Password',
-            'target_table' => 'users',
-            'target_id' => (string)$activeUserId,
-            'description' => 'User successfully updated their account password.',
-            'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
-            'request_method' => 'POST',
-            'request_uri' => $_SERVER['REQUEST_URI'] ?? '/api/employee/change-password.php',
-            'browser' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown',
-            'status' => 'Success'
-        ]);
-    } catch (Throwable $auditEx) {
-        error_log("Audit log failed: " . $auditEx->getMessage());
-    }
+    // 6. Centralized Audit Trail Log
+    \App\Services\AuditLogger::log([
+        'action'        => 'Change Password',
+        'target_table'  => 'users',
+        'target_id'     => (string)$activeUserId,
+        'description'   => 'User successfully updated their account password.',
+        'actor_user_id' => $activeUserId,
+        'status'        => 'Success'
+    ]);
 
     respond([
         'status' => 'success',

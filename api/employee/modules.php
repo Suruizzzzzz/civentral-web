@@ -33,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../src/Services/AuditLogger.php';
 
 // Response Helper
 function respond(array $payload, int $statusCode = 200): void {
@@ -139,20 +140,14 @@ try {
         $newId = $db->insert('modules', $insertPayload);
 
         // Audit Trail
-        try {
-            $db->insert('audit_logs', [
-                'actor_user_id' => $userId,
-                'action' => 'Create Module',
-                'target_table' => 'modules',
-                'target_id' => (string)$newId,
-                'description' => "Created module \"{$moduleName}\"",
-                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
-                'request_method' => 'POST',
-                'request_uri' => $_SERVER['REQUEST_URI'] ?? '/api/employee/modules.php',
-                'browser' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown',
-                'status' => 'Success'
-            ]);
-        } catch (Throwable $auditEx) {}
+        \App\Services\AuditLogger::log([
+            'action'        => 'Create Module',
+            'target_table'  => 'modules',
+            'target_id'     => (string)$newId,
+            'description'   => "Created module \"{$moduleName}\"",
+            'actor_user_id' => $userId,
+            'module_id'     => $newId
+        ]);
 
         respond([
             'status' => 'success',
@@ -192,20 +187,14 @@ try {
         $db->update('modules', $updatePayload, ['module_id' => $moduleId]);
 
         // Audit Trail
-        try {
-            $db->insert('audit_logs', [
-                'actor_user_id' => $userId,
-                'action' => 'Update Module',
-                'target_table' => 'modules',
-                'target_id' => (string)$moduleId,
-                'description' => "Updated module ID {$moduleId}",
-                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
-                'request_method' => $method,
-                'request_uri' => $_SERVER['REQUEST_URI'] ?? '/api/employee/modules.php',
-                'browser' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown',
-                'status' => 'Success'
-            ]);
-        } catch (Throwable $auditEx) {}
+        \App\Services\AuditLogger::log([
+            'action'        => 'Update Module',
+            'target_table'  => 'modules',
+            'target_id'     => (string)$moduleId,
+            'description'   => "Updated module ID {$moduleId}",
+            'actor_user_id' => $userId,
+            'module_id'     => $moduleId
+        ]);
 
         respond([
             'status' => 'success',
@@ -242,20 +231,14 @@ try {
         ], ['module_id' => $moduleId]);
 
         // Audit Trail
-        try {
-            $db->insert('audit_logs', [
-                'actor_user_id' => $userId,
-                'action' => 'Archive Module',
-                'target_table' => 'modules',
-                'target_id' => (string)$moduleId,
-                'description' => "Archived module ID {$moduleId} and all child resources",
-                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
-                'request_method' => 'DELETE',
-                'request_uri' => $_SERVER['REQUEST_URI'] ?? '/api/employee/modules.php',
-                'browser' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown',
-                'status' => 'Success'
-            ]);
-        } catch (Throwable $auditEx) {}
+        \App\Services\AuditLogger::log([
+            'action'        => 'Archive Module',
+            'target_table'  => 'modules',
+            'target_id'     => (string)$moduleId,
+            'description'   => "Archived module ID {$moduleId} and all child resources",
+            'actor_user_id' => $userId,
+            'module_id'     => $moduleId
+        ]);
 
         respond([
             'status' => 'success',

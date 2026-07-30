@@ -1,5 +1,7 @@
 <?php
 
+date_default_timezone_set('Asia/Manila');
+
 if (!ob_get_level()) {
     ob_start();
 }
@@ -23,6 +25,7 @@ require_once __DIR__ . '/Services/AuthService.php';
 require_once __DIR__ . '/Services/UserService.php';
 require_once __DIR__ . '/Services/PermissionService.php';
 require_once __DIR__ . '/Services/HeaderService.php';
+require_once __DIR__ . '/Services/AuditLogger.php';
 
 // Load Middleware
 require_once __DIR__ . '/Middleware/SessionTimeout.php';

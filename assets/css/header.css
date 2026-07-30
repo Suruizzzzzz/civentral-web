@@ -351,3 +351,69 @@ html.dark a:hover i {
 .header-action-btn:hover i {
   transform: scale(1.15);
 }
+
+/* --- PRINT STYLES FOR DATA ONLY PRINTING --- */
+@media print {
+  header,
+  aside,
+  nav,
+  .no-print,
+  #exportDropdownContainer,
+  #exportDropdownMenu,
+  .policy-banner,
+  .filter-panel,
+  .pagination-container,
+  #logDetailsModal,
+  #mutationDetailsModal,
+  #sessionInspectorModal,
+  button,
+  .flex.items-center.gap-3.shrink-0 {
+    display: none !important;
+  }
+
+  body, main {
+    background: #ffffff !important;
+    color: #000000 !important;
+    padding: 10px !important;
+    margin: 0 !important;
+    width: 100% !important;
+    overflow: visible !important;
+  }
+
+  h1 {
+    font-size: 16pt !important;
+    color: #0f172a !important;
+    margin-bottom: 4px !important;
+  }
+
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin-top: 10px !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+
+  tr {
+    page-break-inside: avoid !important;
+  }
+
+  th, td {
+    border: 1px solid #cbd5e1 !important;
+    padding: 6px 8px !important;
+    font-size: 9pt !important;
+    color: #000000 !important;
+    background: transparent !important;
+  }
+
+  th {
+    background-color: #f1f5f9 !important;
+    font-weight: bold !important;
+  }
+
+  td button, td a {
+    display: none !important;
+  }
+}

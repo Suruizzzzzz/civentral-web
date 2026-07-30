@@ -33,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../src/Services/AuditLogger.php';
 
 // Response Helper
 function respond(array $payload, int $statusCode = 200): void {
@@ -159,23 +160,14 @@ try {
                 }
             }
 
-            // D. Non-blocking Audit Logging
-            try {
-                $db->insert('audit_logs', [
-                    'actor_user_id' => $userId,
-                    'action' => 'Update Access Control Matrix',
-                    'target_table' => 'roles',
-                    'target_id' => (string)$roleId,
-                    'description' => "Updated department access boundary for role \"{$targetRole['role_name']}\" (Global Access: " . ($isGlobalAccess ? 'YES' : 'NO') . ")",
-                    'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
-                    'request_method' => 'POST',
-                    'request_uri' => $_SERVER['REQUEST_URI'] ?? '/api/employee/access-control.php',
-                    'browser' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown',
-                    'status' => 'Success'
-                ]);
-            } catch (Throwable $auditEx) {
-                error_log("Audit log failed: " . $auditEx->getMessage());
-            }
+            // D. Centralized Audit Logging
+            \App\Services\AuditLogger::log([
+                'action'       => 'Update Access Control Matrix',
+                'target_table' => 'roles',
+                'target_id'    => (string)$roleId,
+                'description'  => "Updated department access boundary for role \"{$targetRole['role_name']}\" (Global Access: " . ($isGlobalAccess ? 'YES' : 'NO') . ")",
+                'actor_user_id' => $userId
+            ]);
 
             $pdo->commit();
 

@@ -33,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../src/Services/AuditLogger.php';
 
 // Response Helper
 function respond(array $payload, int $statusCode = 200): void {
@@ -165,31 +166,17 @@ try {
         $status = in_array($data['status'] ?? '', ['Success', 'Failed']) ? $data['status'] : 'Success';
         $contextJson = !empty($data['context_json']) ? $data['context_json'] : null;
 
-        $ipAddress = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
-        $requestMethod = $_SERVER['REQUEST_METHOD'] ?? 'POST';
-        $requestUri = $_SERVER['REQUEST_URI'] ?? '/api/employee/audit-logs.php';
-        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
-
-        $insertPayload = [
+        $newId = \App\Services\AuditLogger::log([
             'actor_user_id' => $actorUserId,
-            'session_id' => $_SESSION['session_id'] ?? null,
             'department_id' => $departmentId,
-            'module_id' => $moduleId,
-            'action' => $action,
-            'target_table' => $targetTable,
-            'target_id' => $targetId,
-            'description' => $description,
-            'ip_address' => $ipAddress,
-            'request_method' => $requestMethod,
-            'request_uri' => $requestUri,
-            'browser' => $userAgent,
-            'operating_system' => 'WebClient',
-            'status' => $status,
-            'context_json' => $contextJson ? json_encode($contextJson) : null,
-            'created_at' => date('Y-m-d H:i:s')
-        ];
-
-        $newId = $db->insert('audit_logs', $insertPayload);
+            'module_id'     => $moduleId,
+            'action'        => $action,
+            'target_table'  => $targetTable,
+            'target_id'     => $targetId,
+            'description'   => $description,
+            'status'        => $status,
+            'context_json'  => $contextJson
+        ]);
 
         respond([
             'status' => 'success',

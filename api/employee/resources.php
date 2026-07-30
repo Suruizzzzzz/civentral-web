@@ -33,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../src/Services/AuditLogger.php';
 
 // Response Helper
 function respond(array $payload, int $statusCode = 200): void {
@@ -251,20 +252,15 @@ try {
         }
 
         // Audit Trail
-        try {
-            $db->insert('audit_logs', [
-                'actor_user_id' => $userId,
-                'action' => 'Create Resource',
-                'target_table' => 'resources',
-                'target_id' => (string)$newId,
-                'description' => "Created resource \"{$resourceName}\" under module ID {$moduleId}",
-                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
-                'request_method' => 'POST',
-                'request_uri' => $_SERVER['REQUEST_URI'] ?? '/api/employee/resources.php',
-                'browser' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown',
-                'status' => 'Success'
-            ]);
-        } catch (Throwable $auditEx) {}
+        \App\Services\AuditLogger::log([
+            'action'        => 'Create Resource',
+            'target_table'  => 'resources',
+            'target_id'     => (string)$newId,
+            'description'   => "Created resource \"{$resourceName}\" under module ID {$moduleId}",
+            'actor_user_id' => $userId,
+            'resource_id'   => $newId,
+            'module_id'     => $moduleId
+        ]);
 
         respond([
             'status' => 'success',
@@ -304,20 +300,14 @@ try {
         $db->update('resources', $updatePayload, ['resource_id' => $resourceId]);
 
         // Audit Trail
-        try {
-            $db->insert('audit_logs', [
-                'actor_user_id' => $userId,
-                'action' => 'Update Resource',
-                'target_table' => 'resources',
-                'target_id' => (string)$resourceId,
-                'description' => "Updated resource ID {$resourceId}",
-                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
-                'request_method' => $method,
-                'request_uri' => $_SERVER['REQUEST_URI'] ?? '/api/employee/resources.php',
-                'browser' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown',
-                'status' => 'Success'
-            ]);
-        } catch (Throwable $auditEx) {}
+        \App\Services\AuditLogger::log([
+            'action'        => 'Update Resource',
+            'target_table'  => 'resources',
+            'target_id'     => (string)$resourceId,
+            'description'   => "Updated resource ID {$resourceId}",
+            'actor_user_id' => $userId,
+            'resource_id'   => $resourceId
+        ]);
 
         respond([
             'status' => 'success',
@@ -348,20 +338,14 @@ try {
         ], ['resource_id' => $resourceId]);
 
         // Audit Trail
-        try {
-            $db->insert('audit_logs', [
-                'actor_user_id' => $userId,
-                'action' => 'Archive Resource',
-                'target_table' => 'resources',
-                'target_id' => (string)$resourceId,
-                'description' => "Archived resource ID {$resourceId}",
-                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
-                'request_method' => 'DELETE',
-                'request_uri' => $_SERVER['REQUEST_URI'] ?? '/api/employee/resources.php',
-                'browser' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown',
-                'status' => 'Success'
-            ]);
-        } catch (Throwable $auditEx) {}
+        \App\Services\AuditLogger::log([
+            'action'        => 'Archive Resource',
+            'target_table'  => 'resources',
+            'target_id'     => (string)$resourceId,
+            'description'   => "Archived resource ID {$resourceId}",
+            'actor_user_id' => $userId,
+            'resource_id'   => $resourceId
+        ]);
 
         respond([
             'status' => 'success',

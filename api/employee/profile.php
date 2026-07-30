@@ -33,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../src/Services/AuditLogger.php';
 
 // Response Helper
 function respond(array $payload, int $statusCode = 200): void {
@@ -236,20 +237,13 @@ try {
         $_SESSION['profile_picture'] = $profilePicture;
 
         // Audit Trail
-        try {
-            $db->insert('audit_logs', [
-                'actor_user_id' => $targetUserId,
-                'action' => 'Update Profile',
-                'target_table' => 'users',
-                'target_id' => (string)$targetUserId,
-                'description' => "User updated their personal profile details.",
-                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
-                'request_method' => $method,
-                'request_uri' => $_SERVER['REQUEST_URI'] ?? '/api/employee/profile.php',
-                'browser' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown',
-                'status' => 'Success'
-            ]);
-        } catch (Throwable $auditEx) {}
+        \App\Services\AuditLogger::log([
+            'action'        => 'Update Profile',
+            'target_table'  => 'users',
+            'target_id'     => (string)$targetUserId,
+            'description'   => "User updated their personal profile details.",
+            'actor_user_id' => $targetUserId
+        ]);
 
         respond([
             'status' => 'success',

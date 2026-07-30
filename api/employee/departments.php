@@ -33,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../src/Services/AuditLogger.php';
 
 // Response Helper
 function respond(array $payload, int $statusCode = 200): void {
@@ -175,21 +176,18 @@ try {
 
         $newId = $db->insert('departments', $payload);
 
+        $newDept = $db->select('departments', ['department_id' => $newId])[0] ?? $payload;
+
         // Audit Trail
-        try {
-            $db->insert('audit_logs', [
-                'actor_user_id' => $userId,
-                'action' => 'Create Department',
-                'target_table' => 'departments',
-                'target_id' => (string)$newId,
-                'description' => "Created department \"{$name}\" ({$code})",
-                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
-                'request_method' => 'POST',
-                'request_uri' => $_SERVER['REQUEST_URI'] ?? '/api/employee/departments.php',
-                'browser' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown',
-                'status' => 'Success'
-            ]);
-        } catch (Throwable $auditEx) {}
+        \App\Services\AuditLogger::logMutation([
+            'action'        => 'Create Department',
+            'target_table'  => 'departments',
+            'target_id'     => (string)$newId,
+            'actor_user_id' => $userId,
+            'department_id' => $newId,
+            'old_data'      => null,
+            'new_data'      => $newDept
+        ]);
 
         respond([
             'status' => 'success',
@@ -226,23 +224,20 @@ try {
             $payload['department_head_user_id'] = filter_var($data['department_head_user_id'], FILTER_VALIDATE_INT) ?: null;
         }
 
+        $oldDept = $db->select('departments', ['department_id' => $deptId])[0] ?? [];
         $db->update('departments', $payload, ['department_id' => $deptId]);
+        $newDept = $db->select('departments', ['department_id' => $deptId])[0] ?? $payload;
 
         // Audit Trail
-        try {
-            $db->insert('audit_logs', [
-                'actor_user_id' => $userId,
-                'action' => 'Update Department',
-                'target_table' => 'departments',
-                'target_id' => (string)$deptId,
-                'description' => "Updated department ID {$deptId}",
-                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
-                'request_method' => $method,
-                'request_uri' => $_SERVER['REQUEST_URI'] ?? '/api/employee/departments.php',
-                'browser' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown',
-                'status' => 'Success'
-            ]);
-        } catch (Throwable $auditEx) {}
+        \App\Services\AuditLogger::logMutation([
+            'action'        => 'Update Department',
+            'target_table'  => 'departments',
+            'target_id'     => (string)$deptId,
+            'actor_user_id' => $userId,
+            'department_id' => $deptId,
+            'old_data'      => $oldDept,
+            'new_data'      => $newDept
+        ]);
 
         respond([
             'status' => 'success',
@@ -267,23 +262,19 @@ try {
             ], 400);
         }
 
+        $oldDept = $db->select('departments', ['department_id' => $deptId])[0] ?? [];
         $db->delete('departments', ['department_id' => $deptId]);
 
         // Audit Trail
-        try {
-            $db->insert('audit_logs', [
-                'actor_user_id' => $userId,
-                'action' => 'Delete Department',
-                'target_table' => 'departments',
-                'target_id' => (string)$deptId,
-                'description' => "Deleted department ID {$deptId}",
-                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
-                'request_method' => 'DELETE',
-                'request_uri' => $_SERVER['REQUEST_URI'] ?? '/api/employee/departments.php',
-                'browser' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown',
-                'status' => 'Success'
-            ]);
-        } catch (Throwable $auditEx) {}
+        \App\Services\AuditLogger::logMutation([
+            'action'        => 'Delete Department',
+            'target_table'  => 'departments',
+            'target_id'     => (string)$deptId,
+            'actor_user_id' => $userId,
+            'department_id' => $deptId,
+            'old_data'      => $oldDept,
+            'new_data'      => null
+        ]);
 
         respond([
             'status' => 'success',

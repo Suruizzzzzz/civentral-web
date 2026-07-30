@@ -244,11 +244,11 @@ include '../../includes/sidebar.php';
 <!-- MODALS SECTION -->
 
 <!-- 1. CREATE / EDIT ROLE MODAL -->
-<div id="roleModal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/60 backdrop-blur-xs">
-  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4 overflow-hidden transform scale-95 transition-all duration-300 border border-slate-200">
+<div id="roleModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/70 backdrop-blur-sm">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[85vh] my-auto overflow-hidden flex flex-col transform scale-95 transition-all duration-300 border border-slate-200">
     
     <!-- Modal Header -->
-    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+    <div class="px-5 py-3.5 sm:px-6 sm:py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 shrink-0">
       <div class="flex items-center gap-2.5">
         <div class="h-8 w-8 rounded-xl bg-brand-light border border-brand-border flex items-center justify-center text-brand-dark font-bold text-xs">
           <i id="roleModalIcon" class="fa-solid fa-user-shield"></i>
@@ -258,13 +258,10 @@ include '../../includes/sidebar.php';
           <p class="text-[10px] text-slate-400 font-medium">Configure database role attributes and global access scope.</p>
         </div>
       </div>
-      <button type="button" onclick="closeModal('roleModal')" class="h-8 w-8 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center transition cursor-pointer">
-        <i class="fa-solid fa-xmark text-sm"></i>
-      </button>
     </div>
 
     <!-- Form -->
-    <form id="roleForm" onsubmit="handleSaveRole(event)" class="p-6 space-y-4">
+    <form id="roleForm" onsubmit="handleSaveRole(event)" class="p-4 sm:p-6 space-y-4 overflow-y-auto custom-scrollbar flex-1">
       <input type="hidden" id="roleIdRef">
 
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -369,17 +366,14 @@ include '../../includes/sidebar.php';
 </div>
 
 <!-- 2. STATUS CHANGE CONFIRMATION MODAL -->
-<div id="statusConfirmModal" class="fixed inset-0 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/60 backdrop-blur-xs">
-  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 overflow-hidden transform scale-95 transition-all duration-300 border border-slate-200">
+<div id="statusConfirmModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/70 backdrop-blur-sm">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[85vh] my-auto overflow-hidden transform scale-95 transition-all duration-300 border border-slate-200">
     
-    <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
+    <div class="bg-slate-900 text-white px-5 py-3.5 sm:px-6 sm:py-4 flex items-center justify-between shrink-0">
       <div class="flex items-center space-x-2">
         <i class="fa-solid fa-circle-minus text-amber-400"></i>
         <h3 class="font-extrabold text-sm tracking-tight uppercase">Confirm Role Deactivation</h3>
       </div>
-      <button type="button" onclick="closeModal('statusConfirmModal')" class="text-slate-400 hover:text-white transition cursor-pointer text-sm">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
     </div>
 
     <div class="p-6 space-y-4">

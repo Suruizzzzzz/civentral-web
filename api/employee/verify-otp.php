@@ -33,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../src/Services/AuditLogger.php';
 
 // Response Helper
 function respond(array $payload, int $statusCode = 200): void {
@@ -203,17 +204,12 @@ try {
         }
 
         // 3. Create Audit Log
-        $db->insert('audit_logs', [
-            'actor_user_id' => $user['user_id'],
-            'action' => '2FA Verification Success',
-            'target_table' => 'users',
-            'target_id' => (string)$user['user_id'],
-            'description' => "User completed 2FA verification and signed in.",
-            'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
-            'request_method' => 'POST',
-            'request_uri' => $_SERVER['REQUEST_URI'] ?? '/api/employee/verify-otp.php',
-            'browser' => $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown',
-            'status' => 'Success'
+        \App\Services\AuditLogger::log([
+            'action'        => '2FA Verification Success',
+            'target_table'  => 'users',
+            'target_id'     => (string)$user['user_id'],
+            'description'   => "User completed 2FA verification and signed in.",
+            'actor_user_id' => $user['user_id']
         ]);
     } catch (Throwable $logEx) {}
 

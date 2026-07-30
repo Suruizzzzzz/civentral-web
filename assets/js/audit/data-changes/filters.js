@@ -14,11 +14,29 @@ window.civAudit.dataChanges.filters = {
     const api = window.civAudit.dataChanges.api;
 
     const filtered = api.auditLogsData.filter(log => {
+      const action = log.action || '';
+
+      // Exclude authentication/login/2FA events from Data Changes view
+      const isAuthEvent = [
+        'Initiate 2FA Login',
+        '2FA Verification Success',
+        'Resend 2FA OTP',
+        'Failed Login',
+        'Successful Login',
+        'Logout',
+        'View'
+      ].includes(action);
+
+      if (isAuthEvent) {
+        return false;
+      }
+
       let actorName = 'System';
-      if (log.users) actorName = `${log.users.first_name || ''} ${log.users.last_name || ''}`.trim() || log.users.email || 'User';
+      if (log.users) {
+        actorName = `${log.users.first_name || ''} ${log.users.last_name || ''}`.trim() || log.users.email || 'User';
+      }
       
       const recordId = log.target_id || log.session_id || '';
-      const action = log.action || '';
       const desc = log.description || '';
       const rawDate = log.created_at || '';
       const isoDate = rawDate.split(' ')[0] || '';
@@ -53,5 +71,17 @@ window.civAudit.dataChanges.filters = {
     if (window.showToast) {
       window.showToast("Filters Reset", "Data mutation search parameters cleared.");
     }
+  }
+};
+
+window.applyFilters = function() {
+  if (window.civAudit && window.civAudit.dataChanges && window.civAudit.dataChanges.filters) {
+    window.civAudit.dataChanges.filters.applyFilters();
+  }
+};
+
+window.resetFilters = function() {
+  if (window.civAudit && window.civAudit.dataChanges && window.civAudit.dataChanges.filters) {
+    window.civAudit.dataChanges.filters.resetFilters();
   }
 };
