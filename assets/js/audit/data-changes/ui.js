@@ -2,6 +2,10 @@ window.civAudit = window.civAudit || {};
 window.civAudit.dataChanges = window.civAudit.dataChanges || {};
 
 window.civAudit.dataChanges.ui = {
+  currentPage: 1,
+  pageSize: 50,
+  currentFilteredLogs: [],
+
   populateModuleDropdown() {
     const moduleSelect = document.getElementById('filterModule');
     if (!moduleSelect) return;
@@ -31,9 +35,72 @@ window.civAudit.dataChanges.ui = {
     }
   },
 
-  renderMutationLogs(logs) {
+  changePage(delta) {
+    const totalPages = Math.ceil(this.currentFilteredLogs.length / this.pageSize) || 1;
+    const newPage = this.currentPage + delta;
+    if (newPage >= 1 && newPage <= totalPages) {
+      this.renderMutationLogs(this.currentFilteredLogs, newPage);
+    }
+  },
+
+  goToPage(pageNum) {
+    const totalPages = Math.ceil(this.currentFilteredLogs.length / this.pageSize) || 1;
+    if (pageNum >= 1 && pageNum <= totalPages) {
+      this.renderMutationLogs(this.currentFilteredLogs, pageNum);
+    }
+  },
+
+  renderMutationLogs(logs, page = 1) {
+    this.currentFilteredLogs = logs || [];
+    this.currentPage = page;
+
     const tbody = document.getElementById('mutationTableBody');
     if (!tbody) return;
+
+    const total = this.currentFilteredLogs.length;
+    const totalPages = Math.ceil(total / this.pageSize) || 1;
+
+    if (this.currentPage > totalPages) this.currentPage = totalPages;
+    if (this.currentPage < 1) this.currentPage = 1;
+
+    const startIdx = total > 0 ? (this.currentPage - 1) * this.pageSize : 0;
+    const endIdx = Math.min(startIdx + this.pageSize, total);
+
+    const startEl = document.getElementById('paginationStart');
+    const endEl = document.getElementById('paginationEnd');
+    const totalEl = document.getElementById('paginationTotal');
+    const prevBtn = document.getElementById('prevPageBtn');
+    const nextBtn = document.getElementById('nextPageBtn');
+    const pageNumbersEl = document.getElementById('pageNumbers');
+
+    if (startEl) startEl.innerText = total > 0 ? startIdx + 1 : 0;
+    if (endEl) endEl.innerText = endIdx;
+    if (totalEl) totalEl.innerText = total;
+
+    if (prevBtn) prevBtn.disabled = (this.currentPage <= 1);
+    if (nextBtn) nextBtn.disabled = (this.currentPage >= totalPages);
+
+    if (pageNumbersEl) {
+      pageNumbersEl.innerHTML = '';
+      let maxVisible = 5;
+      let startP = Math.max(1, this.currentPage - 2);
+      let endP = Math.min(totalPages, startP + maxVisible - 1);
+      if (endP - startP + 1 < maxVisible) {
+        startP = Math.max(1, endP - maxVisible + 1);
+      }
+
+      for (let p = startP; p <= endP; p++) {
+        const btn = document.createElement('button');
+        btn.onclick = () => this.goToPage(p);
+        btn.className = `h-7 min-w-[28px] px-2 rounded-lg text-xs font-bold transition cursor-pointer ${
+          p === this.currentPage
+            ? 'bg-[#0f172a] text-white shadow-xs'
+            : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
+        }`;
+        btn.innerText = p;
+        pageNumbersEl.appendChild(btn);
+      }
+    }
 
     if (!logs || logs.length === 0) {
       tbody.innerHTML = `
@@ -53,7 +120,9 @@ window.civAudit.dataChanges.ui = {
     let html = '';
     const esc = window.escapeHtml || (s => s);
 
-    logs.forEach(log => {
+    const pageLogs = this.currentFilteredLogs.slice(startIdx, endIdx);
+
+    pageLogs.forEach(log => {
       const mutId = `#MUT-${log.audit_id}`;
       const rawDate = log.created_at || '';
       const dateObj = new Date(rawDate);
@@ -140,8 +209,8 @@ window.civAudit.dataChanges.ui = {
           </td>
           <td class="py-4 px-5 text-slate-500 font-medium leading-relaxed max-w-xs truncate" title="${esc(log.description || '')}">${esc(log.description || 'No description.')}</td>
           <td class="py-4 px-5 text-center">
-            <button onclick="window.civAudit.dataChanges.modal.openMutationModal(this.closest('tr'))" class="px-2.5 py-1 text-xs font-bold text-slate-700 hover:text-slate-900 border border-slate-200 bg-white hover:bg-slate-50 rounded-lg shadow-xs cursor-pointer transition focus:outline-none">
-              👁️ View Snapshot
+            <button onclick="window.civAudit.dataChanges.modal.openMutationModal(this.closest('tr'))" title="View Snapshot" class="h-8 w-8 inline-flex items-center justify-center text-slate-600 hover:text-slate-900 border border-slate-200 bg-white hover:bg-slate-100 rounded-xl shadow-xs cursor-pointer transition focus:outline-none">
+              <i class="fa-solid fa-eye text-xs"></i>
             </button>
           </td>
         </tr>

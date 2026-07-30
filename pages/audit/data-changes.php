@@ -138,12 +138,12 @@ include '../../includes/sidebar.php';
     </div>
   </div>
 
-  <!-- Data Mutation Trail Table -->
-  <div class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
-    <div class="overflow-x-auto w-full">
+  <!-- Data Mutation Trail Table Card -->
+  <div class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden flex flex-col">
+    <div class="overflow-x-auto overflow-y-auto max-h-[600px] w-full custom-scrollbar">
       <table class="w-full text-left border-collapse min-w-[1200px]">
-        <thead>
-          <tr class="bg-slate-50 border-b border-slate-200">
+        <thead class="sticky top-0 bg-slate-50 z-10 border-b border-slate-200 shadow-xs">
+          <tr>
             <th class="py-3.5 px-5 text-[10px] font-black text-slate-400 uppercase tracking-wider">Change ID</th>
             <th class="py-3.5 px-5 text-[10px] font-black text-slate-400 uppercase tracking-wider">Timestamp</th>
             <th class="py-3.5 px-5 text-[10px] font-black text-slate-400 uppercase tracking-wider">Actor</th>
@@ -156,9 +156,27 @@ include '../../includes/sidebar.php';
           </tr>
         </thead>
         <tbody id="mutationTableBody" class="divide-y divide-slate-100 text-xs">
-          <!-- Dynamically populated from MySQL Database via assets/js/audit/data-changes.js -->
+          <!-- Dynamically populated from MySQL Database -->
         </tbody>
       </table>
+    </div>
+
+    <!-- Pagination Footer Container (50 per page) -->
+    <div id="paginationFooter" class="px-5 py-3.5 bg-slate-50/90 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 font-semibold select-none">
+      <div id="paginationInfo" class="text-xs text-slate-500 font-medium">
+        Showing <span id="paginationStart" class="font-bold text-slate-900">0</span> to <span id="paginationEnd" class="font-bold text-slate-900">0</span> of <span id="paginationTotal" class="font-bold text-slate-900">0</span> entries
+      </div>
+      <div class="flex items-center gap-1.5" id="paginationControls">
+        <button id="prevPageBtn" onclick="window.civAudit.dataChanges.ui.changePage(-1)" class="px-3 py-1.5 border border-slate-200 rounded-xl bg-white hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-xs">
+          <i class="fa-solid fa-chevron-left text-[10px]"></i> Previous
+        </button>
+        <div id="pageNumbers" class="flex items-center gap-1 font-bold text-xs">
+          <!-- Dynamic Page Numbers -->
+        </div>
+        <button id="nextPageBtn" onclick="window.civAudit.dataChanges.ui.changePage(1)" class="px-3 py-1.5 border border-slate-200 rounded-xl bg-white hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-xs">
+          Next <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        </button>
+      </div>
     </div>
   </div>
 

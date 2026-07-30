@@ -35,7 +35,7 @@ window.civAudit.userActivities.filters = {
     });
 
     if (window.civAudit.userActivities.ui) {
-      window.civAudit.userActivities.ui.renderTableRows(filtered);
+      window.civAudit.userActivities.ui.renderTableRows(filtered, 1);
     }
   },
 

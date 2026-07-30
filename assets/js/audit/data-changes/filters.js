@@ -36,7 +36,7 @@ window.civAudit.dataChanges.filters = {
     });
 
     if (window.civAudit.dataChanges.ui) {
-      window.civAudit.dataChanges.ui.renderMutationLogs(filtered);
+      window.civAudit.dataChanges.ui.renderMutationLogs(filtered, 1);
     }
   },
 
