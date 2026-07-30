@@ -2,15 +2,8 @@
 $basePath = '../../';
 require_once __DIR__ . '/../../src/bootstrap.php';
 
-// Access Control: Only Superadmins can manage Access Boundaries
-if (empty($headerUser['is_superadmin'])) {
-    if (!headers_sent()) {
-        header("Location: ../dashboard.php");
-    } else {
-        echo '<script>window.location.href="../dashboard.php";</script>';
-    }
-    exit;
-}
+\App\Middleware\AuthMiddleware::handle($basePath);
+\App\Middleware\PermissionMiddleware::require('role.permission.matrix', $basePath);
 
 include '../../includes/header.php';
 include '../../includes/sidebar.php';

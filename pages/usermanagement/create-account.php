@@ -2,22 +2,8 @@
 $basePath = '../../';
 require_once __DIR__ . '/../../src/bootstrap.php';
 
-$canCreateAccount = !empty($headerUser['is_superadmin']) || 
-                          !empty($headerUser['is_global_access']) || 
-                          (in_array('CREATE', $headerUser['granted_actions'] ?? []) && 
-                           !empty($headerUser['granted_resources']) && array_filter($headerUser['granted_resources'], function($r) {
-                               $rl = strtolower($r);
-                               return strpos($rl, 'users account') !== false || strpos($rl, 'user account') !== false || strpos($rl, 'create account') !== false;
-                           }));
-
-if (!$canCreateAccount) {
-    if (!headers_sent()) {
-        header("Location: user-directory.php");
-    } else {
-        echo '<script>window.location.href="user-directory.php";</script>';
-    }
-    exit;
-}
+\App\Middleware\AuthMiddleware::handle($basePath);
+\App\Middleware\PermissionMiddleware::require('users.create', $basePath);
 
 include '../../includes/header.php';
 include '../../includes/sidebar.php';

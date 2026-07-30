@@ -2,21 +2,8 @@
 $basePath = '../../';
 require_once __DIR__ . '/../../src/bootstrap.php';
 
-$canAccessAccountStatus = !empty($headerUser['is_superadmin']) || 
-                          !empty($headerUser['is_global_access']) || 
-                          (!empty($headerUser['granted_resources']) && array_filter($headerUser['granted_resources'], function($r) {
-                              $rl = strtolower($r);
-                              return strpos($rl, 'account status') !== false || strpos($rl, 'status control') !== false || strpos($rl, 'status') !== false;
-                          }));
-
-if (!$canAccessAccountStatus) {
-    if (!headers_sent()) {
-        header("Location: ../dashboard.php");
-    } else {
-        echo '<script>window.location.href="../dashboard.php";</script>';
-    }
-    exit;
-}
+\App\Middleware\AuthMiddleware::handle($basePath);
+\App\Middleware\PermissionMiddleware::require('users.status', $basePath);
 
 include '../../includes/header.php';
 include '../../includes/sidebar.php';

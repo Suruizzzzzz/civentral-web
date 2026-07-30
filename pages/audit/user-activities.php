@@ -1,5 +1,10 @@
 <?php
 $basePath = '../../';
+require_once __DIR__ . '/../../src/bootstrap.php';
+
+\App\Middleware\AuthMiddleware::handle($basePath);
+\App\Middleware\PermissionMiddleware::require('audit.activities', $basePath);
+
 include '../../includes/header.php';
 include '../../includes/sidebar.php';
 ?>

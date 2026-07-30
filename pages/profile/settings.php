@@ -1,5 +1,9 @@
 <?php
 $basePath = '../../';
+require_once __DIR__ . '/../../src/bootstrap.php';
+
+\App\Middleware\AuthMiddleware::handle($basePath);
+
 include '../../includes/header.php';
 include '../../includes/sidebar.php';
 ?>
