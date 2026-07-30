@@ -121,12 +121,15 @@ window.civAudit.loginHistory.ui = {
       }
 
       for (let p = startP; p <= endP; p++) {
+        const isDark = document.documentElement.classList.contains('dark');
         const btn = document.createElement('button');
         btn.onclick = () => this.goToPage(p);
         btn.className = `h-7 min-w-[28px] px-2 rounded-lg text-xs font-bold transition cursor-pointer ${
           p === this.currentPage
-            ? 'bg-[#0f172a] text-white shadow-xs'
-            : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'
+            ? 'bg-[#86B6F6] text-white shadow-sm ring-2 ring-[#86B6F6]/30'
+            : isDark
+              ? 'bg-slate-700 border border-slate-600 text-[#86B6F6] hover:bg-slate-600'
+              : 'bg-white border border-[#B4D4FF] text-[#176B87] hover:bg-[#EEF5FF]'
         }`;
         btn.innerText = p;
         pageNumbersEl.appendChild(btn);

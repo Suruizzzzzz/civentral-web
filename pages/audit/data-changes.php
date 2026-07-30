@@ -29,36 +29,31 @@ include '../../includes/sidebar.php';
     </div>
 
     <!-- Non-Destructive Action Controls -->
-    <div class="flex items-center gap-3 shrink-0">
-      <button onclick="refreshLogs()" class="inline-flex items-center justify-center gap-2 px-3 py-2.5 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 font-bold rounded-xl text-xs tracking-wide transition shadow-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0f172a]/20">
-        <i class="fa-solid fa-rotate text-slate-400"></i>
+    <div class="flex items-center gap-2.5 shrink-0 flex-wrap">
+      <button onclick="refreshLogs()" class="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 border border-[#B4D4FF] text-[#176B87] bg-[#EEF5FF] hover:bg-[#86B6F6]/20 font-bold rounded-xl text-xs tracking-wide transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#86B6F6]/40 shadow-sm dark:bg-slate-800 dark:border-slate-600 dark:text-[#86B6F6] dark:hover:bg-slate-700">
+        <i class="fa-solid fa-rotate text-[#86B6F6] dark:text-[#86B6F6]"></i>
         <span>Refresh Log</span>
-      </button>
-
-      <button onclick="printData()" class="inline-flex items-center justify-center gap-2 px-3 py-2.5 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 font-bold rounded-xl text-xs tracking-wide transition shadow-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0f172a]/20">
-        <i class="fa-solid fa-print text-slate-400"></i>
-        <span>Print / PDF</span>
       </button>
 
       <!-- Export Dropdown -->
       <div class="relative inline-block text-left" id="exportDropdownContainer">
-        <button id="exportDropdownBtn" onclick="toggleExportDropdown(event)" 
-          class="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 font-bold rounded-xl text-xs tracking-wide transition shadow-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0f172a]/20">
-          <i class="fa-solid fa-file-export text-slate-400"></i>
+        <button id="exportDropdownBtn" onclick="toggleExportDropdown(event)"
+          class="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl text-xs tracking-wide transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-400/50 shadow-sm">
+          <i class="fa-solid fa-file-export"></i>
           <span>Export Logs</span>
-          <i class="fa-solid fa-chevron-down text-[9px] text-slate-400"></i>
+          <i class="fa-solid fa-chevron-down text-[9px] opacity-75"></i>
         </button>
         <!-- Dropdown Card -->
-        <div id="exportDropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg py-1 z-50 text-xs text-slate-600 transition-all transform scale-95 origin-top-right">
-          <a href="#" onclick="exportLogs('PDF', event)" class="flex items-center gap-2.5 px-4 py-2.5 hover:bg-slate-50 text-slate-700 transition font-bold">
+        <div id="exportDropdownMenu" class="hidden absolute right-0 mt-2 w-52 bg-white border border-[#B4D4FF] rounded-xl shadow-xl py-1.5 z-50 text-xs text-slate-600 transition-all transform scale-95 origin-top-right dark:bg-slate-800 dark:border-slate-600">
+          <a href="#" onclick="exportLogs('PDF', event)" class="flex items-center gap-2.5 px-4 py-2.5 hover:bg-[#EEF5FF] text-slate-700 transition font-bold rounded-lg mx-1 dark:text-slate-200 dark:hover:bg-slate-700">
             <i class="fa-solid fa-file-pdf text-red-500 text-sm"></i>
             <span>Export to PDF</span>
           </a>
-          <a href="#" onclick="exportLogs('Excel', event)" class="flex items-center gap-2.5 px-4 py-2.5 hover:bg-slate-50 text-slate-700 transition font-bold">
+          <a href="#" onclick="exportLogs('Excel', event)" class="flex items-center gap-2.5 px-4 py-2.5 hover:bg-[#EEF5FF] text-slate-700 transition font-bold rounded-lg mx-1 dark:text-slate-200 dark:hover:bg-slate-700">
             <i class="fa-solid fa-file-excel text-emerald-600 text-sm"></i>
             <span>Export to Excel</span>
           </a>
-          <a href="#" onclick="exportLogs('CSV', event)" class="flex items-center gap-2.5 px-4 py-2.5 hover:bg-slate-50 text-slate-700 transition font-bold">
+          <a href="#" onclick="exportLogs('CSV', event)" class="flex items-center gap-2.5 px-4 py-2.5 hover:bg-[#EEF5FF] text-slate-700 transition font-bold rounded-lg mx-1 dark:text-slate-200 dark:hover:bg-slate-700">
             <i class="fa-solid fa-file-csv text-emerald-500 text-sm"></i>
             <span>Download CSV</span>
           </a>
@@ -162,18 +157,18 @@ include '../../includes/sidebar.php';
     </div>
 
     <!-- Pagination Footer Container (50 per page) -->
-    <div id="paginationFooter" class="px-5 py-3.5 bg-slate-50/90 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 font-semibold select-none">
-      <div id="paginationInfo" class="text-xs text-slate-500 font-medium">
-        Showing <span id="paginationStart" class="font-bold text-slate-900">0</span> to <span id="paginationEnd" class="font-bold text-slate-900">0</span> of <span id="paginationTotal" class="font-bold text-slate-900">0</span> entries
+    <div id="paginationFooter" class="px-5 py-3.5 bg-[#EEF5FF]/60 border-t border-[#B4D4FF]/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-semibold select-none dark:bg-slate-800/60 dark:border-slate-700">
+      <div id="paginationInfo" class="text-xs text-slate-500 font-medium dark:text-slate-400">
+        Showing <span id="paginationStart" class="font-bold text-[#176B87] dark:text-[#86B6F6]">0</span> to <span id="paginationEnd" class="font-bold text-[#176B87] dark:text-[#86B6F6]">0</span> of <span id="paginationTotal" class="font-bold text-[#176B87] dark:text-[#86B6F6]">0</span> entries
       </div>
       <div class="flex items-center gap-1.5" id="paginationControls">
-        <button id="prevPageBtn" onclick="window.civAudit.dataChanges.ui.changePage(-1)" class="px-3 py-1.5 border border-slate-200 rounded-xl bg-white hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-xs">
+        <button id="prevPageBtn" onclick="window.civAudit.dataChanges.ui.changePage(-1)" class="px-3 py-1.5 border border-[#B4D4FF] rounded-xl bg-white hover:bg-[#EEF5FF] disabled:opacity-40 disabled:cursor-not-allowed text-[#176B87] font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-sm dark:bg-slate-800 dark:border-slate-600 dark:text-[#86B6F6] dark:hover:bg-slate-700">
           <i class="fa-solid fa-chevron-left text-[10px]"></i> Previous
         </button>
         <div id="pageNumbers" class="flex items-center gap-1 font-bold text-xs">
           <!-- Dynamic Page Numbers -->
         </div>
-        <button id="nextPageBtn" onclick="window.civAudit.dataChanges.ui.changePage(1)" class="px-3 py-1.5 border border-slate-200 rounded-xl bg-white hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-xs">
+        <button id="nextPageBtn" onclick="window.civAudit.dataChanges.ui.changePage(1)" class="px-3 py-1.5 border border-[#B4D4FF] rounded-xl bg-white hover:bg-[#EEF5FF] disabled:opacity-40 disabled:cursor-not-allowed text-[#176B87] font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-sm dark:bg-slate-800 dark:border-slate-600 dark:text-[#86B6F6] dark:hover:bg-slate-700">
           Next <i class="fa-solid fa-chevron-right text-[10px]"></i>
         </button>
       </div>
