@@ -1,8 +1,12 @@
 // MODULE MANAGEMENT API
 
-var systemModules = [];
-var currentUserScope = null;
-var archiveTargetId = null;
+window.systemModules = [];
+window.currentUserScope = null;
+window.archiveTargetId = null;
+
+var systemModules = window.systemModules;
+var currentUserScope = window.currentUserScope;
+var archiveTargetId = window.archiveTargetId;
 
 // FETCH MODULES FROM Database REST API
 async function fetchModules() {
@@ -10,7 +14,7 @@ async function fetchModules() {
     const response = await fetch('../../api/employee/modules.php');
     const result = await response.json();
     if (result.status === 'success' && Array.isArray(result.data)) {
-      systemModules = result.data.map(m => ({
+      window.systemModules = result.data.map(m => ({
         id: m.module_id,
         name: m.module_name,
         desc: m.description || '',
@@ -18,8 +22,10 @@ async function fetchModules() {
         created_at: m.created_at ? m.created_at.replace('T', ' ').substring(0, 19) : '',
         updated_at: m.updated_at ? m.updated_at.replace('T', ' ').substring(0, 19) : ''
       }));
-      currentUserScope = result.current_user || null;
-      if (typeof filterModules === 'function') filterModules();
+      systemModules = window.systemModules;
+      window.currentUserScope = result.current_user || null;
+      currentUserScope = window.currentUserScope;
+      if (typeof window.filterModules === 'function') window.filterModules();
     } else {
       console.warn('Modules fetch notice:', result.message);
     }
@@ -49,3 +55,6 @@ async function updateModuleStatusInDb(moduleId, newStatus) {
     if (typeof showToast === 'function') showToast('Error updating status IN DATABASE.');
   }
 }
+
+window.fetchModules = fetchModules;
+window.updateModuleStatusInDb = updateModuleStatusInDb;

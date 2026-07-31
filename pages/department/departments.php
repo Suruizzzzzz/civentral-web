@@ -31,7 +31,7 @@ include '../../includes/sidebar.php';
     <!-- Create Button -->
     <?php if (!empty($headerUser['is_superadmin']) || !empty($headerUser['is_global_access']) || (in_array('CREATE', $headerUser['granted_actions'] ?? []))): ?>
     <div class="shrink-0">
-      <button onclick="openCreateModal()" class="bg-[#0f172a] hover:bg-slate-800 text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 cursor-pointer transition shadow-xs">
+      <button onclick="openCreateModal()" class="bg-[#86B6F6] hover:bg-[#6FA4EE] text-slate-900 font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 cursor-pointer transition shadow-xs">
         <i class="fa-solid fa-plus text-[10px]"></i>
         <span>Create Department</span>
       </button>
@@ -170,7 +170,7 @@ include '../../includes/sidebar.php';
       </div>
       <div class="bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-end space-x-2 shrink-0">
         <button type="button" onclick="closeModal('deptModal')" class="border border-slate-200 bg-white hover:bg-slate-50 text-slate-650 font-bold cursor-pointer transition">Cancel</button>
-        <button type="submit" class="bg-[#0f172a] hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold cursor-pointer transition shadow-xs">Save Department</button>
+        <button type="submit" class="bg-[#86B6F6] hover:bg-[#6FA4EE] text-slate-900 px-4 py-2 rounded-xl text-xs font-bold cursor-pointer transition shadow-xs">Save Department</button>
       </div>
     </form>
   </div>

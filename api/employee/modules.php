@@ -84,8 +84,82 @@ try {
     $canEditModule   = $isSuperAdmin || in_array('EDIT', $userGrantedActions);
     $canDeleteModule = $isSuperAdmin || in_array('DELETE', $userGrantedActions);
 
+    // Get logged in user details (department_id & department_name)
+    $userRoleId = $_SESSION['role_id'] ?? null;
+    $userDeptId = null;
+    $userDeptName = null;
+
+    if ($userId) {
+        $uRes = $db->query("
+            SELECT u.user_id, u.role_id, p.department_id, d.department_name, r.role_prefix, r.role_name, r.is_global_access, r.is_superadmin
+            FROM users u
+            LEFT JOIN roles r ON u.role_id = r.role_id
+            LEFT JOIN positions p ON u.position_id = p.position_id
+            LEFT JOIN departments d ON p.department_id = d.department_id
+            WHERE u.user_id = :uid
+        ", ['uid' => $userId]);
+
+        if (!empty($uRes)) {
+            $userRow = $uRes[0];
+            $userDeptId = $userRow['department_id'] ?? null;
+            $userDeptName = $userRow['department_name'] ?? null;
+            $userRoleId = $userRow['role_id'] ?? $userRoleId;
+        }
+    }
+
     if ($method === 'GET') {
-        $modules = $db->query("SELECT module_id, module_name, description, status, created_at, updated_at FROM modules ORDER BY module_id ASC");
+        if ($isSuperAdmin) {
+            $modules = $db->query("SELECT module_id, module_name, description, status, created_at, updated_at FROM modules ORDER BY module_id ASC") ?: [];
+        } else {
+            $coreModuleIds = [4, 5, 6, 7, 8];
+
+            if (empty($userDeptName) && $userDeptId) {
+                $dRow = $db->query("SELECT department_name FROM departments WHERE department_id = :did", ['did' => $userDeptId]);
+                if (!empty($dRow)) $userDeptName = $dRow[0]['department_name'];
+            }
+
+            $rawWords = preg_split('/[\s,\/&\-\+]+/', strtolower($userDeptName ?? ''));
+            $stopWords = ['department', 'office', 'bureau', 'division', 'service', 'services', 'and', '&', 'of', 'management', 'the', 'unit'];
+            $deptKeywords = array_filter($rawWords, function($w) use ($stopWords) {
+                return strlen($w) >= 3 && !in_array($w, $stopWords);
+            });
+
+            // Fetch ALL modules so frontend Active and Archived tabs work properly
+            $allModules = $db->query("SELECT module_id, module_name, description, status, created_at, updated_at FROM modules ORDER BY module_id ASC") ?: [];
+
+            $grantedModRows = $userRoleId ? ($db->query("
+                SELECT DISTINCT res.module_id
+                FROM role_permissions rp
+                JOIN permissions p ON rp.permission_id = p.permission_id
+                JOIN resources res ON p.resource_id = res.resource_id
+                WHERE rp.role_id = :rid
+            ", ['rid' => $userRoleId]) ?: []) : [];
+
+            $grantedModIds = array_column($grantedModRows, 'module_id');
+
+            $modules = [];
+            foreach ($allModules as $m) {
+                $mId = (int)$m['module_id'];
+                $mNameLower = strtolower($m['module_name']);
+
+                if (in_array($mId, $coreModuleIds, true) || in_array($mId, $grantedModIds, true)) {
+                    $modules[] = $m;
+                    continue;
+                }
+
+                $matchesKeyword = false;
+                foreach ($deptKeywords as $kw) {
+                    if (strpos($mNameLower, $kw) !== false) {
+                        $matchesKeyword = true;
+                        break;
+                    }
+                }
+
+                if ($matchesKeyword) {
+                    $modules[] = $m;
+                }
+            }
+        }
 
         respond([
             'status' => 'success',
@@ -179,21 +253,30 @@ try {
         if (isset($data['description'])) $updatePayload['description'] = trim($data['description']);
         if (isset($data['status']) && in_array($data['status'], ['Active', 'Inactive', 'Archived'])) {
             $updatePayload['status'] = $data['status'];
-            if ($data['status'] === 'Archived') {
-                $db->update('resources', ['status' => 'Archived', 'updated_at' => date('Y-m-d H:i:s')], ['module_id' => $moduleId]);
-            }
+        }
+
+        $oldModuleRows = $db->query("SELECT * FROM modules WHERE module_id = :id", ['id' => $moduleId]);
+        $oldModule = !empty($oldModuleRows) ? $oldModuleRows[0] : null;
+
+        if (isset($data['status']) && $data['status'] === 'Archived') {
+            $db->update('resources', ['status' => 'Archived', 'updated_at' => date('Y-m-d H:i:s')], ['module_id' => $moduleId]);
         }
 
         $db->update('modules', $updatePayload, ['module_id' => $moduleId]);
 
-        // Audit Trail
-        \App\Services\AuditLogger::log([
+        $newModuleRows = $db->query("SELECT * FROM modules WHERE module_id = :id", ['id' => $moduleId]);
+        $newModule = !empty($newModuleRows) ? $newModuleRows[0] : null;
+
+        // Audit Trail with Full Data Mutation Snapshot
+        \App\Services\AuditLogger::logMutation([
             'action'        => 'Update Module',
             'target_table'  => 'modules',
             'target_id'     => (string)$moduleId,
             'description'   => "Updated module ID {$moduleId}",
             'actor_user_id' => $userId,
-            'module_id'     => $moduleId
+            'module_id'     => $moduleId,
+            'old_data'      => $oldModule,
+            'new_data'      => $newModule
         ]);
 
         respond([
@@ -219,6 +302,9 @@ try {
             ], 400);
         }
 
+        $oldModuleRows = $db->query("SELECT * FROM modules WHERE module_id = :id", ['id' => $moduleId]);
+        $oldModule = !empty($oldModuleRows) ? $oldModuleRows[0] : null;
+
         $db->update('modules', [
             'status' => 'Archived',
             'updated_at' => date('Y-m-d H:i:s')
@@ -230,14 +316,19 @@ try {
             'updated_at' => date('Y-m-d H:i:s')
         ], ['module_id' => $moduleId]);
 
-        // Audit Trail
-        \App\Services\AuditLogger::log([
+        $newModuleRows = $db->query("SELECT * FROM modules WHERE module_id = :id", ['id' => $moduleId]);
+        $newModule = !empty($newModuleRows) ? $newModuleRows[0] : null;
+
+        // Audit Trail with Full Data Mutation Snapshot
+        \App\Services\AuditLogger::logMutation([
             'action'        => 'Archive Module',
             'target_table'  => 'modules',
             'target_id'     => (string)$moduleId,
             'description'   => "Archived module ID {$moduleId} and all child resources",
             'actor_user_id' => $userId,
-            'module_id'     => $moduleId
+            'module_id'     => $moduleId,
+            'old_data'      => $oldModule,
+            'new_data'      => $newModule
         ]);
 
         respond([

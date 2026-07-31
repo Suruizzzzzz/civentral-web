@@ -152,9 +152,9 @@ include '../../includes/sidebar.php';
     <div class="border-t border-slate-200 pt-5 flex items-center justify-end space-x-3">
       <a href="user-directory.php" class="border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 px-5 py-2.5 rounded-xl text-xs font-bold cursor-pointer transition shadow-xs">Cancel</a>
       
-      <button type="submit" id="submitBtn" class="bg-[#0f172a] hover:bg-slate-800 text-white font-bold px-5 py-2.5 rounded-xl text-xs flex items-center gap-2 cursor-pointer transition shadow-xs">
-        <i id="spinnerIcon" class="fa-solid fa-circle-notch animate-spin hidden"></i>
-        <span>Create Account & Save</span>
+      <button type="submit" id="submitBtn" class="bg-[#86B6F6] hover:bg-[#6FA4EE] text-slate-900 font-bold px-6 py-2.5 rounded-xl text-xs flex items-center gap-2 cursor-pointer transition shadow-xs">
+        <i id="spinnerIcon" class="fa-solid fa-spinner fa-spin text-xs hidden"></i>
+        <span id="submitBtnText">Create Account & Save</span>
       </button>
     </div>
 

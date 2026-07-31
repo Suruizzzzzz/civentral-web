@@ -71,7 +71,7 @@ include '../../includes/sidebar.php';
           <button onclick="resetToDefaults()" class="border border-slate-200 hover:bg-slate-50 text-slate-650 font-bold px-4 py-2 rounded-xl text-xs transition cursor-pointer">
             Reset to Defaults
           </button>
-          <button onclick="saveChanges()" class="bg-[#0f172a] hover:bg-slate-800 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-xs cursor-pointer">
+          <button onclick="saveChanges()" class="bg-[#86B6F6] hover:bg-[#6FA4EE] text-slate-900 font-bold px-4 py-2 rounded-xl text-xs transition shadow-xs cursor-pointer">
             Save Changes
           </button>
         </div>

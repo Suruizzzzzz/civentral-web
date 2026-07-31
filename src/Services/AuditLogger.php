@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+require_once __DIR__ . '/NotificationService.php';
+
 class AuditLogger
 {
     /**
@@ -96,7 +98,19 @@ class AuditLogger
                 'created_at'       => date('Y-m-d H:i:s')
             ];
 
-            return $db->insert('audit_logs', $insertPayload);
+            $auditId = $db->insert('audit_logs', $insertPayload);
+            if ($auditId && $status === 'Success' && $actorUserId) {
+                \App\Services\NotificationService::dispatchFromAudit(
+                    (int)$auditId,
+                    $action,
+                    (int)$actorUserId,
+                    $departmentId ? (int)$departmentId : null,
+                    $targetTable,
+                    $targetId,
+                    $description
+                );
+            }
+            return $auditId;
         } catch (\Throwable $e) {
             error_log("AuditLogger Failure: " . $e->getMessage());
             return false;
@@ -137,10 +151,13 @@ class AuditLogger
                     $newVal = '***';
                 }
 
-                if ((string)$oldVal !== (string)$newVal) {
+                $oldStr = is_array($oldVal) ? json_encode($oldVal) : (string)$oldVal;
+                $newStr = is_array($newVal) ? json_encode($newVal) : (string)$newVal;
+
+                if ($oldStr !== $newStr) {
                     $changes[$key] = [
-                        'old' => $oldVal,
-                        'new' => $newVal
+                        'old' => is_array($oldVal) ? $oldStr : $oldVal,
+                        'new' => is_array($newVal) ? $newStr : $newVal
                     ];
                 }
             }
@@ -157,8 +174,8 @@ class AuditLogger
             if (!empty($changes)) {
                 $changeSummaries = [];
                 foreach ($changes as $fld => $diff) {
-                    $o = $diff['old'] !== null ? (string)$diff['old'] : 'null';
-                    $n = $diff['new'] !== null ? (string)$diff['new'] : 'null';
+                    $o = $diff['old'] !== null ? (is_array($diff['old']) ? json_encode($diff['old']) : (string)$diff['old']) : 'null';
+                    $n = $diff['new'] !== null ? (is_array($diff['new']) ? json_encode($diff['new']) : (string)$diff['new']) : 'null';
                     $changeSummaries[] = "{$fld}: \"{$o}\" → \"{$n}\"";
                 }
                 $description = "{$action} on {$targetTable}" . ($targetId ? " #{$targetId}" : "") . ": " . implode(', ', $changeSummaries);

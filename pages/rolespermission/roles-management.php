@@ -34,7 +34,7 @@ include '../../includes/sidebar.php';
       <button 
         type="button"
         onclick="openCreateModal()" 
-        class="bg-brand-dark hover:bg-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 text-white font-bold px-4.5 py-2.5 rounded-xl text-xs transition duration-200 shadow-xs flex items-center gap-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-dark/20"
+        class="bg-[#86B6F6] hover:bg-[#6FA4EE] text-slate-900 font-bold px-4.5 py-2.5 rounded-xl text-xs transition duration-200 shadow-xs flex items-center gap-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#86B6F6]/30"
       >
         <i class="fa-solid fa-plus text-xs"></i>
         <span>Create New Role</span>
@@ -353,7 +353,7 @@ include '../../includes/sidebar.php';
         </button>
         <button 
           type="submit" 
-          class="px-5 py-2 bg-[#0F172A] hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition shadow-xs cursor-pointer flex items-center gap-1.5"
+          class="px-5 py-2 bg-[#86B6F6] hover:bg-[#6FA4EE] text-slate-900 font-bold rounded-xl text-xs transition shadow-xs cursor-pointer flex items-center gap-1.5"
         >
           <i class="fa-solid fa-floppy-disk text-xs"></i>
           <span>Save Role</span>

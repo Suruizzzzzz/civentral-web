@@ -65,14 +65,20 @@ class PermissionService
             'citizens.view'      => ['citizen.directory', 'citizen directory', 'citizens'],
             'citizens.account'   => ['citizen.account', 'citizen account', 'kyc'],
             'scholarships.manage'=> ['scholarship.types', 'scholarship types', 'scholarship.program', 'scholarship program', 'scholarships'],
-            'audit.activities'   => ['user.activities', 'user activities', 'audit'],
-            'audit.login_history'=> ['login.history', 'login history', 'audit'],
-            'audit.data_changes' => ['data.changes', 'data changes', 'audit'],
+            'audit.activities'   => ['user.activities', 'user activities', 'audit', 'audit logs system', 'audit logs'],
+            'audit.login_history'=> ['login.history', 'login history', 'audit', 'audit logs system', 'audit logs'],
+            'audit.data_changes' => ['data.changes', 'data changes', 'audit', 'audit logs system', 'audit logs'],
         ];
 
+        // Normalize map keys to ensure matching regardless of dots/underscores
+        $normalizedMap = [];
+        foreach ($slugAliasMap as $k => $v) {
+            $normalizedMap[$this->normalizeSlug($k)] = $v;
+        }
+
         $acceptableSlugs = [$targetSlug];
-        if (isset($slugAliasMap[$targetSlug])) {
-            foreach ($slugAliasMap[$targetSlug] as $alias) {
+        if (isset($normalizedMap[$targetSlug])) {
+            foreach ($normalizedMap[$targetSlug] as $alias) {
                 $acceptableSlugs[] = $this->normalizeSlug($alias);
             }
         }

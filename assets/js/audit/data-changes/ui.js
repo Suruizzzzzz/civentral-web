@@ -169,9 +169,21 @@ window.civAudit.dataChanges.ui = {
           const newData = parsed.new_data || parsed.new || null;
           const changes = parsed.changes || null;
 
-          if (oldData) oldJsonStr = JSON.stringify(oldData, null, 2);
-          if (newData) newJsonStr = JSON.stringify(newData, null, 2);
-          if (!oldData && !newData) {
+          if (oldData) {
+            oldJsonStr = JSON.stringify(oldData, null, 2);
+          } else {
+            oldJsonStr = JSON.stringify({
+              record_id: log.target_id ? log.target_id : (log.session_id ? `SESS-${log.session_id}` : 'REC-CORE'),
+              target_entity: log.target_table || 'system',
+              action_type: log.action || 'Data Mutation',
+              status: log.status || 'Active',
+              description: log.description || 'Pre-mutation record snapshot.'
+            }, null, 2);
+          }
+
+          if (newData) {
+            newJsonStr = JSON.stringify(newData, null, 2);
+          } else {
             newJsonStr = JSON.stringify(parsed, null, 2);
           }
 
@@ -196,11 +208,22 @@ window.civAudit.dataChanges.ui = {
             newVal = 'Record Created';
           }
         } catch (e) {
+          oldJsonStr = JSON.stringify({
+            record_id: log.target_id || 'N/A',
+            target_table: log.target_table || 'system',
+            description: log.description || 'Pre-mutation state'
+          }, null, 2);
           newJsonStr = JSON.stringify({ raw_context: log.context_json }, null, 2);
         }
       } else {
-        oldVal = log.target_table ? `${log.target_table} (State)` : 'Initial';
+        oldVal = log.target_table ? `${log.target_table} (Pre-State)` : 'Initial';
         newVal = isSuccess ? 'Committed' : 'Failed';
+        oldJsonStr = JSON.stringify({
+          record_id: log.target_id ? log.target_id : (log.session_id ? `SESS-${log.session_id}` : 'REC-CORE'),
+          target_entity: log.target_table || 'system',
+          action: log.action || 'Data Update',
+          description: log.description || 'Pre-mutation record snapshot.'
+        }, null, 2);
         newJsonStr = JSON.stringify({
           audit_id: log.audit_id,
           action: log.action,
@@ -262,5 +285,27 @@ window.civAudit.dataChanges.ui = {
     });
 
     tbody.innerHTML = html;
+
+    // Auto-open audit log modal if audit_id is specified in URL query
+    const urlParams = new URLSearchParams(window.location.search);
+    const auditIdParam = urlParams.get('audit_id');
+    if (auditIdParam) {
+      const targetRow = tbody.querySelector(`tr[data-audit-id="${auditIdParam}"]`);
+      if (targetRow) {
+        // Remove audit_id parameter from URL so it doesn't trigger again on pagination/filters
+        const newSearch = window.location.search.replace(new RegExp('[?&]audit_id=' + auditIdParam), '').replace(/^&/, '?');
+        const cleanUrl = window.location.pathname + newSearch;
+        window.history.replaceState({}, document.title, cleanUrl);
+        window.civAudit.dataChanges.modal.openMutationModal(targetRow);
+      } else {
+        const matchIdx = this.currentFilteredLogs.findIndex(log => log.audit_id == auditIdParam);
+        if (matchIdx !== -1) {
+          const targetPage = Math.floor(matchIdx / this.pageSize) + 1;
+          if (targetPage !== this.currentPage) {
+            this.goToPage(targetPage);
+          }
+        }
+      }
+    }
   }
 };

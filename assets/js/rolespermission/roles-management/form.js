@@ -53,6 +53,9 @@ async function handleSaveRole(e) {
       if (typeof showToast === 'function') showToast(result.message || 'System role saved successfully.');
       if (typeof closeModal === 'function') closeModal('roleModal');
       if (typeof fetchRoles === 'function') await fetchRoles();
+      if (window.civNotif && typeof window.civNotif.fetchCount === 'function') {
+        window.civNotif.fetchCount();
+      }
     } else {
       if (typeof showToast === 'function') showToast(result.message || 'Error saving role.', true);
     }

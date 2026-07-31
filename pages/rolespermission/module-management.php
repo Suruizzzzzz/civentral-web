@@ -34,7 +34,7 @@ include '../../includes/sidebar.php';
       <button 
         type="button"
         onclick="openCreateModuleModal()" 
-        class="bg-[#0F172A] hover:bg-slate-800 text-white font-bold px-4.5 py-2.5 rounded-xl text-xs transition duration-200 shadow-xs flex items-center gap-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-slate-900/20"
+        class="bg-[#86B6F6] hover:bg-[#6FA4EE] text-slate-900 font-bold px-4.5 py-2.5 rounded-xl text-xs transition duration-200 shadow-xs flex items-center gap-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#86B6F6]/30"
       >
         <i class="fa-solid fa-plus text-xs"></i>
         <span>Create New Module</span>
@@ -80,6 +80,31 @@ include '../../includes/sidebar.php';
         <i class="fa-solid fa-box-archive text-lg"></i>
       </div>
     </div>
+  </div>
+
+  <!-- Active / Archive Tabs Navigation -->
+  <div class="flex items-center gap-2 border-b border-slate-200/80 pb-0">
+    <button 
+      type="button" 
+      id="tabActiveModulesBtn" 
+      onclick="switchModuleTab('active')" 
+      class="module-tab-btn px-4 py-2.5 text-xs font-bold border-b-2 border-brand-dark text-brand-dark flex items-center gap-2 transition cursor-pointer"
+    >
+      <i class="fa-solid fa-list-check text-xs"></i>
+      <span>Active Modules</span>
+      <span id="tabActiveModulesBadge" class="px-2 py-0.5 text-[10px] font-black rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">0</span>
+    </button>
+    
+    <button 
+      type="button" 
+      id="tabArchivedModulesBtn" 
+      onclick="switchModuleTab('archived')" 
+      class="module-tab-btn px-4 py-2.5 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2 transition cursor-pointer"
+    >
+      <i class="fa-solid fa-box-archive text-xs"></i>
+      <span>Archived Modules</span>
+      <span id="tabArchivedModulesBadge" class="px-2 py-0.5 text-[10px] font-black rounded-full bg-slate-100 text-slate-600 border border-slate-200">0</span>
+    </button>
   </div>
 
   <!-- Module Directory Workspace -->
@@ -137,6 +162,24 @@ include '../../includes/sidebar.php';
       <i class="fa-solid fa-folder-open text-slate-300 text-3xl block"></i>
       <p class="text-xs font-bold text-slate-700">No system modules match your search filter</p>
       <p class="text-[10px] text-slate-400">Try adjusting your search keyword or dropdown filters.</p>
+    </div>
+
+    <!-- Pagination Footer Container -->
+    <div id="modulePaginationFooter" class="px-5 py-3.5 bg-slate-50/50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-semibold select-none">
+      <div id="modulePaginationInfo" class="text-xs text-slate-500 font-medium">
+        Showing <span id="modulePaginationStart" class="font-bold text-brand-dark">0</span> to <span id="modulePaginationEnd" class="font-bold text-brand-dark">0</span> of <span id="modulePaginationTotal" class="font-bold text-brand-dark">0</span> modules
+      </div>
+      <div class="flex items-center gap-1.5" id="modulePaginationControls">
+        <button id="modulePrevPageBtn" onclick="changeModulePage(-1)" class="px-3 py-1.5 border border-slate-200 rounded-xl bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-2xs">
+          <i class="fa-solid fa-chevron-left text-[10px]"></i> Previous
+        </button>
+        <div id="modulePageNumbers" class="flex items-center gap-1 font-bold text-xs">
+          <!-- Dynamic Page Numbers -->
+        </div>
+        <button id="moduleNextPageBtn" onclick="changeModulePage(1)" class="px-3 py-1.5 border border-slate-200 rounded-xl bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-2xs">
+          Next <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        </button>
+      </div>
     </div>
 
   </div>
@@ -229,7 +272,7 @@ include '../../includes/sidebar.php';
         </button>
         <button 
           type="submit" 
-          class="px-5 py-2 bg-[#0F172A] hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition shadow-xs cursor-pointer flex items-center gap-1.5"
+          class="px-5 py-2 bg-[#86B6F6] hover:bg-[#6FA4EE] text-slate-900 font-bold rounded-xl text-xs transition shadow-xs cursor-pointer flex items-center gap-1.5"
         >
           <i class="fa-solid fa-floppy-disk text-xs"></i>
           <span>Save Module</span>

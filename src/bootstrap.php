@@ -26,6 +26,7 @@ require_once __DIR__ . '/Services/UserService.php';
 require_once __DIR__ . '/Services/PermissionService.php';
 require_once __DIR__ . '/Services/HeaderService.php';
 require_once __DIR__ . '/Services/AuditLogger.php';
+require_once __DIR__ . '/Services/NotificationService.php';
 
 // Load Middleware
 require_once __DIR__ . '/Middleware/SessionTimeout.php';

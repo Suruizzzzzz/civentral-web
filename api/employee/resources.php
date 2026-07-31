@@ -42,6 +42,90 @@ function respond(array $payload, int $statusCode = 200): void {
     exit;
 }
 
+// Auto-grant permissions for a resource to creator, department roles & Super Admin roles
+function autoGrantResourcePermissions($db, int $resourceId, ?int $actorUserId = null, ?int $creatorRoleId = null, ?int $creatorDeptId = null): void {
+    try {
+        $grantedByUserId = null;
+        if ($actorUserId) {
+            $uCheck = $db->query("SELECT user_id FROM users WHERE user_id = :uid", ['uid' => $actorUserId]);
+            if (!empty($uCheck)) {
+                $grantedByUserId = (int)$actorUserId;
+            }
+        }
+
+        $allActions = $db->query("SELECT action_id FROM actions WHERE status != 'Archived' OR status IS NULL") ?: [];
+        if (empty($allActions)) return;
+
+        $targetRoleIds = [];
+        if ($creatorRoleId) {
+            $targetRoleIds[] = (int)$creatorRoleId;
+        }
+
+        if ($creatorDeptId) {
+            $deptRoles = $db->query("SELECT role_id FROM roles WHERE department_id = :did", ['did' => $creatorDeptId]) ?: [];
+            foreach ($deptRoles as $dr) {
+                if (!empty($dr['role_id'])) $targetRoleIds[] = (int)$dr['role_id'];
+            }
+        }
+
+        $superRoles = $db->query("
+            SELECT role_id 
+            FROM roles 
+            WHERE is_superadmin = 1 
+               OR is_global_access = 1 
+               OR UPPER(role_prefix) IN ('SA', 'SADM') 
+               OR LOWER(role_name) IN ('super administrator', 'superadmin')
+        ") ?: [];
+
+        foreach ($superRoles as $sr) {
+            if (!empty($sr['role_id'])) $targetRoleIds[] = (int)$sr['role_id'];
+        }
+
+        $targetRoleIds = array_unique(array_filter($targetRoleIds));
+
+        foreach ($allActions as $actRow) {
+            $actId = (int)$actRow['action_id'];
+            $permKey = "res_{$resourceId}_act_{$actId}";
+
+            $existingPerm = $db->query(
+                "SELECT permission_id FROM permissions WHERE resource_id = :rid AND action_id = :aid",
+                ['rid' => $resourceId, 'aid' => $actId]
+            );
+
+            if (!empty($existingPerm)) {
+                $permId = (int)$existingPerm[0]['permission_id'];
+            } else {
+                $permId = $db->insert('permissions', [
+                    'resource_id' => $resourceId,
+                    'action_id' => $actId,
+                    'permission_key' => $permKey,
+                    'status' => 'Active',
+                    'created_at' => date('Y-m-d H:i:s')
+                ]);
+            }
+
+            if ($permId) {
+                foreach ($targetRoleIds as $rId) {
+                    $existingRp = $db->query(
+                        "SELECT role_permission_id FROM role_permissions WHERE role_id = :rid AND permission_id = :pid",
+                        ['rid' => $rId, 'pid' => $permId]
+                    );
+                    if (empty($existingRp)) {
+                        $db->insert('role_permissions', [
+                            'role_id' => $rId,
+                            'permission_id' => $permId,
+                            'granted_by' => $grantedByUserId,
+                            'granted_at' => date('Y-m-d H:i:s')
+                        ]);
+                    }
+                }
+            }
+        }
+    } catch (Throwable $e) {
+        error_log("autoGrantResourcePermissions Error: " . $e->getMessage());
+    }
+}
+
 $method = $_SERVER['REQUEST_METHOD'];
 
 try {
@@ -85,11 +169,100 @@ try {
     $canDeleteResource = $isSuperAdmin || in_array('DELETE', $userGrantedActions);
 
     if ($method === 'GET') {
-        $sql = "SELECT r.*, m.module_name, m.description AS module_desc
+        // Fetch user department info
+        $userRoleId = $_SESSION['role_id'] ?? null;
+        $userDeptId = null;
+        $userDeptName = null;
+
+        if ($userId) {
+            $uRes = $db->query("
+                SELECT u.user_id, u.role_id, p.department_id, d.department_name
+                FROM users u
+                LEFT JOIN positions p ON u.position_id = p.position_id
+                LEFT JOIN departments d ON p.department_id = d.department_id
+                WHERE u.user_id = :uid
+            ", ['uid' => $userId]);
+
+            if (!empty($uRes)) {
+                $userRow = $uRes[0];
+                $userDeptId = $userRow['department_id'] ?? null;
+                $userDeptName = $userRow['department_name'] ?? null;
+                $userRoleId = $userRow['role_id'] ?? $userRoleId;
+            }
+        }
+
+        if ($isSuperAdmin) {
+            $resourcesRaw = $db->query("
+                SELECT r.*, m.module_name, m.description AS module_desc
                 FROM resources r
                 LEFT JOIN modules m ON r.module_id = m.module_id
-                ORDER BY r.resource_id ASC";
-        $resourcesRaw = $db->query($sql) ?: [];
+                ORDER BY r.resource_id ASC
+            ") ?: [];
+            $modules = $db->query("SELECT module_id, module_name FROM modules WHERE status != 'Archived' OR status IS NULL ORDER BY module_name ASC") ?: [];
+        } else {
+            $coreModuleIds = [4, 5, 6, 7, 8];
+
+            if (empty($userDeptName) && $userDeptId) {
+                $dRow = $db->query("SELECT department_name FROM departments WHERE department_id = :did", ['did' => $userDeptId]);
+                if (!empty($dRow)) $userDeptName = $dRow[0]['department_name'];
+            }
+
+            $rawWords = preg_split('/[\s,\/&\-\+]+/', strtolower($userDeptName ?? ''));
+            $stopWords = ['department', 'office', 'bureau', 'division', 'service', 'services', 'and', '&', 'of', 'management', 'the', 'unit'];
+            $deptKeywords = array_filter($rawWords, function($w) use ($stopWords) {
+                return strlen($w) >= 3 && !in_array($w, $stopWords);
+            });
+
+            $allModules = $db->query("SELECT module_id, module_name FROM modules WHERE status != 'Archived' OR status IS NULL ORDER BY module_id ASC") ?: [];
+
+            $grantedModRows = $userRoleId ? ($db->query("
+                SELECT DISTINCT res.module_id
+                FROM role_permissions rp
+                JOIN permissions p ON rp.permission_id = p.permission_id
+                JOIN resources res ON p.resource_id = res.resource_id
+                WHERE rp.role_id = :rid
+            ", ['rid' => $userRoleId]) ?: []) : [];
+
+            $grantedModIds = array_column($grantedModRows, 'module_id');
+
+            $modules = [];
+            $allowedModuleIds = [];
+            foreach ($allModules as $m) {
+                $mId = (int)$m['module_id'];
+                $mNameLower = strtolower($m['module_name']);
+
+                if (in_array($mId, $coreModuleIds, true) || in_array($mId, $grantedModIds, true)) {
+                    $modules[] = $m;
+                    $allowedModuleIds[] = $mId;
+                    continue;
+                }
+
+                $matchesKeyword = false;
+                foreach ($deptKeywords as $kw) {
+                    if (strpos($mNameLower, $kw) !== false) {
+                        $matchesKeyword = true;
+                        break;
+                    }
+                }
+
+                if ($matchesKeyword) {
+                    $modules[] = $m;
+                    $allowedModuleIds[] = $mId;
+                }
+            }
+
+            if (!empty($allowedModuleIds)) {
+                $inClause = implode(',', array_map('intval', $allowedModuleIds));
+                $sql = "SELECT r.*, m.module_name, m.description AS module_desc
+                        FROM resources r
+                        LEFT JOIN modules m ON r.module_id = m.module_id
+                        WHERE r.module_id IN ({$inClause})
+                        ORDER BY r.resource_id ASC";
+                $resourcesRaw = $db->query($sql) ?: [];
+            } else {
+                $resourcesRaw = [];
+            }
+        }
 
         $resources = [];
         foreach ($resourcesRaw as $row) {
@@ -108,8 +281,6 @@ try {
                 ] : null
             ];
         }
-
-        $modules = $db->query("SELECT module_id, module_name FROM modules WHERE status = 'Active' ORDER BY module_name ASC") ?: [];
 
         respond([
             'status' => 'success',
@@ -180,76 +351,15 @@ try {
 
         $newId = $db->insert('resources', $insertPayload);
 
-        // Auto-grant permissions for the new resource to creator & Super Admin roles
-        try {
-            $allActions = $db->query("SELECT action_id FROM actions") ?: [];
-            
-            // 1. Identify target role IDs (Creator role + Super Administrator / Global Access roles)
-            $targetRoleIds = [];
-            if (!empty($_SESSION['role_id'])) {
-                $targetRoleIds[] = (int)$_SESSION['role_id'];
-            }
-
-            $superRoles = $db->query("
-                SELECT role_id 
-                FROM roles 
-                WHERE is_superadmin = 1 
-                   OR is_global_access = 1 
-                   OR UPPER(role_prefix) IN ('SA', 'SADM') 
-                   OR LOWER(role_name) IN ('super administrator', 'superadmin')
-            ") ?: [];
-
-            foreach ($superRoles as $sr) {
-                if (!empty($sr['role_id'])) {
-                    $targetRoleIds[] = (int)$sr['role_id'];
-                }
-            }
-
-            $targetRoleIds = array_unique($targetRoleIds);
-
-            // 2. Create permissions rows for each action & grant to target roles
-            foreach ($allActions as $actRow) {
-                $actId = (int)$actRow['action_id'];
-                $permKey = "res_{$newId}_act_{$actId}";
-
-                // Check existing permission row
-                $existingPerm = $db->query(
-                    "SELECT permission_id FROM permissions WHERE resource_id = :rid AND action_id = :aid",
-                    ['rid' => $newId, 'aid' => $actId]
-                );
-
-                if (!empty($existingPerm)) {
-                    $permId = (int)$existingPerm[0]['permission_id'];
-                } else {
-                    $permId = $db->insert('permissions', [
-                        'resource_id' => $newId,
-                        'action_id' => $actId,
-                        'permission_key' => $permKey,
-                        'status' => 'Active',
-                        'created_at' => date('Y-m-d H:i:s')
-                    ]);
-                }
-
-                if ($permId) {
-                    foreach ($targetRoleIds as $rId) {
-                        $existingRp = $db->query(
-                            "SELECT role_permission_id FROM role_permissions WHERE role_id = :rid AND permission_id = :pid",
-                            ['rid' => $rId, 'pid' => $permId]
-                        );
-                        if (empty($existingRp)) {
-                            $db->insert('role_permissions', [
-                                'role_id' => $rId,
-                                'permission_id' => $permId,
-                                'granted_by' => $userId,
-                                'granted_at' => date('Y-m-d H:i:s')
-                            ]);
-                        }
-                    }
-                }
-            }
-        } catch (Throwable $permEx) {
-            error_log("Auto-grant permissions error: " . $permEx->getMessage());
+        // Fetch user department ID
+        $userDeptId = null;
+        if ($userId) {
+            $uRes = $db->query("SELECT p.department_id FROM users u LEFT JOIN positions p ON u.position_id = p.position_id WHERE u.user_id = :uid", ['uid' => $userId]);
+            if (!empty($uRes)) $userDeptId = $uRes[0]['department_id'] ?? null;
         }
+
+        // Auto-grant permissions for the new resource to creator, department roles & Super Admin roles
+        autoGrantResourcePermissions($db, (int)$newId, (int)$userId, $_SESSION['role_id'] ?? null, $userDeptId);
 
         // Audit Trail
         \App\Services\AuditLogger::log([
@@ -297,16 +407,32 @@ try {
         if (isset($data['description'])) $updatePayload['description'] = trim($data['description']);
         if (isset($data['status']) && in_array($data['status'], ['Active', 'Inactive', 'Archived'])) $updatePayload['status'] = $data['status'];
 
+        $oldResRows = $db->query("SELECT * FROM resources WHERE resource_id = :id", ['id' => $resourceId]);
+        $oldRes = !empty($oldResRows) ? $oldResRows[0] : null;
+
         $db->update('resources', $updatePayload, ['resource_id' => $resourceId]);
 
-        // Audit Trail
-        \App\Services\AuditLogger::log([
+        $newResRows = $db->query("SELECT * FROM resources WHERE resource_id = :id", ['id' => $resourceId]);
+        $newRes = !empty($newResRows) ? $newResRows[0] : null;
+
+        // Auto-grant permissions for the resource to creator, department roles & Super Admin roles
+        $userDeptId = null;
+        if ($userId) {
+            $uRes = $db->query("SELECT p.department_id FROM users u LEFT JOIN positions p ON u.position_id = p.position_id WHERE u.user_id = :uid", ['uid' => $userId]);
+            if (!empty($uRes)) $userDeptId = $uRes[0]['department_id'] ?? null;
+        }
+        autoGrantResourcePermissions($db, (int)$resourceId, (int)$userId, $_SESSION['role_id'] ?? null, $userDeptId);
+
+        // Audit Trail with Full Data Mutation Snapshot
+        \App\Services\AuditLogger::logMutation([
             'action'        => 'Update Resource',
             'target_table'  => 'resources',
             'target_id'     => (string)$resourceId,
             'description'   => "Updated resource ID {$resourceId}",
             'actor_user_id' => $userId,
-            'resource_id'   => $resourceId
+            'resource_id'   => $resourceId,
+            'old_data'      => $oldRes,
+            'new_data'      => $newRes
         ]);
 
         respond([
@@ -331,6 +457,29 @@ try {
                 'message' => 'Valid resource_id is required for deletion.'
             ], 400);
         }
+
+        $oldResRows = $db->query("SELECT * FROM resources WHERE resource_id = :id", ['id' => $resourceId]);
+        $oldRes = !empty($oldResRows) ? $oldResRows[0] : null;
+
+        $db->update('resources', [
+            'status' => 'Archived',
+            'updated_at' => date('Y-m-d H:i:s')
+        ], ['resource_id' => $resourceId]);
+
+        $newResRows = $db->query("SELECT * FROM resources WHERE resource_id = :id", ['id' => $resourceId]);
+        $newRes = !empty($newResRows) ? $newResRows[0] : null;
+
+        // Audit Trail with Full Data Mutation Snapshot
+        \App\Services\AuditLogger::logMutation([
+            'action'        => 'Archive Resource',
+            'target_table'  => 'resources',
+            'target_id'     => (string)$resourceId,
+            'description'   => "Archived resource ID {$resourceId}",
+            'actor_user_id' => $userId,
+            'resource_id'   => $resourceId,
+            'old_data'      => $oldRes,
+            'new_data'      => $newRes
+        ]);
 
         $db->update('resources', [
             'status' => 'Archived',

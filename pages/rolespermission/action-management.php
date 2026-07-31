@@ -34,7 +34,7 @@ include '../../includes/sidebar.php';
       <button 
         type="button"
         onclick="openCreateActionModal()" 
-        class="bg-[#0F172A] hover:bg-slate-800 text-white font-bold px-4.5 py-2.5 rounded-xl text-xs transition duration-200 shadow-xs flex items-center gap-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-slate-900/20"
+        class="bg-[#86B6F6] hover:bg-[#6FA4EE] text-slate-900 font-bold px-4.5 py-2.5 rounded-xl text-xs transition duration-200 shadow-xs flex items-center gap-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#86B6F6]/30"
       >
         <i class="fa-solid fa-plus text-xs"></i>
         <span>Create New Action</span>
@@ -80,6 +80,31 @@ include '../../includes/sidebar.php';
         <i class="fa-solid fa-box-archive text-lg"></i>
       </div>
     </div>
+  </div>
+
+  <!-- Active / Archive Tabs Navigation -->
+  <div class="flex items-center gap-2 border-b border-slate-200/80 pb-0">
+    <button 
+      type="button" 
+      id="tabActiveActionsBtn" 
+      onclick="switchActionTab('active')" 
+      class="action-tab-btn px-4 py-2.5 text-xs font-bold border-b-2 border-brand-dark text-brand-dark flex items-center gap-2 transition cursor-pointer"
+    >
+      <i class="fa-solid fa-list-check text-xs"></i>
+      <span>Active Actions</span>
+      <span id="tabActiveActionsBadge" class="px-2 py-0.5 text-[10px] font-black rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">0</span>
+    </button>
+    
+    <button 
+      type="button" 
+      id="tabArchivedActionsBtn" 
+      onclick="switchActionTab('archived')" 
+      class="action-tab-btn px-4 py-2.5 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2 transition cursor-pointer"
+    >
+      <i class="fa-solid fa-box-archive text-xs"></i>
+      <span>Archived Actions</span>
+      <span id="tabArchivedActionsBadge" class="px-2 py-0.5 text-[10px] font-black rounded-full bg-slate-100 text-slate-600 border border-slate-200">0</span>
+    </button>
   </div>
 
   <!-- Actions Directory Control Panel & Datatable Workspace -->
@@ -139,6 +164,24 @@ include '../../includes/sidebar.php';
       <i class="fa-solid fa-folder-open text-slate-300 text-3xl block"></i>
       <p class="text-xs font-bold text-slate-700">No action verbs match your search filter</p>
       <p class="text-[10px] text-slate-400">Try adjusting your search keyword or category dropdown filter.</p>
+    </div>
+
+    <!-- Pagination Footer Container -->
+    <div id="actionPaginationFooter" class="px-5 py-3.5 bg-slate-50/50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-semibold select-none">
+      <div id="actionPaginationInfo" class="text-xs text-slate-500 font-medium">
+        Showing <span id="actionPaginationStart" class="font-bold text-brand-dark">0</span> to <span id="actionPaginationEnd" class="font-bold text-brand-dark">0</span> of <span id="actionPaginationTotal" class="font-bold text-brand-dark">0</span> actions
+      </div>
+      <div class="flex items-center gap-1.5" id="actionPaginationControls">
+        <button id="actionPrevPageBtn" onclick="changeActionPage(-1)" class="px-3 py-1.5 border border-slate-200 rounded-xl bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-2xs">
+          <i class="fa-solid fa-chevron-left text-[10px]"></i> Previous
+        </button>
+        <div id="actionPageNumbers" class="flex items-center gap-1 font-bold text-xs">
+          <!-- Dynamic Page Numbers -->
+        </div>
+        <button id="actionNextPageBtn" onclick="changeActionPage(1)" class="px-3 py-1.5 border border-slate-200 rounded-xl bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-2xs">
+          Next <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        </button>
+      </div>
     </div>
 
   </div>
@@ -229,7 +272,7 @@ include '../../includes/sidebar.php';
         </button>
         <button 
           type="submit" 
-          class="px-5 py-2 bg-[#0F172A] hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition shadow-xs cursor-pointer flex items-center gap-1.5"
+          class="px-5 py-2 bg-[#86B6F6] hover:bg-[#6FA4EE] text-slate-900 font-bold rounded-xl text-xs transition shadow-xs cursor-pointer flex items-center gap-1.5"
         >
           <i class="fa-solid fa-floppy-disk text-xs"></i>
           <span>Save Action</span>
@@ -337,27 +380,64 @@ async function fetchActions() {
   }
 }
 
-// RENDER ACTIONS DATATABLE
-function renderActionsTable(dataToRender = systemActions) {
+// RENDER ACTIONS DATATABLE & PAGINATION
+var currentActionPage = 1;
+var actionPageSize = 10;
+var currentFilteredActions = [];
+
+function changeActionPage(delta) {
+  const totalPages = Math.ceil(currentFilteredActions.length / actionPageSize) || 1;
+  const newPage = currentActionPage + delta;
+  if (newPage >= 1 && newPage <= totalPages) {
+    currentActionPage = newPage;
+    renderActionsTable(currentFilteredActions, false);
+  }
+}
+
+function goToActionPage(page) {
+  const totalPages = Math.ceil(currentFilteredActions.length / actionPageSize) || 1;
+  if (page >= 1 && page <= totalPages) {
+    currentActionPage = page;
+    renderActionsTable(currentFilteredActions, false);
+  }
+}
+
+window.changeActionPage = changeActionPage;
+window.goToActionPage = goToActionPage;
+
+function renderActionsTable(dataToRender = systemActions, resetPage = true) {
+  currentFilteredActions = dataToRender;
+  if (resetPage) currentActionPage = 1;
+
   const tableBody = document.getElementById('actionTableBody');
   const emptyState = document.getElementById('emptyTableState');
+  const paginationFooter = document.getElementById('actionPaginationFooter');
   if (!tableBody) return;
 
   tableBody.innerHTML = '';
 
   if (dataToRender.length === 0) {
     if (emptyState) emptyState.classList.remove('hidden');
+    if (paginationFooter) paginationFooter.classList.add('hidden');
     updateActionMetrics();
     return;
   } else {
     if (emptyState) emptyState.classList.add('hidden');
+    if (paginationFooter) paginationFooter.classList.remove('hidden');
   }
+
+  const totalPages = Math.ceil(dataToRender.length / actionPageSize) || 1;
+  if (currentActionPage > totalPages) currentActionPage = totalPages;
+
+  const startIdx = (currentActionPage - 1) * actionPageSize;
+  const endIdx = Math.min(startIdx + actionPageSize, dataToRender.length);
+  const pageItems = dataToRender.slice(startIdx, endIdx);
 
   const isSuperAdmin = currentUserScope ? !!currentUserScope.is_superadmin : false;
   const grantedActions = currentUserScope ? (currentUserScope.granted_actions || []) : [];
   const canEdit = isSuperAdmin || grantedActions.includes('EDIT');
 
-  dataToRender.forEach(act => {
+  pageItems.forEach(act => {
     const tr = document.createElement('tr');
     tr.className = 'hover:bg-slate-50/60 transition group';
 
@@ -434,16 +514,28 @@ function renderActionsTable(dataToRender = systemActions) {
             <i class="fa-solid fa-pen-to-square text-xs"></i>
           </button>
 
+          ${isArchived ? `
+          <!-- Restore Button -->
+          <button 
+            type="button" 
+            onclick="restoreAction(${act.id})" 
+            class="px-2.5 py-1.5 rounded-lg border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-[11px] flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
+            title="Restore Action to Active Tab"
+          >
+            <i class="fa-solid fa-rotate-left text-xs"></i>
+            <span>Restore</span>
+          </button>
+          ` : `
           <!-- Archive Button -->
           <button 
             type="button" 
             onclick="openArchiveActionModal(${act.id})" 
-            class="h-8 w-8 rounded-lg border border-slate-200 hover:bg-amber-50 text-slate-400 hover:text-amber-600 flex items-center justify-center transition cursor-pointer ${isArchived ? 'opacity-40 cursor-not-allowed' : ''}"
-            ${isArchived ? 'disabled' : ''}
+            class="h-8 w-8 rounded-lg border border-slate-200 hover:bg-amber-50 text-slate-400 hover:text-amber-600 flex items-center justify-center transition cursor-pointer"
             title="Archive Action"
           >
             <i class="fa-solid fa-box-archive text-xs"></i>
-          </button>` : `<span class="text-[10px] text-slate-400 font-bold italic">Read-only</span>`}
+          </button>
+          `}` : `<span class="text-[10px] text-slate-400 font-bold italic">Read-only</span>`}
         </div>
       </td>
     `;
@@ -451,8 +543,66 @@ function renderActionsTable(dataToRender = systemActions) {
     tableBody.appendChild(tr);
   });
 
+  // Update Pagination UI
+  const startEl = document.getElementById('actionPaginationStart');
+  const endEl = document.getElementById('actionPaginationEnd');
+  const totalEl = document.getElementById('actionPaginationTotal');
+  const prevBtn = document.getElementById('actionPrevPageBtn');
+  const nextBtn = document.getElementById('actionNextPageBtn');
+  const pageNumsEl = document.getElementById('actionPageNumbers');
+
+  if (startEl) startEl.textContent = dataToRender.length > 0 ? (startIdx + 1) : 0;
+  if (endEl) endEl.textContent = endIdx;
+  if (totalEl) totalEl.textContent = dataToRender.length;
+
+  if (prevBtn) prevBtn.disabled = (currentActionPage <= 1);
+  if (nextBtn) nextBtn.disabled = (currentActionPage >= totalPages);
+
+  if (pageNumsEl) {
+    let numsHtml = '';
+    for (let p = 1; p <= totalPages; p++) {
+      if (p === currentActionPage) {
+        numsHtml += `<button type="button" onclick="goToActionPage(${p})" class="h-7 w-7 rounded-lg bg-[#86B6F6] text-slate-900 font-extrabold text-xs flex items-center justify-center cursor-pointer shadow-2xs">${p}</button>`;
+      } else {
+        numsHtml += `<button type="button" onclick="goToActionPage(${p})" class="h-7 w-7 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold text-xs flex items-center justify-center cursor-pointer">${p}</button>`;
+      }
+    }
+    pageNumsEl.innerHTML = numsHtml;
+  }
+
   updateActionMetrics();
 }
+
+window.currentActionTab = 'active';
+
+function switchActionTab(tabName) {
+  window.currentActionTab = tabName;
+  const activeBtn = document.getElementById('tabActiveActionsBtn');
+  const archivedBtn = document.getElementById('tabArchivedActionsBtn');
+  const statusFilterSelect = document.getElementById('statusFilterSelect');
+
+  if (activeBtn && archivedBtn) {
+    if (tabName === 'active') {
+      activeBtn.className = "action-tab-btn px-4 py-2.5 text-xs font-bold border-b-2 border-brand-dark text-brand-dark flex items-center gap-2 transition cursor-pointer";
+      archivedBtn.className = "action-tab-btn px-4 py-2.5 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2 transition cursor-pointer";
+      if (statusFilterSelect) statusFilterSelect.disabled = false;
+    } else {
+      activeBtn.className = "action-tab-btn px-4 py-2.5 text-xs font-bold border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2 transition cursor-pointer";
+      archivedBtn.className = "action-tab-btn px-4 py-2.5 text-xs font-bold border-b-2 border-amber-600 text-amber-700 flex items-center gap-2 transition cursor-pointer";
+      if (statusFilterSelect) statusFilterSelect.disabled = true;
+    }
+  }
+
+  filterActions();
+}
+
+window.switchActionTab = switchActionTab;
+
+async function restoreAction(id) {
+  await updateActionStatusInDb(id, 'Active');
+}
+
+window.restoreAction = restoreAction;
 
 // UPDATE METRIC CARDS
 function updateActionMetrics() {
@@ -473,9 +623,17 @@ function updateActionMetrics() {
 function filterActions() {
   const searchInput = document.getElementById('actionSearchInput');
   const statusFilter = document.getElementById('statusFilterSelect');
+  const activeBadge = document.getElementById('tabActiveActionsBadge');
+  const archivedBadge = document.getElementById('tabArchivedActionsBadge');
 
   const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
   const selectedStatus = statusFilter ? statusFilter.value : 'ALL';
+
+  const activeCount = systemActions.filter(a => a.status !== 'Archived').length;
+  const archivedCount = systemActions.filter(a => a.status === 'Archived').length;
+
+  if (activeBadge) activeBadge.textContent = activeCount;
+  if (archivedBadge) archivedBadge.textContent = archivedCount;
 
   const filtered = systemActions.filter(act => {
     const matchesQuery = act.name.toLowerCase().includes(query) || 
@@ -483,7 +641,11 @@ function filterActions() {
 
     const matchesStatus = selectedStatus === 'ALL' || act.status === selectedStatus;
 
-    return matchesQuery && matchesStatus;
+    if (currentActionTab === 'archived') {
+      return matchesQuery && act.status === 'Archived';
+    } else {
+      return matchesQuery && matchesStatus && act.status !== 'Archived';
+    }
   });
 
   renderActionsTable(filtered);

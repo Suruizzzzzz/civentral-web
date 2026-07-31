@@ -12,18 +12,18 @@ include '../../includes/sidebar.php';
 <main class="flex-1 p-6 md:p-8 w-full space-y-6 overflow-y-auto bg-slate-50">
 
   <!-- Breadcrumb & Page Header -->
-  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-200/80 pb-5">
+  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-200/80 dark:border-slate-700/80 pb-5">
     <div class="space-y-1.5">
-      <div class="flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-slate-400">
+      <div class="flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400">
         <span>Audit Logs</span>
         <i class="fa-solid fa-chevron-right text-[8px] opacity-60"></i>
-        <span class="text-slate-900">Data Mutation Logs</span>
+        <span class="text-slate-900 dark:text-slate-200">Data Mutation Logs</span>
       </div>
-      <h1 class="text-2xl font-black text-slate-950 tracking-tight flex items-center gap-2.5 mt-4">
-        <i class="fa-solid fa-database text-[#0f172a]"></i>
-        Data Mutation & Records Audit
+      <h1 class="text-2xl font-black text-slate-950 dark:text-white tracking-tight flex items-center gap-2.5 mt-4">
+        <i class="fa-solid fa-database text-[#176B87] dark:text-[#86B6F6] shrink-0"></i>
+        <span>Data Mutation & Records Audit</span>
       </h1>
-      <p class="text-xs text-slate-500 max-w-3xl leading-relaxed font-medium">
+      <p class="text-xs text-slate-500 dark:text-slate-400 max-w-3xl leading-relaxed font-medium">
         Track structural row edits, history changes, and delta record mutations to maximize data accountability.
       </p>
     </div>

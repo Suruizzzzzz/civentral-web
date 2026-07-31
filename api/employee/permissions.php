@@ -100,6 +100,23 @@ try {
         }
     }
 
+    $userRoleId = !empty($_SESSION['role_id']) ? (int)$_SESSION['role_id'] : (!empty($userRow['role_id']) ? (int)$userRow['role_id'] : null);
+    
+    // Fetch logged in user's own role granted permission pairs (resource_id_action_id)
+    $userRolePermPairs = [];
+    if ($userRoleId) {
+        $myPermsRes = $db->query("
+            SELECT DISTINCT p.resource_id, p.action_id
+            FROM role_permissions rp
+            JOIN permissions p ON rp.permission_id = p.permission_id
+            WHERE rp.role_id = :rid
+        ", ['rid' => $userRoleId]) ?: [];
+
+        foreach ($myPermsRes as $mpr) {
+            $userRolePermPairs[] = $mpr['resource_id'] . '_' . $mpr['action_id'];
+        }
+    }
+
     $canEditPermissions = $isSuperAdmin || in_array('EDIT', $userGrantedActions) || in_array('CREATE', $userGrantedActions);
 
     if ($method === 'GET') {
@@ -150,9 +167,66 @@ try {
             ");
         }
 
+        if ($isSuperAdmin) {
+            $modules = $db->query("SELECT module_id, module_name, description, status FROM modules WHERE (status != 'Archived' OR status IS NULL) AND (status = 'Active' OR status IS NULL) ORDER BY module_id ASC") ?: [];
+            $resources = $db->query("SELECT resource_id, module_id, resource_name, resource_route, status FROM resources WHERE (status != 'Archived' OR status IS NULL) AND (status = 'Active' OR status IS NULL) ORDER BY resource_id ASC") ?: [];
+        } else {
+            $coreModuleIds = [4, 5, 6, 7, 8];
+
+            if (empty($userDeptName) && $userDeptId) {
+                $dRow = $db->query("SELECT department_name FROM departments WHERE department_id = :did", ['did' => $userDeptId]);
+                if (!empty($dRow)) $userDeptName = $dRow[0]['department_name'];
+            }
+
+            $rawWords = preg_split('/[\s,\/&\-\+]+/', strtolower($userDeptName ?? ''));
+            $stopWords = ['department', 'office', 'bureau', 'division', 'service', 'services', 'and', '&', 'of', 'management', 'the', 'unit'];
+            $deptKeywords = array_filter($rawWords, function($w) use ($stopWords) {
+                return strlen($w) >= 3 && !in_array($w, $stopWords);
+            });
+
+            $allModules = $db->query("SELECT module_id, module_name, description, status FROM modules WHERE (status != 'Archived' OR status IS NULL) AND (status = 'Active' OR status IS NULL) ORDER BY module_id ASC") ?: [];
+
+            $grantedModRows = $userRoleId ? ($db->query("
+                SELECT DISTINCT res.module_id
+                FROM role_permissions rp
+                JOIN permissions p ON rp.permission_id = p.permission_id
+                JOIN resources res ON p.resource_id = res.resource_id
+                WHERE rp.role_id = :rid AND (res.status != 'Archived' OR res.status IS NULL)
+            ", ['rid' => $userRoleId]) ?: []) : [];
+
+            $grantedModIds = array_column($grantedModRows, 'module_id');
+
+            $modules = [];
+            foreach ($allModules as $m) {
+                if (($m['status'] ?? '') === 'Archived') {
+                    continue;
+                }
+
+                $mId = (int)$m['module_id'];
+                $mNameLower = strtolower($m['module_name']);
+
+                if (in_array($mId, $coreModuleIds, true) || in_array($mId, $grantedModIds, true)) {
+                    $modules[] = $m;
+                    continue;
+                }
+
+                $matchesKeyword = false;
+                foreach ($deptKeywords as $kw) {
+                    if (strpos($mNameLower, $kw) !== false) {
+                        $matchesKeyword = true;
+                        break;
+                    }
+                }
+
+                if ($matchesKeyword) {
+                    $modules[] = $m;
+                }
+            }
+
+            $resources = $db->query("SELECT resource_id, module_id, resource_name, resource_route, status FROM resources WHERE (status != 'Archived' OR status IS NULL) AND (status = 'Active' OR status IS NULL) ORDER BY resource_id ASC") ?: [];
+        }
+
         $departments = $db->query("SELECT department_id, department_code, department_name FROM departments WHERE status = 'Active' ORDER BY department_name ASC") ?: [];
-        $modules = $db->query("SELECT module_id, module_name, description, status FROM modules WHERE status != 'Archived' OR status IS NULL ORDER BY module_id ASC");
-        $resources = $db->query("SELECT resource_id, module_id, resource_name, resource_route, status FROM resources WHERE status != 'Archived' OR status IS NULL ORDER BY resource_id ASC");
         $actions = $db->query("SELECT action_id, action_name FROM actions WHERE status != 'Archived' OR status IS NULL ORDER BY action_id ASC");
         $permissions = $db->query("SELECT permission_id, resource_id, action_id, permission_key, status FROM permissions");
         $rolePermissions = $db->query("SELECT role_permission_id, role_id, permission_id, granted_by, granted_at FROM role_permissions");
@@ -168,10 +242,12 @@ try {
             'role_permissions' => $rolePermissions ?: [],
             'current_user' => [
                 'user_id' => (int)$userId,
+                'role_id' => $userRoleId,
                 'department_id' => $userDeptId,
                 'department_name' => $userDeptName,
                 'is_superadmin' => $isSuperAdmin,
-                'granted_actions' => $userGrantedActions
+                'granted_actions' => $userGrantedActions,
+                'granted_perm_pairs' => $userRolePermPairs
             ]
         ]);
     }
@@ -185,7 +261,7 @@ try {
         }
 
         $rawInput = file_get_contents('php://input');
-        $data = json_decode($rawInput, true) ?? [];
+        $data = json_decode($rawInput, true) ?: $_POST;
 
         $roleId = filter_var($data['role_id'] ?? null, FILTER_VALIDATE_INT);
         $grantedPairs = is_array($data['granted_permissions'] ?? null) ? $data['granted_permissions'] : [];
@@ -197,7 +273,15 @@ try {
             ], 400);
         }
 
-        // If non-superadmin, check if target role belongs to user's department scope
+        // A. Prevent non-SuperAdmin from modifying their OWN role's permissions
+        if (!$isSuperAdmin && $userRoleId && $roleId === $userRoleId) {
+            respond([
+                'status' => 'error',
+                'message' => 'Forbidden. You cannot modify the permissions of your own role. Your permissions were assigned by Super Administrator.'
+            ], 403);
+        }
+
+        // B. If non-superadmin, check if target role belongs to user's department scope
         if (!$isSuperAdmin && $userDeptId) {
             $targetRoleCheck = $db->query("
                 SELECT r.role_id FROM roles r
@@ -211,6 +295,23 @@ try {
                     'message' => 'Forbidden. You cannot modify permissions for roles outside your department.'
                 ], 403);
             }
+        }
+
+        // C. Delegation Scoping: Non-SuperAdmin can ONLY grant permissions that their own role possesses
+        if (!$isSuperAdmin) {
+            $allowedMap = array_flip($userRolePermPairs);
+            $filteredGrantedPairs = [];
+            foreach ($grantedPairs as $pair) {
+                $rId = filter_var($pair['resource_id'] ?? null, FILTER_VALIDATE_INT);
+                $aId = filter_var($pair['action_id'] ?? null, FILTER_VALIDATE_INT);
+                if (!$rId || !$aId) continue;
+
+                $key = $rId . '_' . $aId;
+                if (isset($allowedMap[$key])) {
+                    $filteredGrantedPairs[] = $pair;
+                }
+            }
+            $grantedPairs = $filteredGrantedPairs;
         }
 
         // Check target role exists
@@ -264,6 +365,10 @@ try {
                 }
             }
 
+            // Fetch old permissions snapshot
+            $oldPermRows = $db->query("SELECT permission_id FROM role_permissions WHERE role_id = :rid", ['rid' => $roleId]) ?: [];
+            $oldPermIds = array_column($oldPermRows, 'permission_id');
+
             // C. Clear existing role_permissions for this role_id
             $db->delete('role_permissions', ['role_id' => $roleId]);
 
@@ -279,12 +384,15 @@ try {
             }
 
             // E. Record Audit Trail
-            \App\Services\AuditLogger::log([
+            $targetRoleName = $targetRole['role_name'] ?? 'Assigned Role';
+            \App\Services\AuditLogger::logMutation([
                 'action'        => 'Update Role Permissions Matrix',
-                'target_table'  => 'roles',
+                'target_table'  => 'role_permissions',
                 'target_id'     => (string)$roleId,
-                'description'   => "Updated permissions matrix for role \"{$targetRole['role_name']}\" (" . count($grantedPermIds) . " permissions granted)",
-                'actor_user_id' => $userId
+                'description'   => "Granted updated access permissions to role: {$targetRoleName} (" . count($grantedPermIds) . " permissions active)",
+                'actor_user_id' => $userId,
+                'old_data'      => ['role_id' => $roleId, 'role_name' => $targetRoleName, 'granted_permission_count' => count($oldPermIds), 'permission_ids' => $oldPermIds],
+                'new_data'      => ['role_id' => $roleId, 'role_name' => $targetRoleName, 'granted_permission_count' => count($grantedPermIds), 'permission_ids' => $grantedPermIds]
             ]);
 
             $pdo->commit();

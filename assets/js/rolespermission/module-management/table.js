@@ -1,24 +1,61 @@
-// RENDER MODULES TABLE AND METRICS
-function renderModulesTable(dataToRender = systemModules) {
+// RENDER MODULES TABLE, METRICS AND PAGINATION
+var currentModulePage = 1;
+var modulePageSize = 10;
+var currentFilteredModules = [];
+
+function changeModulePage(delta) {
+  const totalPages = Math.ceil(currentFilteredModules.length / modulePageSize) || 1;
+  const newPage = currentModulePage + delta;
+  if (newPage >= 1 && newPage <= totalPages) {
+    currentModulePage = newPage;
+    renderModulesTable(currentFilteredModules, false);
+  }
+}
+
+function goToModulePage(page) {
+  const totalPages = Math.ceil(currentFilteredModules.length / modulePageSize) || 1;
+  if (page >= 1 && page <= totalPages) {
+    currentModulePage = page;
+    renderModulesTable(currentFilteredModules, false);
+  }
+}
+
+window.changeModulePage = changeModulePage;
+window.goToModulePage = goToModulePage;
+
+function renderModulesTable(dataToRender = systemModules, resetPage = true) {
+  currentFilteredModules = dataToRender;
+  if (resetPage) currentModulePage = 1;
+
   const tableBody = document.getElementById('moduleTableBody');
   const emptyState = document.getElementById('emptyTableState');
+  const paginationFooter = document.getElementById('modulePaginationFooter');
   if (!tableBody) return;
 
   tableBody.innerHTML = '';
 
   if (dataToRender.length === 0) {
     if (emptyState) emptyState.classList.remove('hidden');
+    if (paginationFooter) paginationFooter.classList.add('hidden');
     updateMetrics();
     return;
   } else {
     if (emptyState) emptyState.classList.add('hidden');
+    if (paginationFooter) paginationFooter.classList.remove('hidden');
   }
+
+  const totalPages = Math.ceil(dataToRender.length / modulePageSize) || 1;
+  if (currentModulePage > totalPages) currentModulePage = totalPages;
+
+  const startIdx = (currentModulePage - 1) * modulePageSize;
+  const endIdx = Math.min(startIdx + modulePageSize, dataToRender.length);
+  const pageItems = dataToRender.slice(startIdx, endIdx);
 
   const isSuperAdmin = currentUserScope ? !!currentUserScope.is_superadmin : false;
   const grantedActions = currentUserScope ? (currentUserScope.granted_actions || []) : [];
   const canEdit = isSuperAdmin || grantedActions.includes('EDIT');
 
-  dataToRender.forEach(mod => {
+  pageItems.forEach(mod => {
     const tr = document.createElement('tr');
     tr.className = 'hover:bg-slate-50/60 transition group';
 
@@ -47,7 +84,6 @@ function renderModulesTable(dataToRender = systemModules) {
       `;
     }
 
-    // iOS Style Status Toggle Switch
     const isChecked = mod.status === 'Active';
     const isArchived = mod.status === 'Archived';
 
@@ -96,16 +132,28 @@ function renderModulesTable(dataToRender = systemModules) {
             <i class="fa-solid fa-pen-to-square text-xs"></i>
           </button>
 
+          ${isArchived ? `
+          <!-- Restore Button -->
+          <button 
+            type="button" 
+            onclick="restoreModule(${mod.id})" 
+            class="px-2.5 py-1.5 rounded-lg border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-[11px] flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
+            title="Restore Module to Active Tab"
+          >
+            <i class="fa-solid fa-rotate-left text-xs"></i>
+            <span>Restore</span>
+          </button>
+          ` : `
           <!-- Archive Button -->
           <button 
             type="button" 
             onclick="openArchiveModal(${mod.id})" 
-            class="h-8 w-8 rounded-lg border border-slate-200 hover:bg-amber-50 text-slate-400 hover:text-amber-600 flex items-center justify-center transition cursor-pointer ${isArchived ? 'opacity-40 cursor-not-allowed' : ''}"
-            ${isArchived ? 'disabled' : ''}
+            class="h-8 w-8 rounded-lg border border-slate-200 hover:bg-amber-50 text-slate-400 hover:text-amber-600 flex items-center justify-center transition cursor-pointer"
             title="Archive Module"
           >
             <i class="fa-solid fa-box-archive text-xs"></i>
-          </button>` : `<span class="text-[10px] text-slate-400 font-bold italic">Read-only</span>`}
+          </button>
+          `}` : `<span class="text-[10px] text-slate-400 font-bold italic">Read-only</span>`}
         </div>
       </td>
     `;
@@ -113,8 +161,42 @@ function renderModulesTable(dataToRender = systemModules) {
     tableBody.appendChild(tr);
   });
 
+  // Update Pagination UI
+  const startEl = document.getElementById('modulePaginationStart');
+  const endEl = document.getElementById('modulePaginationEnd');
+  const totalEl = document.getElementById('modulePaginationTotal');
+  const prevBtn = document.getElementById('modulePrevPageBtn');
+  const nextBtn = document.getElementById('moduleNextPageBtn');
+  const pageNumsEl = document.getElementById('modulePageNumbers');
+
+  if (startEl) startEl.textContent = dataToRender.length > 0 ? (startIdx + 1) : 0;
+  if (endEl) endEl.textContent = endIdx;
+  if (totalEl) totalEl.textContent = dataToRender.length;
+
+  if (prevBtn) prevBtn.disabled = (currentModulePage <= 1);
+  if (nextBtn) nextBtn.disabled = (currentModulePage >= totalPages);
+
+  if (pageNumsEl) {
+    let numsHtml = '';
+    for (let p = 1; p <= totalPages; p++) {
+      if (p === currentModulePage) {
+        numsHtml += `<button type="button" onclick="goToModulePage(${p})" class="h-7 w-7 rounded-lg bg-[#86B6F6] text-slate-900 font-extrabold text-xs flex items-center justify-center cursor-pointer shadow-2xs">${p}</button>`;
+      } else {
+        numsHtml += `<button type="button" onclick="goToModulePage(${p})" class="h-7 w-7 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold text-xs flex items-center justify-center cursor-pointer">${p}</button>`;
+      }
+    }
+    pageNumsEl.innerHTML = numsHtml;
+  }
+
   updateMetrics();
 }
+
+async function restoreModule(id) {
+  if (typeof updateModuleStatusInDb === 'function') {
+    await updateModuleStatusInDb(id, 'Active');
+  }
+}
+window.restoreModule = restoreModule;
 
 // UPDATE TOP METRIC CARDS
 function updateMetrics() {
@@ -130,3 +212,5 @@ function updateMetrics() {
   const inactiveCount = systemModules.filter(m => m.status !== 'Active').length;
   if (inactiveEl) inactiveEl.textContent = inactiveCount;
 }
+
+window.renderModulesTable = renderModulesTable;

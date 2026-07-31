@@ -261,6 +261,28 @@ window.civAudit.loginHistory.ui = {
 
       tbody.appendChild(tr);
     });
+
+    // Auto-open audit log modal if audit_id is specified in URL query
+    const urlParams = new URLSearchParams(window.location.search);
+    const auditIdParam = urlParams.get('audit_id');
+    if (auditIdParam) {
+      const targetRow = tbody.querySelector(`tr[data-id="#LOG-${auditIdParam}"]`);
+      if (targetRow) {
+        // Remove audit_id parameter from URL so it doesn't trigger again on pagination/filters
+        const newSearch = window.location.search.replace(new RegExp('[?&]audit_id=' + auditIdParam), '').replace(/^&/, '?');
+        const cleanUrl = window.location.pathname + newSearch;
+        window.history.replaceState({}, document.title, cleanUrl);
+        window.civAudit.loginHistory.modal.openSessionModal(targetRow);
+      } else {
+        const matchIdx = this.filteredLoginLogs.findIndex(log => log.login_id == auditIdParam);
+        if (matchIdx !== -1) {
+          const targetPage = Math.floor(matchIdx / this.pageSize) + 1;
+          if (targetPage !== this.currentPage) {
+            this.goToPage(targetPage);
+          }
+        }
+      }
+    }
   }
 };
 

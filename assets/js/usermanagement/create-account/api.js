@@ -74,8 +74,13 @@ async function handleCreateUser(e) {
     return;
   }
 
-  if (submitBtn) submitBtn.disabled = true;
+  const submitBtnText = document.getElementById('submitBtnText');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+  }
   if (spinner) spinner.classList.remove('hidden');
+  if (submitBtnText) submitBtnText.textContent = 'Processing & Registering Account...';
 
   const payload = {
     first_name: fName,
@@ -99,7 +104,11 @@ async function handleCreateUser(e) {
     const result = await response.json();
 
     if (spinner) spinner.classList.add('hidden');
-    if (submitBtn) submitBtn.disabled = false;
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+    }
+    if (submitBtnText) submitBtnText.textContent = 'Create Account & Save';
 
     if (result.status === 'success') {
       // Populate and trigger Success Modal
@@ -118,6 +127,10 @@ async function handleCreateUser(e) {
     console.error('Create user error:', err);
     if (typeof showToast === 'function') showToast('Network error creating user account.', true);
     if (spinner) spinner.classList.add('hidden');
-    if (submitBtn) submitBtn.disabled = false;
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+    }
+    if (submitBtnText) submitBtnText.textContent = 'Create Account & Save';
   }
 }

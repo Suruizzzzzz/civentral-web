@@ -14,9 +14,17 @@ function selectRole(roleId) {
   const currentRoleObj = rolesData.find(r => r.role_id === roleId);
   const roleNameDisplay = currentRoleObj ? currentRoleObj.role_name : 'Role';
 
+  const isSuperAdmin = currentUserScope ? !!currentUserScope.is_superadmin : false;
+  const userRoleId = currentUserScope ? currentUserScope.role_id : null;
+  const isEditingOwnRole = !isSuperAdmin && (roleId === userRoleId);
+
   const editHeader = document.getElementById('editingRoleHeader');
   if (editHeader) {
-    editHeader.innerText = `Editing Permissions for: ${roleNameDisplay}`;
+    if (isEditingOwnRole) {
+      editHeader.innerText = `Editing Permissions for: ${roleNameDisplay} (View-Only - Your Role)`;
+    } else {
+      editHeader.innerText = `Editing Permissions for: ${roleNameDisplay}`;
+    }
   }
   
   const searchInput = document.getElementById('roleSearchInput');

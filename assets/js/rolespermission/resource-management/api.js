@@ -1,9 +1,14 @@
 // RESOURCE MANAGEMENT API
 
-var systemResources = [];
-var systemModulesList = [];
-var currentUserScope = null;
-var archiveTargetResourceId = null;
+window.systemResources = [];
+window.systemModulesList = [];
+window.currentUserScope = null;
+window.archiveTargetResourceId = null;
+
+var systemResources = window.systemResources;
+var systemModulesList = window.systemModulesList;
+var currentUserScope = window.currentUserScope;
+var archiveTargetResourceId = window.archiveTargetResourceId;
 
 // FETCH RESOURCES AND MODULES FROM Database API
 async function fetchResources() {
@@ -11,14 +16,17 @@ async function fetchResources() {
     const response = await fetch('../../api/employee/resources.php');
     const result = await response.json();
     if (result.status === 'success') {
-      currentUserScope = result.current_user || null;
+      window.currentUserScope = result.current_user || null;
+      currentUserScope = window.currentUserScope;
+
       if (Array.isArray(result.modules)) {
-        systemModulesList = result.modules;
+        window.systemModulesList = result.modules;
+        systemModulesList = window.systemModulesList;
         populateModuleSelects();
       }
 
       if (Array.isArray(result.data)) {
-        systemResources = result.data.map(r => ({
+        window.systemResources = result.data.map(r => ({
           id: r.resource_id,
           module_id: r.module_id,
           module: r.modules ? r.modules.module_name : (systemModulesList.find(m => m.module_id === r.module_id)?.module_name || 'Unassigned'),
@@ -29,7 +37,8 @@ async function fetchResources() {
           created_at: r.created_at ? r.created_at.replace('T', ' ').substring(0, 19) : '',
           updated_at: r.updated_at ? r.updated_at.replace('T', ' ').substring(0, 19) : ''
         }));
-        if (typeof filterResources === 'function') filterResources();
+        systemResources = window.systemResources;
+        if (typeof window.filterResources === 'function') window.filterResources();
       }
     } else {
       console.warn('Resources fetch notice:', result.message);
@@ -86,3 +95,6 @@ async function updateResourceStatusInDb(resourceId, newStatus) {
     if (typeof showToast === 'function') showToast('Error updating status IN DATABASE.');
   }
 }
+
+window.fetchResources = fetchResources;
+window.updateResourceStatusInDb = updateResourceStatusInDb;

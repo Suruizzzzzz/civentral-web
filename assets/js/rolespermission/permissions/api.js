@@ -112,6 +112,7 @@ async function fetchPermissionsData() {
 // ACTION: SAVE PERMISSION MATRIX CHANGES TO DATABASE
 async function saveChanges() {
   const isSuperAdmin = currentUserScope ? !!currentUserScope.is_superadmin : false;
+  const userRoleId = currentUserScope ? currentUserScope.role_id : null;
   const grantedActions = currentUserScope ? (currentUserScope.granted_actions || []) : [];
   const canEdit = isSuperAdmin || grantedActions.includes('EDIT') || grantedActions.includes('CREATE');
 
@@ -122,6 +123,11 @@ async function saveChanges() {
 
   const roleId = window.selectedRoleId;
   if (!roleId) return;
+
+  if (!isSuperAdmin && roleId === userRoleId) {
+    if (typeof showToast === 'function') showToast('Forbidden. You cannot modify the permissions of your own role.', true);
+    return;
+  }
 
   const currentRolePerms = window.currentPermissions[roleId] || {};
   const grantedPairs = [];

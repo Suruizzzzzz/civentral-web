@@ -33,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../src/Services/AuditLogger.php';
 
 // Response Helper
 function respond(array $payload, int $statusCode = 200): void {
@@ -134,6 +135,17 @@ try {
             'updated_at' => date('Y-m-d H:i:s')
         ]);
 
+        $newActionRows = $db->query("SELECT * FROM actions WHERE action_id = :id", ['id' => $newId]);
+        \App\Services\AuditLogger::logMutation([
+            'action'        => 'Create Action',
+            'target_table'  => 'actions',
+            'target_id'     => (string)$newId,
+            'description'   => "Created action verb \"{$actionName}\"",
+            'actor_user_id' => $userId,
+            'old_data'      => null,
+            'new_data'      => !empty($newActionRows) ? $newActionRows[0] : null
+        ]);
+
         respond([
             'status' => 'success',
             'message' => "Action verb \"{$actionName}\" created successfully.",
@@ -164,7 +176,23 @@ try {
         if (isset($data['description'])) $updatePayload['description'] = trim($data['description']);
         if (isset($data['status']) && in_array($data['status'], ['Active', 'Inactive', 'Archived'])) $updatePayload['status'] = $data['status'];
 
+        $oldActionRows = $db->query("SELECT * FROM actions WHERE action_id = :id", ['id' => $actionId]);
+        $oldAction = !empty($oldActionRows) ? $oldActionRows[0] : null;
+
         $db->update('actions', $updatePayload, ['action_id' => $actionId]);
+
+        $newActionRows = $db->query("SELECT * FROM actions WHERE action_id = :id", ['id' => $actionId]);
+        $newAction = !empty($newActionRows) ? $newActionRows[0] : null;
+
+        \App\Services\AuditLogger::logMutation([
+            'action'        => 'Update Action',
+            'target_table'  => 'actions',
+            'target_id'     => (string)$actionId,
+            'description'   => "Updated action verb ID {$actionId}",
+            'actor_user_id' => $userId,
+            'old_data'      => $oldAction,
+            'new_data'      => $newAction
+        ]);
 
         respond([
             'status' => 'success',
@@ -188,10 +216,26 @@ try {
             ], 400);
         }
 
+        $oldActionRows = $db->query("SELECT * FROM actions WHERE action_id = :id", ['id' => $actionId]);
+        $oldAction = !empty($oldActionRows) ? $oldActionRows[0] : null;
+
         $db->update('actions', [
             'status' => 'Archived',
             'updated_at' => date('Y-m-d H:i:s')
         ], ['action_id' => $actionId]);
+
+        $newActionRows = $db->query("SELECT * FROM actions WHERE action_id = :id", ['id' => $actionId]);
+        $newAction = !empty($newActionRows) ? $newActionRows[0] : null;
+
+        \App\Services\AuditLogger::logMutation([
+            'action'        => 'Archive Action',
+            'target_table'  => 'actions',
+            'target_id'     => (string)$actionId,
+            'description'   => "Archived action verb ID {$actionId}",
+            'actor_user_id' => $userId,
+            'old_data'      => $oldAction,
+            'new_data'      => $newAction
+        ]);
 
         respond([
             'status' => 'success',
