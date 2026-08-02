@@ -42,6 +42,15 @@ function respond(array $payload, int $statusCode = 200): void {
     exit;
 }
 
+// Authentication Check
+$userId = $_SESSION['user_id'] ?? null;
+if (!$userId) {
+    respond([
+        'status' => 'error',
+        'message' => 'Unauthorized session. Please sign in to update citizen account status.'
+    ], 401);
+}
+
 $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
 
 $citId = trim($input['citizen_id'] ?? $input['id'] ?? '');

@@ -44,6 +44,15 @@ function respond(array $payload, int $statusCode = 200): void {
 }
 
 try {
+    // Authentication Check
+    $userId = $_SESSION['user_id'] ?? null;
+    if (!$userId) {
+        respond([
+            'status' => 'error',
+            'message' => 'Unauthorized session. Please sign in to view citizen accounts.'
+        ], 401);
+    }
+
     $users = $db->query("SELECT * FROM citizen_users ORDER BY created_at DESC");
 
     $formattedUsers = [];
