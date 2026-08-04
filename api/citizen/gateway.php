@@ -143,6 +143,24 @@ function handleCitizenGateway(string $path = '', string $method = ''): void {
             handleCheckAccount($input, $db);
             break;
 
+        // AUTH: LOGOUT
+        case ($path === '/auth/logout' || $path === '/logout' || $path === '/logout.php'):
+            if ($method !== 'POST') respond(['status' => 'error', 'message' => 'Method Not Allowed.'], 405);
+            handleLogout($input, $db);
+            break;
+
+        // AUTH: FORGOT PASSWORD
+        case ($path === '/auth/forgot-password' || $path === '/forgot-password' || $path === '/forgot-password.php'):
+            if ($method !== 'POST') respond(['status' => 'error', 'message' => 'Method Not Allowed.'], 405);
+            handleForgotPassword($input, $db);
+            break;
+
+        // AUTH: RESET PASSWORD
+        case ($path === '/auth/reset-password' || $path === '/reset-password' || $path === '/reset-password.php'):
+            if ($method !== 'POST') respond(['status' => 'error', 'message' => 'Method Not Allowed.'], 405);
+            handleResetPassword($input, $db);
+            break;
+
         // PROFILE: GET PROFILE
         case ($path === '/profile' || $path === '/get-profile' || $path === '/get-profile.php'):
             if (!in_array($method, ['GET', 'POST'])) respond(['status' => 'error', 'message' => 'Method Not Allowed.'], 405);
@@ -201,14 +219,67 @@ function handleCitizenGateway(string $path = '', string $method = ''): void {
 }
 
 // -----------------------------------------------------------------------------
+// HELPERS FOR EXTENDED CITIZEN TABLES
+// -----------------------------------------------------------------------------
+
+function logCitizenLoginAttempt($db, ?int $citizenUserId, ?int $sessionId, string $status, ?string $failureReason = null): void {
+    try {
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        $db->insert('citizen_login_history', [
+            'citizen_user_id' => $citizenUserId,
+            'session_id' => $sessionId,
+            'login_time' => date('Y-m-d H:i:s'),
+            'ip_address' => $ip,
+            'login_status' => $status,
+            'failure_reason' => $failureReason
+        ]);
+    } catch (Throwable $e) {
+        error_log("Failed to log citizen login history: " . $e->getMessage());
+    }
+}
+
+function createCitizenSession($db, int $citizenUserId, string $platform = 'Web', ?string $deviceId = null, ?string $pushToken = null): array {
+    try {
+        $rawRefreshToken = bin2hex(random_bytes(32));
+        $refreshTokenHash = hash('sha256', $rawRefreshToken);
+        $loginIp = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+        $expiresAt = date('Y-m-d H:i:s', strtotime('+30 days'));
+
+        $sessionId = $db->insert('citizen_sessions', [
+            'citizen_user_id' => $citizenUserId,
+            'device_id' => $deviceId ?: ('device_' . substr(md5(uniqid((string)mt_rand(), true)), 0, 8)),
+            'refresh_token_hash' => $refreshTokenHash,
+            'push_token' => $pushToken,
+            'platform' => in_array($platform, ['Android', 'iOS', 'Web']) ? $platform : 'Web',
+            'login_ip' => $loginIp,
+            'is_revoked' => 0,
+            'last_active_at' => date('Y-m-d H:i:s'),
+            'expires_at' => $expiresAt
+        ]);
+
+        return [
+            'session_id' => $sessionId,
+            'refresh_token' => $rawRefreshToken,
+            'expires_at' => $expiresAt
+        ];
+    } catch (Throwable $e) {
+        error_log("Failed to create citizen session: " . $e->getMessage());
+        return ['session_id' => null, 'refresh_token' => null, 'expires_at' => null];
+    }
+}
+
+// -----------------------------------------------------------------------------
 // ENDPOINT HANDLERS
 // -----------------------------------------------------------------------------
 
 function handleLogin(array $input, $db): void {
     $emailOrMobile = strtolower(trim($input['email'] ?? $input['username'] ?? $input['mobile_number'] ?? ''));
     $password = trim($input['password'] ?? '');
+    $platform = trim($input['platform'] ?? 'Web');
+    $deviceId = trim($input['device_id'] ?? '');
 
     if (empty($emailOrMobile) || empty($password)) {
+        logCitizenLoginAttempt($db, null, null, 'Failed', 'Missing credentials');
         respond(['status' => 'error', 'message' => 'Please provide both Email / Mobile Number and Password.'], 400);
     }
 
@@ -220,6 +291,7 @@ function handleLogin(array $input, $db): void {
         ]);
 
         if (empty($users)) {
+            logCitizenLoginAttempt($db, null, null, 'Failed', 'Account not found');
             respond(['status' => 'error', 'message' => 'Invalid email/mobile number or password.'], 401);
         }
 
@@ -227,10 +299,12 @@ function handleLogin(array $input, $db): void {
         $citizenUserId = intval($user['citizen_user_id']);
 
         if ($user['status'] === 'Locked') {
+            logCitizenLoginAttempt($db, $citizenUserId, null, 'Failed', 'Account locked');
             respond(['status' => 'error', 'message' => 'Account is locked due to excessive failed attempts. Please reset your password or contact support.'], 403);
         }
 
         if ($user['status'] === 'Inactive' || $user['status'] === 'Archived') {
+            logCitizenLoginAttempt($db, $citizenUserId, null, 'Failed', 'Account inactive');
             respond(['status' => 'error', 'message' => 'Account is inactive. Please contact support.'], 403);
         }
 
@@ -241,6 +315,7 @@ function handleLogin(array $input, $db): void {
 
             if ($user['status'] === 'Pending') {
                 $_SESSION['pending_citizen_user_id'] = $citizenUserId;
+                logCitizenLoginAttempt($db, $citizenUserId, null, 'Failed', 'Email verification required');
                 respond([
                     'status' => 'verification_required',
                     'message' => 'Email verification required.',
@@ -253,6 +328,13 @@ function handleLogin(array $input, $db): void {
             } catch (Throwable $e) {}
 
             $_SESSION['citizen_user_id'] = $citizenUserId;
+
+            // Create active citizen session record
+            $sessionInfo = createCitizenSession($db, $citizenUserId, $platform, $deviceId);
+            $sessionId = $sessionInfo['session_id'];
+
+            // Log successful login attempt
+            logCitizenLoginAttempt($db, $citizenUserId, $sessionId, 'Success');
 
             $middlePart = !empty($user['middle_name']) ? trim($user['middle_name']) . ' ' : '';
             $suffixPart = !empty($user['suffix']) ? ' ' . trim($user['suffix']) : '';
@@ -268,6 +350,11 @@ function handleLogin(array $input, $db): void {
                     'full_name' => $fullName,
                     'email' => $user['email'],
                     'mobile_number' => $user['mobile_number']
+                ],
+                'session' => [
+                    'session_id' => $sessionId,
+                    'refresh_token' => $sessionInfo['refresh_token'],
+                    'expires_at' => $sessionInfo['expires_at']
                 ]
             ]);
         } else {
@@ -277,9 +364,11 @@ function handleLogin(array $input, $db): void {
             if ($failedAttempts >= 5) {
                 $updates['status'] = 'Locked';
                 $db->update('citizen_users', $updates, ['citizen_user_id' => $citizenUserId]);
+                logCitizenLoginAttempt($db, $citizenUserId, null, 'Failed', '5 consecutive failed password attempts - Account Locked');
                 respond(['status' => 'error', 'message' => 'Account locked due to 5 consecutive failed login attempts.'], 403);
             } else {
                 $db->update('citizen_users', $updates, ['citizen_user_id' => $citizenUserId]);
+                logCitizenLoginAttempt($db, $citizenUserId, null, 'Failed', 'Incorrect password');
                 $remaining = 5 - $failedAttempts;
                 respond(['status' => 'error', 'message' => "Invalid password. {$remaining} attempt(s) remaining before account lockout."], 401);
             }
@@ -939,4 +1028,121 @@ function handleGetNotifications(array $input, $db): void {
         respond(['status' => 'error', 'message' => 'Failed to fetch notifications.'], 500);
     }
 }
+
+function handleLogout(array $input, $db): void {
+    $citizenUserId = intval($_SESSION['citizen_user_id'] ?? $input['citizen_user_id'] ?? 0);
+    $refreshToken = trim($input['refresh_token'] ?? '');
+
+    if (!empty($refreshToken)) {
+        $tokenHash = hash('sha256', $refreshToken);
+        try {
+            $db->update('citizen_sessions', ['is_revoked' => 1], ['refresh_token_hash' => $tokenHash]);
+        } catch (Throwable $e) {}
+    } elseif ($citizenUserId > 0) {
+        try {
+            $db->update('citizen_sessions', ['is_revoked' => 1], ['citizen_user_id' => $citizenUserId]);
+        } catch (Throwable $e) {}
+    }
+
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        unset($_SESSION['citizen_user_id']);
+        unset($_SESSION['pending_citizen_user_id']);
+    }
+
+    respond(['status' => 'success', 'message' => 'Successfully logged out.']);
+}
+
+function handleForgotPassword(array $input, $db): void {
+    $email = strtolower(trim($input['email'] ?? ''));
+
+    if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        respond(['status' => 'error', 'message' => 'Please provide a valid email address.'], 400);
+    }
+
+    try {
+        $users = $db->query("SELECT * FROM citizen_users WHERE LOWER(email) = LOWER(:email) LIMIT 1", ['email' => $email]);
+
+        if (empty($users)) {
+            respond(['status' => 'success', 'message' => 'If an account exists with this email, password reset instructions have been sent.']);
+        }
+
+        $user = $users[0];
+        $citizenUserId = intval($user['citizen_user_id']);
+
+        $resetCode = sprintf('%06d', mt_rand(0, 999999));
+        $rawResetToken = bin2hex(random_bytes(32));
+        $resetTokenHash = hash('sha256', $rawResetToken);
+        $expiresAt = date('Y-m-d H:i:s', strtotime('+1 hour'));
+
+        $db->insert('citizen_password_resets', [
+            'citizen_user_id' => $citizenUserId,
+            'reset_token_hash' => $resetTokenHash,
+            'expires_at' => $expiresAt,
+            'used_at' => null
+        ]);
+
+        $middlePart = !empty($user['middle_name']) ? $user['middle_name'] . ' ' : '';
+        $recipientName = trim("{$user['first_name']} {$middlePart}{$user['last_name']}");
+        sendOTPEmail($email, $recipientName, $resetCode, 'Password Reset');
+
+        respond([
+            'status' => 'success',
+            'message' => 'Password reset instructions and verification code sent to your email.',
+            'email' => $email,
+            'reset_token' => $rawResetToken
+        ]);
+    } catch (Throwable $e) {
+        error_log("Forgot Password Error: " . $e->getMessage());
+        respond(['status' => 'error', 'message' => 'Failed to process password reset request.'], 500);
+    }
+}
+
+function handleResetPassword(array $input, $db): void {
+    $rawToken = trim($input['reset_token'] ?? $input['token'] ?? '');
+    $email = strtolower(trim($input['email'] ?? ''));
+    $newPassword = trim($input['new_password'] ?? $input['password'] ?? '');
+
+    if (empty($newPassword) || strlen($newPassword) < 8) {
+        respond(['status' => 'error', 'message' => 'Password must be at least 8 characters long.'], 400);
+    }
+
+    try {
+        $user = null;
+        if (!empty($rawToken)) {
+            $tokenHash = hash('sha256', $rawToken);
+            $resets = $db->query("SELECT * FROM citizen_password_resets WHERE reset_token_hash = :hash AND used_at IS NULL AND expires_at > NOW() LIMIT 1", ['hash' => $tokenHash]);
+            if (!empty($resets)) {
+                $resetRecord = $resets[0];
+                $users = $db->query("SELECT * FROM citizen_users WHERE citizen_user_id = :cid LIMIT 1", ['cid' => $resetRecord['citizen_user_id']]);
+                if (!empty($users)) {
+                    $user = $users[0];
+                    $db->update('citizen_password_resets', ['used_at' => date('Y-m-d H:i:s')], ['reset_id' => $resetRecord['reset_id']]);
+                }
+            }
+        } elseif (!empty($email)) {
+            $users = $db->query("SELECT * FROM citizen_users WHERE LOWER(email) = LOWER(:email) LIMIT 1", ['email' => $email]);
+            if (!empty($users)) $user = $users[0];
+        }
+
+        if (!$user) {
+            respond(['status' => 'error', 'message' => 'Invalid or expired password reset token.'], 400);
+        }
+
+        $citizenUserId = intval($user['citizen_user_id']);
+        $newPasswordHash = password_hash($newPassword, PASSWORD_BCRYPT);
+
+        $db->update('citizen_users', [
+            'password' => $newPasswordHash,
+            'status' => 'Active',
+            'failed_attempts' => 0,
+            'updated_at' => date('Y-m-d H:i:s')
+        ], ['citizen_user_id' => $citizenUserId]);
+
+        respond(['status' => 'success', 'message' => 'Password reset successfully. You may now log in with your new password.']);
+    } catch (Throwable $e) {
+        error_log("Reset Password Error: " . $e->getMessage());
+        respond(['status' => 'error', 'message' => 'Failed to reset password.'], 500);
+    }
+}
+
 
