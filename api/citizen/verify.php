@@ -1,6 +1,6 @@
 <?php
 /**
- * Legacy endpoint wrapper for /api/citizen/verify-otp.php
+ * Legacy endpoint wrapper for /api/citizen/verify.php
  * Delegates request handling to Citizen REST API Gateway.
  */
 

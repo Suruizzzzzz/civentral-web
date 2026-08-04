@@ -5,6 +5,8 @@ var ctrlCitizens = [];
 async function fetchControlCitizens() {
   try {
     const endpoints = [
+      '/api/citizen/accounts',
+      '/civentral/api/citizen/accounts',
       '/api/citizen/get-accounts.php',
       '/civentral/api/citizen/get-accounts.php',
       '../../api/citizen/get-accounts.php'
