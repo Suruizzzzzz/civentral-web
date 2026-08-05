@@ -23,6 +23,74 @@ function goToResourcePage(page) {
 window.changeResourcePage = changeResourcePage;
 window.goToResourcePage = goToResourcePage;
 
+function toggleSelectResource(checkbox, id) {
+  if (!Array.isArray(window.selectedArchivedResourceIds)) window.selectedArchivedResourceIds = [];
+  
+  if (checkbox.checked) {
+    if (!window.selectedArchivedResourceIds.includes(id)) {
+      window.selectedArchivedResourceIds.push(id);
+    }
+  } else {
+    window.selectedArchivedResourceIds = window.selectedArchivedResourceIds.filter(item => item !== id);
+  }
+  updateBulkDeleteToolbar();
+}
+
+function toggleSelectAllArchivedResources(selectAllCheckbox) {
+  if (!Array.isArray(window.selectedArchivedResourceIds)) window.selectedArchivedResourceIds = [];
+  const archivedRes = currentFilteredResources.filter(r => r.status === 'Archived');
+
+  if (selectAllCheckbox.checked) {
+    archivedRes.forEach(r => {
+      if (!window.selectedArchivedResourceIds.includes(r.id)) {
+        window.selectedArchivedResourceIds.push(r.id);
+      }
+    });
+  } else {
+    const pageIds = archivedRes.map(r => r.id);
+    window.selectedArchivedResourceIds = window.selectedArchivedResourceIds.filter(id => !pageIds.includes(id));
+  }
+
+  const rowCheckboxes = document.querySelectorAll('.archive-resource-checkbox');
+  rowCheckboxes.forEach(cb => {
+    cb.checked = selectAllCheckbox.checked;
+  });
+
+  updateBulkDeleteToolbar();
+}
+
+function updateBulkDeleteToolbar() {
+  const bulkBtn = document.getElementById('bulkDeleteBtn');
+  const countEl = document.getElementById('selectedCount');
+  const selectAllCb = document.getElementById('selectAllArchivedResources');
+
+  const selectedCount = (window.selectedArchivedResourceIds || []).length;
+
+  if (countEl) countEl.textContent = selectedCount;
+
+  if (bulkBtn) {
+    if (window.currentResourceTab === 'archived' && selectedCount > 0) {
+      bulkBtn.classList.remove('hidden');
+    } else {
+      bulkBtn.classList.add('hidden');
+    }
+  }
+
+  if (selectAllCb && window.currentResourceTab === 'archived') {
+    const archivedRes = currentFilteredResources.filter(r => r.status === 'Archived');
+    if (archivedRes.length > 0) {
+      const allSelected = archivedRes.every(r => (window.selectedArchivedResourceIds || []).includes(r.id));
+      selectAllCb.checked = allSelected;
+    } else {
+      selectAllCb.checked = false;
+    }
+  }
+}
+
+window.toggleSelectResource = toggleSelectResource;
+window.toggleSelectAllArchivedResources = toggleSelectAllArchivedResources;
+window.updateBulkDeleteToolbar = updateBulkDeleteToolbar;
+
 function renderResourcesTable(dataToRender = systemResources, resetPage = true) {
   currentFilteredResources = dataToRender;
   if (resetPage) currentResourcePage = 1;
@@ -30,7 +98,20 @@ function renderResourcesTable(dataToRender = systemResources, resetPage = true) 
   const tableBody = document.getElementById('resourceTableBody');
   const emptyState = document.getElementById('emptyTableState');
   const paginationFooter = document.getElementById('resourcePaginationFooter');
+  const checkboxTh = document.getElementById('checkboxTh');
+  const selectAllCb = document.getElementById('selectAllArchivedResources');
+
   if (!tableBody) return;
+
+  const isArchivedTab = window.currentResourceTab === 'archived';
+  if (checkboxTh) {
+    if (isArchivedTab) {
+      checkboxTh.classList.remove('hidden');
+    } else {
+      checkboxTh.classList.add('hidden');
+      if (selectAllCb) selectAllCb.checked = false;
+    }
+  }
 
   tableBody.innerHTML = '';
 
@@ -38,6 +119,7 @@ function renderResourcesTable(dataToRender = systemResources, resetPage = true) 
     if (emptyState) emptyState.classList.remove('hidden');
     if (paginationFooter) paginationFooter.classList.add('hidden');
     updateResourceMetrics();
+    updateBulkDeleteToolbar();
     return;
   } else {
     if (emptyState) emptyState.classList.add('hidden');
@@ -51,7 +133,6 @@ function renderResourcesTable(dataToRender = systemResources, resetPage = true) 
   const endIdx = Math.min(startIdx + resourcePageSize, dataToRender.length);
   const pageItems = dataToRender.slice(startIdx, endIdx);
 
-  // Badge Color Map for Parent Modules
   const moduleBadgeMap = {
     "User Management": "bg-purple-50 text-purple-700 border-purple-200",
     "Citizen Management": "bg-indigo-50 text-indigo-700 border-indigo-200",
@@ -68,6 +149,7 @@ function renderResourcesTable(dataToRender = systemResources, resetPage = true) 
   const isSuperAdmin = currentUserScope ? !!currentUserScope.is_superadmin : false;
   const grantedActions = currentUserScope ? (currentUserScope.granted_actions || []) : [];
   const canEdit = isSuperAdmin || grantedActions.includes('EDIT');
+  const canDelete = isSuperAdmin || grantedActions.includes('DELETE');
 
   pageItems.forEach(res => {
     const tr = document.createElement('tr');
@@ -101,8 +183,21 @@ function renderResourcesTable(dataToRender = systemResources, resetPage = true) 
 
     const isChecked = res.status === 'Active';
     const isArchived = res.status === 'Archived';
+    const isItemSelected = (window.selectedArchivedResourceIds || []).includes(res.id);
+
+    const checkboxTdHtml = isArchivedTab ? `
+      <td class="px-4 py-4 text-center">
+        <input 
+          type="checkbox" 
+          ${isItemSelected ? 'checked' : ''} 
+          onchange="toggleSelectResource(this, ${res.id})" 
+          class="archive-resource-checkbox rounded border-slate-300 text-rose-600 focus:ring-rose-500 cursor-pointer"
+        >
+      </td>
+    ` : '';
 
     tr.innerHTML = `
+      ${checkboxTdHtml}
       <td class="px-6 py-4">
         <div class="space-y-0.5">
           <span class="font-extrabold text-slate-900 tracking-tight block text-xs">${res.name}</span>
@@ -133,10 +228,11 @@ function renderResourcesTable(dataToRender = systemResources, resetPage = true) 
       </td>
 
       <td class="px-6 py-4 text-right">
-        <div class="flex items-center justify-end gap-3">
+        <div class="flex items-center justify-end gap-2.5">
           ${canEdit ? `
+          ${!isArchived ? `
           <!-- iOS Toggle Switch -->
-          <label class="relative inline-flex items-center cursor-pointer ${isArchived ? 'opacity-50 pointer-events-none' : ''}" title="Activate/Deactivate Resource">
+          <label class="relative inline-flex items-center cursor-pointer" title="Activate/Deactivate Resource">
             <input 
               type="checkbox" 
               ${isChecked ? 'checked' : ''} 
@@ -155,6 +251,7 @@ function renderResourcesTable(dataToRender = systemResources, resetPage = true) 
           >
             <i class="fa-solid fa-pen-to-square text-xs"></i>
           </button>
+          ` : ''}
 
           ${isArchived ? `
           <!-- Restore Button -->
@@ -167,6 +264,18 @@ function renderResourcesTable(dataToRender = systemResources, resetPage = true) 
             <i class="fa-solid fa-rotate-left text-xs"></i>
             <span>Restore</span>
           </button>
+
+          ${canDelete ? `
+          <!-- Permanent Delete Button -->
+          <button 
+            type="button" 
+            onclick="openDeleteConfirmModal(${res.id})" 
+            class="h-8 w-8 rounded-lg border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center transition cursor-pointer"
+            title="Permanently Delete Resource from Database"
+          >
+            <i class="fa-solid fa-trash text-xs"></i>
+          </button>
+          ` : ''}
           ` : `
           <!-- Archive Button -->
           <button 
@@ -213,6 +322,7 @@ function renderResourcesTable(dataToRender = systemResources, resetPage = true) 
   }
 
   updateResourceMetrics();
+  updateBulkDeleteToolbar();
 }
 
 async function restoreResource(id) {
@@ -238,3 +348,4 @@ function updateResourceMetrics() {
 }
 
 window.renderResourcesTable = renderResourcesTable;
+

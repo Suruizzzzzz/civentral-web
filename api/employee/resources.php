@@ -191,7 +191,7 @@ try {
             }
         }
 
-        if ($isSuperAdmin) {
+        if ($isSuperAdmin || $canCreateResource || $canEditResource || $canDeleteResource) {
             $resourcesRaw = $db->query("
                 SELECT r.*, m.module_name, m.description AS module_desc
                 FROM resources r
@@ -454,57 +454,90 @@ try {
             ], 403);
         }
 
-        $resourceId = filter_var($_GET['resource_id'] ?? $data['resource_id'] ?? null, FILTER_VALIDATE_INT);
+        $isPermanent = (isset($_GET['permanent']) && ($_GET['permanent'] === 'true' || $_GET['permanent'] === '1')) 
+                     || (!empty($data['permanent']) && ($data['permanent'] === true || $data['permanent'] === 'true' || $data['permanent'] === 1))
+                     || (isset($_GET['action']) && $_GET['action'] === 'permanent_delete')
+                     || (!empty($data['action']) && $data['action'] === 'permanent_delete');
 
-        if (!$resourceId) {
+        $resourceIds = [];
+        if (!empty($data['resource_ids']) && is_array($data['resource_ids'])) {
+            $resourceIds = array_map('intval', array_filter($data['resource_ids'], 'is_numeric'));
+        } else {
+            $singleId = filter_var($_GET['resource_id'] ?? $data['resource_id'] ?? null, FILTER_VALIDATE_INT);
+            if ($singleId) {
+                $resourceIds = [$singleId];
+            }
+        }
+
+        if (empty($resourceIds)) {
             respond([
                 'status' => 'error',
-                'message' => 'Valid resource_id is required for deletion.'
+                'message' => 'Valid resource_id or resource_ids list is required.'
             ], 400);
         }
 
-        $oldResRows = $db->query("SELECT * FROM resources WHERE resource_id = :id", ['id' => $resourceId]);
-        $oldRes = !empty($oldResRows) ? $oldResRows[0] : null;
+        if ($isPermanent) {
+            $deletedCount = 0;
+            foreach ($resourceIds as $rId) {
+                $oldResRows = $db->query("SELECT * FROM resources WHERE resource_id = :id", ['id' => $rId]);
+                $oldRes = !empty($oldResRows) ? $oldResRows[0] : null;
 
-        $db->update('resources', [
-            'status' => 'Archived',
-            'updated_at' => date('Y-m-d H:i:s')
-        ], ['resource_id' => $resourceId]);
+                if (!$oldRes) continue;
 
-        $newResRows = $db->query("SELECT * FROM resources WHERE resource_id = :id", ['id' => $resourceId]);
-        $newRes = !empty($newResRows) ? $newResRows[0] : null;
+                // Explicit cascading cleanup of permissions & role_permissions
+                $db->query("DELETE FROM role_permissions WHERE permission_id IN (SELECT permission_id FROM permissions WHERE resource_id = :rid)", ['rid' => $rId]);
+                $db->delete('permissions', ['resource_id' => $rId]);
 
-        // Audit Trail with Full Data Mutation Snapshot
-        \App\Services\AuditLogger::logMutation([
-            'action'        => 'Archive Resource',
-            'target_table'  => 'resources',
-            'target_id'     => (string)$resourceId,
-            'description'   => "Archived resource ID {$resourceId}",
-            'actor_user_id' => $userId,
-            'resource_id'   => $resourceId,
-            'old_data'      => $oldRes,
-            'new_data'      => $newRes
-        ]);
+                // Delete resource record
+                $db->delete('resources', ['resource_id' => $rId]);
+                $deletedCount++;
 
-        $db->update('resources', [
-            'status' => 'Archived',
-            'updated_at' => date('Y-m-d H:i:s')
-        ], ['resource_id' => $resourceId]);
+                // Audit Trail
+                \App\Services\AuditLogger::log([
+                    'action'        => 'Permanent Delete Resource',
+                    'target_table'  => 'resources',
+                    'target_id'     => (string)$rId,
+                    'description'   => "Permanently deleted resource ID {$rId} (\"" . ($oldRes['resource_name'] ?? '') . "\") and associated permissions",
+                    'actor_user_id' => $userId,
+                    'resource_id'   => null
+                ]);
+            }
 
-        // Audit Trail
-        \App\Services\AuditLogger::log([
-            'action'        => 'Archive Resource',
-            'target_table'  => 'resources',
-            'target_id'     => (string)$resourceId,
-            'description'   => "Archived resource ID {$resourceId}",
-            'actor_user_id' => $userId,
-            'resource_id'   => $resourceId
-        ]);
+            respond([
+                'status' => 'success',
+                'message' => $deletedCount === 1 ? 'Resource permanently deleted from database.' : "{$deletedCount} resources permanently deleted from database."
+            ]);
+        } else {
+            // Soft Archive
+            foreach ($resourceIds as $rId) {
+                $oldResRows = $db->query("SELECT * FROM resources WHERE resource_id = :id", ['id' => $rId]);
+                $oldRes = !empty($oldResRows) ? $oldResRows[0] : null;
 
-        respond([
-            'status' => 'success',
-            'message' => 'Resource archived successfully.'
-        ]);
+                $db->update('resources', [
+                    'status' => 'Archived',
+                    'updated_at' => date('Y-m-d H:i:s')
+                ], ['resource_id' => $rId]);
+
+                $newResRows = $db->query("SELECT * FROM resources WHERE resource_id = :id", ['id' => $rId]);
+                $newRes = !empty($newResRows) ? $newResRows[0] : null;
+
+                \App\Services\AuditLogger::logMutation([
+                    'action'        => 'Archive Resource',
+                    'target_table'  => 'resources',
+                    'target_id'     => (string)$rId,
+                    'description'   => "Archived resource ID {$rId}",
+                    'actor_user_id' => $userId,
+                    'resource_id'   => $rId,
+                    'old_data'      => $oldRes,
+                    'new_data'      => $newRes
+                ]);
+            }
+
+            respond([
+                'status' => 'success',
+                'message' => 'Resource(s) archived successfully.'
+            ]);
+        }
     }
 
     respond([

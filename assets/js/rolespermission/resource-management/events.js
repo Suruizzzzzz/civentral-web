@@ -35,6 +35,17 @@ async function handleSaveResource(event) {
     if (result.status === 'success') {
       if (typeof showToast === 'function') showToast(result.message || 'Resource saved successfully.');
       if (typeof closeResourceModal === 'function') closeResourceModal();
+
+      if (idVal === '') {
+        const searchInput = document.getElementById('resourceSearchInput');
+        const parentModuleFilter = document.getElementById('parentModuleFilter');
+        const statusFilterSelect = document.getElementById('statusFilterSelect');
+        if (searchInput) searchInput.value = '';
+        if (parentModuleFilter) parentModuleFilter.value = 'ALL';
+        if (statusFilterSelect) statusFilterSelect.value = 'ALL';
+        if (typeof switchResourceTab === 'function') switchResourceTab('active');
+      }
+
       if (typeof fetchResources === 'function') await fetchResources();
     } else {
       if (typeof showToast === 'function') showToast(result.message || 'Failed to save resource.');
@@ -51,11 +62,14 @@ window.handleSaveResource = handleSaveResource;
 document.addEventListener('click', (e) => {
   if (e.target.id === 'resourceModal' && typeof closeResourceModal === 'function') closeResourceModal();
   if (e.target.id === 'archiveModal' && typeof closeArchiveModal === 'function') closeArchiveModal();
+  if (e.target.id === 'deleteConfirmModal' && typeof closeDeleteConfirmModal === 'function') closeDeleteConfirmModal();
 });
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     if (typeof closeResourceModal === 'function') closeResourceModal();
     if (typeof closeArchiveModal === 'function') closeArchiveModal();
+    if (typeof closeDeleteConfirmModal === 'function') closeDeleteConfirmModal();
   }
 });
+

@@ -126,6 +126,17 @@ include '../../includes/sidebar.php';
 
       <!-- Filters Group -->
       <div class="flex items-center gap-3">
+        <!-- Bulk Delete Button (Archived Tab) -->
+        <button 
+          type="button" 
+          id="bulkDeleteBtn" 
+          onclick="openDeleteConfirmModal()" 
+          class="hidden bg-rose-600 hover:bg-rose-700 text-white font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-2 transition cursor-pointer shadow-2xs"
+        >
+          <i class="fa-solid fa-trash text-xs"></i>
+          <span>Delete Selected (<span id="selectedCount">0</span>)</span>
+        </button>
+
         <!-- Parent Module Filter Dropdown -->
         <select 
           id="parentModuleFilter" 
@@ -163,7 +174,10 @@ include '../../includes/sidebar.php';
     <div class="overflow-x-auto">
       <table class="w-full text-left border-collapse">
         <thead>
-          <tr class="bg-slate-50/80 border-b border-slate-200/80 text-[10px] font-black uppercase tracking-wider text-slate-400">
+          <tr id="resourceTableHeader" class="bg-slate-50/80 border-b border-slate-200/80 text-[10px] font-black uppercase tracking-wider text-slate-400">
+            <th id="checkboxTh" class="px-4 py-3.5 w-10 text-center hidden">
+              <input type="checkbox" id="selectAllArchivedResources" onchange="toggleSelectAllArchivedResources(this)" class="rounded border-slate-300 text-rose-600 focus:ring-rose-500 cursor-pointer">
+            </th>
             <th class="px-6 py-3.5">Resource Name</th>
             <th class="px-6 py-3.5">Parent Module</th>
             <th class="px-6 py-3.5">Description</th>
@@ -374,6 +388,50 @@ include '../../includes/sidebar.php';
         >
           <i class="fa-solid fa-box-archive text-xs"></i>
           <span>Confirm Archive</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL 3: PERMANENT DELETE CONFIRMATION MODAL -->
+<div id="deleteConfirmModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 bg-slate-900/70 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300">
+  <div class="bg-white border border-slate-200 rounded-2xl shadow-xl w-full max-w-md max-h-[85vh] my-auto overflow-y-auto transform scale-95 transition-all duration-300" id="deleteConfirmModalCard">
+    <div class="p-6 space-y-4 text-center">
+      
+      <!-- Danger Icon -->
+      <div class="h-14 w-14 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 flex items-center justify-center mx-auto text-xl shadow-2xs">
+        <i class="fa-solid fa-trash-can"></i>
+      </div>
+
+      <div class="space-y-1">
+        <h3 class="text-base font-black text-slate-900 tracking-tight">Permanently Delete Resource(s)?</h3>
+        <p id="deleteTargetInfo" class="text-xs font-bold text-rose-600">Resource: Citizen Verification</p>
+      </div>
+
+      <!-- Warning Callout Box -->
+      <div class="bg-rose-50/80 border border-rose-200/80 rounded-xl p-3.5 text-left text-xs leading-relaxed text-rose-900 flex items-start gap-2.5">
+        <i class="fa-solid fa-triangle-exclamation text-rose-600 text-sm mt-0.5 shrink-0"></i>
+        <span>This action will <strong>permanently delete</strong> the selected resource(s) and all associated permissions from the database. This action <strong>cannot be undone</strong>.</span>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="pt-2 flex items-center justify-end gap-2.5">
+        <button 
+          type="button" 
+          onclick="closeDeleteConfirmModal()" 
+          class="w-1/2 py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold rounded-xl text-xs transition cursor-pointer"
+        >
+          Cancel
+        </button>
+        <button 
+          type="button" 
+          onclick="confirmPermanentDelete()" 
+          class="w-1/2 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs transition shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
+        >
+          <i class="fa-solid fa-trash text-xs"></i>
+          <span>Delete Permanently</span>
         </button>
       </div>
 

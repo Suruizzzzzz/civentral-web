@@ -4,6 +4,8 @@ window.systemResources = [];
 window.systemModulesList = [];
 window.currentUserScope = null;
 window.archiveTargetResourceId = null;
+window.selectedArchivedResourceIds = [];
+window.singleDeleteTargetResourceId = null;
 
 var systemResources = window.systemResources;
 var systemModulesList = window.systemModulesList;
@@ -96,5 +98,30 @@ async function updateResourceStatusInDb(resourceId, newStatus) {
   }
 }
 
+// PERMANENTLY DELETE RESOURCE(S) FROM DATABASE
+async function deleteResourcesPermanently(resourceIds) {
+  try {
+    const ids = Array.isArray(resourceIds) ? resourceIds : [resourceIds];
+    const response = await fetch('../../api/employee/resources.php?permanent=true', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ resource_ids: ids, permanent: true })
+    });
+    const result = await response.json();
+    if (result.status === 'success') {
+      if (typeof showToast === 'function') showToast(result.message || 'Resource(s) permanently deleted.');
+      window.selectedArchivedResourceIds = [];
+      await fetchResources();
+    } else {
+      if (typeof showToast === 'function') showToast(result.message || 'Failed to delete resource(s).');
+    }
+  } catch (err) {
+    console.error('Error permanently deleting resources:', err);
+    if (typeof showToast === 'function') showToast('Error deleting resource(s) FROM DATABASE.');
+  }
+}
+
 window.fetchResources = fetchResources;
 window.updateResourceStatusInDb = updateResourceStatusInDb;
+window.deleteResourcesPermanently = deleteResourcesPermanently;
+

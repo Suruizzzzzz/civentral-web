@@ -129,6 +129,52 @@ async function toggleResourceStatus(id) {
   if (typeof updateResourceStatusInDb === 'function') await updateResourceStatusInDb(id, nextStatus);
 }
 
+function openDeleteConfirmModal(id = null) {
+  const isSuperAdmin = currentUserScope ? !!currentUserScope.is_superadmin : false;
+  const grantedActions = currentUserScope ? (currentUserScope.granted_actions || []) : [];
+  const canDelete = isSuperAdmin || grantedActions.includes('DELETE');
+
+  if (!canDelete) {
+    if (typeof showToast === 'function') showToast('Forbidden. View-only access level cannot delete system resources.');
+    return;
+  }
+
+  const targetInfoEl = document.getElementById('deleteTargetInfo');
+
+  if (id) {
+    window.singleDeleteTargetResourceId = id;
+    const res = (window.systemResources || []).find(r => r.id === id);
+    if (targetInfoEl) targetInfoEl.textContent = res ? `Resource: ${res.name}` : `Resource ID #${id}`;
+  } else {
+    window.singleDeleteTargetResourceId = null;
+    const count = (window.selectedArchivedResourceIds || []).length;
+    if (count === 0) {
+      if (typeof showToast === 'function') showToast('No archived resources selected.');
+      return;
+    }
+    if (targetInfoEl) targetInfoEl.textContent = `${count} selected archived resource(s)`;
+  }
+
+  showModalOverlay('deleteConfirmModal', 'deleteConfirmModalCard');
+}
+
+function closeDeleteConfirmModal() {
+  window.singleDeleteTargetResourceId = null;
+  hideModalOverlay('deleteConfirmModal', 'deleteConfirmModalCard');
+}
+
+async function confirmPermanentDelete() {
+  const targetIds = window.singleDeleteTargetResourceId ? [window.singleDeleteTargetResourceId] : (window.selectedArchivedResourceIds || []);
+  
+  closeDeleteConfirmModal();
+
+  if (targetIds.length === 0) return;
+
+  if (typeof deleteResourcesPermanently === 'function') {
+    await deleteResourcesPermanently(targetIds);
+  }
+}
+
 window.openCreateResourceModal = openCreateResourceModal;
 window.openEditResourceModal = openEditResourceModal;
 window.closeResourceModal = closeResourceModal;
@@ -136,3 +182,7 @@ window.openArchiveResourceModal = openArchiveResourceModal;
 window.closeArchiveModal = closeArchiveModal;
 window.confirmArchiveResource = confirmArchiveResource;
 window.toggleResourceStatus = toggleResourceStatus;
+window.openDeleteConfirmModal = openDeleteConfirmModal;
+window.closeDeleteConfirmModal = closeDeleteConfirmModal;
+window.confirmPermanentDelete = confirmPermanentDelete;
+
