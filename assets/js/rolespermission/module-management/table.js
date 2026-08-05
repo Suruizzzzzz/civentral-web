@@ -23,6 +23,74 @@ function goToModulePage(page) {
 window.changeModulePage = changeModulePage;
 window.goToModulePage = goToModulePage;
 
+function toggleSelectModule(checkbox, id) {
+  if (!Array.isArray(window.selectedArchivedIds)) window.selectedArchivedIds = [];
+  
+  if (checkbox.checked) {
+    if (!window.selectedArchivedIds.includes(id)) {
+      window.selectedArchivedIds.push(id);
+    }
+  } else {
+    window.selectedArchivedIds = window.selectedArchivedIds.filter(item => item !== id);
+  }
+  updateBulkDeleteToolbar();
+}
+
+function toggleSelectAllArchived(selectAllCheckbox) {
+  if (!Array.isArray(window.selectedArchivedIds)) window.selectedArchivedIds = [];
+  const archivedMods = currentFilteredModules.filter(m => m.status === 'Archived');
+
+  if (selectAllCheckbox.checked) {
+    archivedMods.forEach(m => {
+      if (!window.selectedArchivedIds.includes(m.id)) {
+        window.selectedArchivedIds.push(m.id);
+      }
+    });
+  } else {
+    const pageIds = archivedMods.map(m => m.id);
+    window.selectedArchivedIds = window.selectedArchivedIds.filter(id => !pageIds.includes(id));
+  }
+
+  const rowCheckboxes = document.querySelectorAll('.archive-module-checkbox');
+  rowCheckboxes.forEach(cb => {
+    cb.checked = selectAllCheckbox.checked;
+  });
+
+  updateBulkDeleteToolbar();
+}
+
+function updateBulkDeleteToolbar() {
+  const bulkBtn = document.getElementById('bulkDeleteBtn');
+  const countEl = document.getElementById('selectedCount');
+  const selectAllCb = document.getElementById('selectAllArchived');
+
+  const selectedCount = (window.selectedArchivedIds || []).length;
+
+  if (countEl) countEl.textContent = selectedCount;
+
+  if (bulkBtn) {
+    if (window.currentModuleTab === 'archived' && selectedCount > 0) {
+      bulkBtn.classList.remove('hidden');
+    } else {
+      bulkBtn.classList.add('hidden');
+    }
+  }
+
+  if (selectAllCb && window.currentModuleTab === 'archived') {
+    const archivedMods = currentFilteredModules.filter(m => m.status === 'Archived');
+    if (archivedMods.length > 0) {
+      const allSelected = archivedMods.every(m => (window.selectedArchivedIds || []).includes(m.id));
+      selectAllCb.checked = allSelected;
+    } else {
+      selectAllCb.checked = false;
+    }
+  }
+}
+
+window.toggleSelectModule = toggleSelectModule;
+window.toggleSelectAllArchived = toggleSelectAllArchived;
+window.updateBulkDeleteToolbar = updateBulkDeleteToolbar;
+
 function renderModulesTable(dataToRender = systemModules, resetPage = true) {
   currentFilteredModules = dataToRender;
   if (resetPage) currentModulePage = 1;
@@ -30,7 +98,20 @@ function renderModulesTable(dataToRender = systemModules, resetPage = true) {
   const tableBody = document.getElementById('moduleTableBody');
   const emptyState = document.getElementById('emptyTableState');
   const paginationFooter = document.getElementById('modulePaginationFooter');
+  const checkboxTh = document.getElementById('checkboxTh');
+  const selectAllCb = document.getElementById('selectAllArchived');
+
   if (!tableBody) return;
+
+  const isArchivedTab = window.currentModuleTab === 'archived';
+  if (checkboxTh) {
+    if (isArchivedTab) {
+      checkboxTh.classList.remove('hidden');
+    } else {
+      checkboxTh.classList.add('hidden');
+      if (selectAllCb) selectAllCb.checked = false;
+    }
+  }
 
   tableBody.innerHTML = '';
 
@@ -38,6 +119,7 @@ function renderModulesTable(dataToRender = systemModules, resetPage = true) {
     if (emptyState) emptyState.classList.remove('hidden');
     if (paginationFooter) paginationFooter.classList.add('hidden');
     updateMetrics();
+    updateBulkDeleteToolbar();
     return;
   } else {
     if (emptyState) emptyState.classList.add('hidden');
@@ -54,12 +136,12 @@ function renderModulesTable(dataToRender = systemModules, resetPage = true) {
   const isSuperAdmin = currentUserScope ? !!currentUserScope.is_superadmin : false;
   const grantedActions = currentUserScope ? (currentUserScope.granted_actions || []) : [];
   const canEdit = isSuperAdmin || grantedActions.includes('EDIT');
+  const canDelete = isSuperAdmin || grantedActions.includes('DELETE');
 
   pageItems.forEach(mod => {
     const tr = document.createElement('tr');
     tr.className = 'hover:bg-slate-50/60 transition group';
 
-    // Status Badge HTML
     let statusBadgeHtml = '';
     if (mod.status === 'Active') {
       statusBadgeHtml = `
@@ -86,8 +168,21 @@ function renderModulesTable(dataToRender = systemModules, resetPage = true) {
 
     const isChecked = mod.status === 'Active';
     const isArchived = mod.status === 'Archived';
+    const isItemSelected = (window.selectedArchivedIds || []).includes(mod.id);
+
+    const checkboxTdHtml = isArchivedTab ? `
+      <td class="px-4 py-4 text-center">
+        <input 
+          type="checkbox" 
+          ${isItemSelected ? 'checked' : ''} 
+          onchange="toggleSelectModule(this, ${mod.id})" 
+          class="archive-module-checkbox rounded border-slate-300 text-rose-600 focus:ring-rose-500 cursor-pointer"
+        >
+      </td>
+    ` : '';
 
     tr.innerHTML = `
+      ${checkboxTdHtml}
       <td class="px-6 py-4">
         <span class="font-extrabold text-slate-900 tracking-tight block text-xs">${mod.name}</span>
       </td>
@@ -109,10 +204,11 @@ function renderModulesTable(dataToRender = systemModules, resetPage = true) {
       </td>
 
       <td class="px-6 py-4 text-right">
-        <div class="flex items-center justify-end gap-3">
+        <div class="flex items-center justify-end gap-2.5">
           ${canEdit ? `
+          ${!isArchived ? `
           <!-- iOS Toggle Switch -->
-          <label class="relative inline-flex items-center cursor-pointer ${isArchived ? 'opacity-50 pointer-events-none' : ''}" title="Activate/Deactivate Module">
+          <label class="relative inline-flex items-center cursor-pointer" title="Activate/Deactivate Module">
             <input 
               type="checkbox" 
               ${isChecked ? 'checked' : ''} 
@@ -131,6 +227,7 @@ function renderModulesTable(dataToRender = systemModules, resetPage = true) {
           >
             <i class="fa-solid fa-pen-to-square text-xs"></i>
           </button>
+          ` : ''}
 
           ${isArchived ? `
           <!-- Restore Button -->
@@ -143,6 +240,18 @@ function renderModulesTable(dataToRender = systemModules, resetPage = true) {
             <i class="fa-solid fa-rotate-left text-xs"></i>
             <span>Restore</span>
           </button>
+
+          ${canDelete ? `
+          <!-- Permanent Delete Button -->
+          <button 
+            type="button" 
+            onclick="openDeleteConfirmModal(${mod.id})" 
+            class="h-8 w-8 rounded-lg border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center transition cursor-pointer"
+            title="Permanently Delete Module from Database"
+          >
+            <i class="fa-solid fa-trash text-xs"></i>
+          </button>
+          ` : ''}
           ` : `
           <!-- Archive Button -->
           <button 
@@ -189,6 +298,7 @@ function renderModulesTable(dataToRender = systemModules, resetPage = true) {
   }
 
   updateMetrics();
+  updateBulkDeleteToolbar();
 }
 
 async function restoreModule(id) {
@@ -214,3 +324,4 @@ function updateMetrics() {
 }
 
 window.renderModulesTable = renderModulesTable;
+

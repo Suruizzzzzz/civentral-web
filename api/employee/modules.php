@@ -108,7 +108,7 @@ try {
     }
 
     if ($method === 'GET') {
-        if ($isSuperAdmin) {
+        if ($isSuperAdmin || $canCreateModule || $canEditModule || $canDeleteModule) {
             $modules = $db->query("SELECT module_id, module_name, description, status, created_at, updated_at FROM modules ORDER BY module_id ASC") ?: [];
         } else {
             $coreModuleIds = [4, 5, 6, 7, 8];
@@ -238,7 +238,7 @@ try {
             ], 403);
         }
 
-        $moduleId = filter_var($data['module_id'] ?? null, FILTER_VALIDATE_INT);
+        $moduleId = filter_var($data['module_id'] ?? ($_GET['module_id'] ?? null), FILTER_VALIDATE_INT);
 
         if (!$moduleId) {
             respond([
@@ -251,14 +251,17 @@ try {
 
         if (isset($data['module_name'])) $updatePayload['module_name'] = trim($data['module_name']);
         if (isset($data['description'])) $updatePayload['description'] = trim($data['description']);
-        if (isset($data['status']) && in_array($data['status'], ['Active', 'Inactive', 'Archived'])) {
-            $updatePayload['status'] = $data['status'];
+        if (isset($data['status'])) {
+            $st = ucfirst(strtolower(trim($data['status'])));
+            if (in_array($st, ['Active', 'Inactive', 'Archived'])) {
+                $updatePayload['status'] = $st;
+            }
         }
 
         $oldModuleRows = $db->query("SELECT * FROM modules WHERE module_id = :id", ['id' => $moduleId]);
         $oldModule = !empty($oldModuleRows) ? $oldModuleRows[0] : null;
 
-        if (isset($data['status']) && $data['status'] === 'Archived') {
+        if (isset($updatePayload['status']) && $updatePayload['status'] === 'Archived') {
             $db->update('resources', ['status' => 'Archived', 'updated_at' => date('Y-m-d H:i:s')], ['module_id' => $moduleId]);
         }
 
@@ -293,48 +296,111 @@ try {
             ], 403);
         }
 
-        $moduleId = filter_var($_GET['module_id'] ?? $data['module_id'] ?? null, FILTER_VALIDATE_INT);
+        $isPermanent = (isset($_GET['permanent']) && ($_GET['permanent'] === 'true' || $_GET['permanent'] === '1')) 
+                     || (!empty($data['permanent']) && ($data['permanent'] === true || $data['permanent'] === 'true' || $data['permanent'] === 1))
+                     || (isset($_GET['action']) && $_GET['action'] === 'permanent_delete')
+                     || (!empty($data['action']) && $data['action'] === 'permanent_delete');
 
-        if (!$moduleId) {
+        $moduleIds = [];
+        if (!empty($data['module_ids']) && is_array($data['module_ids'])) {
+            $moduleIds = array_map('intval', array_filter($data['module_ids'], 'is_numeric'));
+        } else {
+            $singleId = filter_var($_GET['module_id'] ?? $data['module_id'] ?? null, FILTER_VALIDATE_INT);
+            if ($singleId) {
+                $moduleIds = [$singleId];
+            }
+        }
+
+        if (empty($moduleIds)) {
             respond([
                 'status' => 'error',
-                'message' => 'Valid module_id is required for deletion.'
+                'message' => 'Valid module_id or module_ids list is required.'
             ], 400);
         }
 
-        $oldModuleRows = $db->query("SELECT * FROM modules WHERE module_id = :id", ['id' => $moduleId]);
-        $oldModule = !empty($oldModuleRows) ? $oldModuleRows[0] : null;
+        $coreModuleIds = [4, 5, 6, 7, 8];
 
-        $db->update('modules', [
-            'status' => 'Archived',
-            'updated_at' => date('Y-m-d H:i:s')
-        ], ['module_id' => $moduleId]);
+        if ($isPermanent) {
+            // Guard core system modules
+            $blockedCore = array_intersect($moduleIds, $coreModuleIds);
+            if (!empty($blockedCore)) {
+                respond([
+                    'status' => 'error',
+                    'message' => 'Core system modules cannot be permanently deleted from the database.'
+                ], 400);
+            }
 
-        // Cascade archive all child resources under this module
-        $db->update('resources', [
-            'status' => 'Archived',
-            'updated_at' => date('Y-m-d H:i:s')
-        ], ['module_id' => $moduleId]);
+            $deletedCount = 0;
+            foreach ($moduleIds as $mId) {
+                $oldModuleRows = $db->query("SELECT * FROM modules WHERE module_id = :id", ['id' => $mId]);
+                $oldModule = !empty($oldModuleRows) ? $oldModuleRows[0] : null;
 
-        $newModuleRows = $db->query("SELECT * FROM modules WHERE module_id = :id", ['id' => $moduleId]);
-        $newModule = !empty($newModuleRows) ? $newModuleRows[0] : null;
+                if (!$oldModule) continue;
 
-        // Audit Trail with Full Data Mutation Snapshot
-        \App\Services\AuditLogger::logMutation([
-            'action'        => 'Archive Module',
-            'target_table'  => 'modules',
-            'target_id'     => (string)$moduleId,
-            'description'   => "Archived module ID {$moduleId} and all child resources",
-            'actor_user_id' => $userId,
-            'module_id'     => $moduleId,
-            'old_data'      => $oldModule,
-            'new_data'      => $newModule
-        ]);
+                // Explicit cascading cleanup of resources & permissions
+                $resRows = $db->query("SELECT resource_id FROM resources WHERE module_id = :id", ['id' => $mId]) ?: [];
+                foreach ($resRows as $r) {
+                    $rId = (int)$r['resource_id'];
+                    $db->query("DELETE FROM role_permissions WHERE permission_id IN (SELECT permission_id FROM permissions WHERE resource_id = :rid)", ['rid' => $rId]);
+                    $db->delete('permissions', ['resource_id' => $rId]);
+                }
+                $db->delete('resources', ['module_id' => $mId]);
 
-        respond([
-            'status' => 'success',
-            'message' => 'Module and all child resources archived successfully.'
-        ]);
+                // Delete module record
+                $db->delete('modules', ['module_id' => $mId]);
+                $deletedCount++;
+
+                // Audit Trail
+                \App\Services\AuditLogger::log([
+                    'action'        => 'Permanent Delete Module',
+                    'target_table'  => 'modules',
+                    'target_id'     => (string)$mId,
+                    'description'   => "Permanently deleted module ID {$mId} (\"" . ($oldModule['module_name'] ?? '') . "\") and associated resources/permissions",
+                    'actor_user_id' => $userId,
+                    'module_id'     => null
+                ]);
+            }
+
+            respond([
+                'status' => 'success',
+                'message' => $deletedCount === 1 ? 'Module permanently deleted from database.' : "{$deletedCount} modules permanently deleted from database."
+            ]);
+        } else {
+            // Soft Archive
+            foreach ($moduleIds as $mId) {
+                $oldModuleRows = $db->query("SELECT * FROM modules WHERE module_id = :id", ['id' => $mId]);
+                $oldModule = !empty($oldModuleRows) ? $oldModuleRows[0] : null;
+
+                $db->update('modules', [
+                    'status' => 'Archived',
+                    'updated_at' => date('Y-m-d H:i:s')
+                ], ['module_id' => $mId]);
+
+                $db->update('resources', [
+                    'status' => 'Archived',
+                    'updated_at' => date('Y-m-d H:i:s')
+                ], ['module_id' => $mId]);
+
+                $newModuleRows = $db->query("SELECT * FROM modules WHERE module_id = :id", ['id' => $mId]);
+                $newModule = !empty($newModuleRows) ? $newModuleRows[0] : null;
+
+                \App\Services\AuditLogger::logMutation([
+                    'action'        => 'Archive Module',
+                    'target_table'  => 'modules',
+                    'target_id'     => (string)$mId,
+                    'description'   => "Archived module ID {$mId} and all child resources",
+                    'actor_user_id' => $userId,
+                    'module_id'     => $mId,
+                    'old_data'      => $oldModule,
+                    'new_data'      => $newModule
+                ]);
+            }
+
+            respond([
+                'status' => 'success',
+                'message' => 'Module(s) and child resources archived successfully.'
+            ]);
+        }
     }
 
     respond([

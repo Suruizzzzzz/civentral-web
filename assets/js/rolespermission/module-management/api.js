@@ -3,6 +3,8 @@
 window.systemModules = [];
 window.currentUserScope = null;
 window.archiveTargetId = null;
+window.selectedArchivedIds = [];
+window.singleDeleteTargetId = null;
 
 var systemModules = window.systemModules;
 var currentUserScope = window.currentUserScope;
@@ -56,5 +58,30 @@ async function updateModuleStatusInDb(moduleId, newStatus) {
   }
 }
 
+// PERMANENTLY DELETE MODULE(S) FROM DATABASE
+async function deleteModulesPermanently(moduleIds) {
+  try {
+    const ids = Array.isArray(moduleIds) ? moduleIds : [moduleIds];
+    const response = await fetch('../../api/employee/modules.php?permanent=true', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ module_ids: ids, permanent: true })
+    });
+    const result = await response.json();
+    if (result.status === 'success') {
+      if (typeof showToast === 'function') showToast(result.message || 'Module(s) permanently deleted.');
+      window.selectedArchivedIds = [];
+      await fetchModules();
+    } else {
+      if (typeof showToast === 'function') showToast(result.message || 'Failed to delete module(s).');
+    }
+  } catch (err) {
+    console.error('Error permanently deleting modules:', err);
+    if (typeof showToast === 'function') showToast('Error deleting module(s) FROM DATABASE.');
+  }
+}
+
 window.fetchModules = fetchModules;
 window.updateModuleStatusInDb = updateModuleStatusInDb;
+window.deleteModulesPermanently = deleteModulesPermanently;
+

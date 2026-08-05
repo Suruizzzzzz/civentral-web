@@ -31,6 +31,15 @@ async function handleSaveModule(event) {
     if (result.status === 'success') {
       if (typeof showToast === 'function') showToast(result.message || 'Module saved successfully.');
       if (typeof closeModuleModal === 'function') closeModuleModal();
+
+      if (idVal === '') {
+        const searchInput = document.getElementById('moduleSearchInput');
+        const statusFilterSelect = document.getElementById('statusFilterSelect');
+        if (searchInput) searchInput.value = '';
+        if (statusFilterSelect) statusFilterSelect.value = 'ALL';
+        if (typeof switchModuleTab === 'function') switchModuleTab('active');
+      }
+
       if (typeof fetchModules === 'function') await fetchModules();
     } else {
       if (typeof showToast === 'function') showToast(result.message || 'Failed to save module.');
@@ -47,11 +56,14 @@ window.handleSaveModule = handleSaveModule;
 document.addEventListener('click', (e) => {
   if (e.target.id === 'moduleModal' && typeof closeModuleModal === 'function') closeModuleModal();
   if (e.target.id === 'archiveModal' && typeof closeArchiveModal === 'function') closeArchiveModal();
+  if (e.target.id === 'deleteConfirmModal' && typeof closeDeleteConfirmModal === 'function') closeDeleteConfirmModal();
 });
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     if (typeof closeModuleModal === 'function') closeModuleModal();
     if (typeof closeArchiveModal === 'function') closeArchiveModal();
+    if (typeof closeDeleteConfirmModal === 'function') closeDeleteConfirmModal();
   }
 });
+

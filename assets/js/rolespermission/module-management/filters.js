@@ -7,6 +7,10 @@ window.switchModuleTab = function(tabName) {
   const archivedBtn = document.getElementById('tabArchivedModulesBtn');
   const statusFilterSelect = document.getElementById('statusFilterSelect');
 
+  if (tabName === 'active') {
+    window.selectedArchivedIds = [];
+  }
+
   if (activeBtn && archivedBtn) {
     if (tabName === 'active') {
       activeBtn.className = "module-tab-btn px-4 py-2.5 text-xs font-bold border-b-2 border-brand-dark text-brand-dark flex items-center gap-2 transition cursor-pointer";

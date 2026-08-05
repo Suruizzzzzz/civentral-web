@@ -405,7 +405,12 @@ try {
         if (isset($data['resource_name'])) $updatePayload['resource_name'] = trim($data['resource_name']);
         if (isset($data['resource_route'])) $updatePayload['resource_route'] = trim($data['resource_route']);
         if (isset($data['description'])) $updatePayload['description'] = trim($data['description']);
-        if (isset($data['status']) && in_array($data['status'], ['Active', 'Inactive', 'Archived'])) $updatePayload['status'] = $data['status'];
+        if (isset($data['status'])) {
+            $st = ucfirst(strtolower(trim($data['status'])));
+            if (in_array($st, ['Active', 'Inactive', 'Archived'])) {
+                $updatePayload['status'] = $st;
+            }
+        }
 
         $oldResRows = $db->query("SELECT * FROM resources WHERE resource_id = :id", ['id' => $resourceId]);
         $oldRes = !empty($oldResRows) ? $oldResRows[0] : null;

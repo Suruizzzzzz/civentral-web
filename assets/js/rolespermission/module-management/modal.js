@@ -122,6 +122,52 @@ async function toggleModuleStatus(id) {
   if (typeof updateModuleStatusInDb === 'function') await updateModuleStatusInDb(id, nextStatus);
 }
 
+function openDeleteConfirmModal(id = null) {
+  const isSuperAdmin = currentUserScope ? !!currentUserScope.is_superadmin : false;
+  const grantedActions = currentUserScope ? (currentUserScope.granted_actions || []) : [];
+  const canDelete = isSuperAdmin || grantedActions.includes('DELETE');
+
+  if (!canDelete) {
+    if (typeof showToast === 'function') showToast('Forbidden. View-only access level cannot delete system modules.');
+    return;
+  }
+
+  const targetInfoEl = document.getElementById('deleteTargetInfo');
+
+  if (id) {
+    window.singleDeleteTargetId = id;
+    const mod = (window.systemModules || []).find(m => m.id === id);
+    if (targetInfoEl) targetInfoEl.textContent = mod ? `Module: ${mod.name}` : `Module ID #${id}`;
+  } else {
+    window.singleDeleteTargetId = null;
+    const count = (window.selectedArchivedIds || []).length;
+    if (count === 0) {
+      if (typeof showToast === 'function') showToast('No archived modules selected.');
+      return;
+    }
+    if (targetInfoEl) targetInfoEl.textContent = `${count} selected archived module(s)`;
+  }
+
+  showModalOverlay('deleteConfirmModal', 'deleteConfirmModalCard');
+}
+
+function closeDeleteConfirmModal() {
+  window.singleDeleteTargetId = null;
+  hideModalOverlay('deleteConfirmModal', 'deleteConfirmModalCard');
+}
+
+async function confirmPermanentDelete() {
+  const targetIds = window.singleDeleteTargetId ? [window.singleDeleteTargetId] : (window.selectedArchivedIds || []);
+  
+  closeDeleteConfirmModal();
+
+  if (targetIds.length === 0) return;
+
+  if (typeof deleteModulesPermanently === 'function') {
+    await deleteModulesPermanently(targetIds);
+  }
+}
+
 window.openCreateModuleModal = openCreateModuleModal;
 window.openCreateModal = openCreateModuleModal;
 window.openEditModal = openEditModal;
@@ -130,3 +176,7 @@ window.openArchiveModal = openArchiveModal;
 window.closeArchiveModal = closeArchiveModal;
 window.confirmArchiveModule = confirmArchiveModule;
 window.toggleModuleStatus = toggleModuleStatus;
+window.openDeleteConfirmModal = openDeleteConfirmModal;
+window.closeDeleteConfirmModal = closeDeleteConfirmModal;
+window.confirmPermanentDelete = confirmPermanentDelete;
+
