@@ -191,7 +191,7 @@ try {
             }
         }
 
-        if ($isSuperAdmin || $canCreateResource || $canEditResource || $canDeleteResource) {
+        if ($isSuperAdmin) {
             $resourcesRaw = $db->query("
                 SELECT r.*, m.module_name, m.description AS module_desc
                 FROM resources r
@@ -207,11 +207,39 @@ try {
                 if (!empty($dRow)) $userDeptName = $dRow[0]['department_name'];
             }
 
-            $rawWords = preg_split('/[\s,\/&\-\+]+/', strtolower($userDeptName ?? ''));
+            // Gather all user's authorized departments (primary department + role_department_access)
+            $userAuthorizedDeptNames = [];
+            if (!empty($userDeptName)) {
+                $userAuthorizedDeptNames[] = $userDeptName;
+            }
+
+            if ($userRoleId) {
+                $rdaDepts = $db->query("
+                    SELECT d.department_name 
+                    FROM role_department_access rda
+                    JOIN departments d ON rda.department_id = d.department_id
+                    WHERE rda.role_id = :rid
+                ", ['rid' => $userRoleId]) ?: [];
+                foreach ($rdaDepts as $rd) {
+                    if (!empty($rd['department_name'])) {
+                        $userAuthorizedDeptNames[] = $rd['department_name'];
+                    }
+                }
+            }
+
+            $userAuthorizedDeptNames = array_unique($userAuthorizedDeptNames);
+
             $stopWords = ['department', 'office', 'bureau', 'division', 'service', 'services', 'and', '&', 'of', 'management', 'the', 'unit'];
-            $deptKeywords = array_filter($rawWords, function($w) use ($stopWords) {
-                return strlen($w) >= 3 && !in_array($w, $stopWords);
-            });
+            $deptKeywords = [];
+            foreach ($userAuthorizedDeptNames as $dName) {
+                $rawWords = preg_split('/[\s,\/&\-\+]+/', strtolower($dName));
+                foreach ($rawWords as $w) {
+                    if (strlen($w) >= 3 && !in_array($w, $stopWords, true)) {
+                        $deptKeywords[] = $w;
+                    }
+                }
+            }
+            $deptKeywords = array_unique($deptKeywords);
 
             $allModules = $db->query("SELECT module_id, module_name FROM modules WHERE status != 'Archived' OR status IS NULL ORDER BY module_id ASC") ?: [];
 

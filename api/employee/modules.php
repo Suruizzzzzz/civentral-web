@@ -108,7 +108,7 @@ try {
     }
 
     if ($method === 'GET') {
-        if ($isSuperAdmin || $canCreateModule || $canEditModule || $canDeleteModule) {
+        if ($isSuperAdmin) {
             $modules = $db->query("SELECT module_id, module_name, description, status, created_at, updated_at FROM modules ORDER BY module_id ASC") ?: [];
         } else {
             $coreModuleIds = [4, 5, 6, 7, 8];
@@ -118,13 +118,40 @@ try {
                 if (!empty($dRow)) $userDeptName = $dRow[0]['department_name'];
             }
 
-            $rawWords = preg_split('/[\s,\/&\-\+]+/', strtolower($userDeptName ?? ''));
-            $stopWords = ['department', 'office', 'bureau', 'division', 'service', 'services', 'and', '&', 'of', 'management', 'the', 'unit'];
-            $deptKeywords = array_filter($rawWords, function($w) use ($stopWords) {
-                return strlen($w) >= 3 && !in_array($w, $stopWords);
-            });
+            // Gather all user's authorized departments (primary department + role_department_access)
+            $userAuthorizedDeptNames = [];
+            if (!empty($userDeptName)) {
+                $userAuthorizedDeptNames[] = $userDeptName;
+            }
 
-            // Fetch ALL modules so frontend Active and Archived tabs work properly
+            if ($userRoleId) {
+                $rdaDepts = $db->query("
+                    SELECT d.department_name 
+                    FROM role_department_access rda
+                    JOIN departments d ON rda.department_id = d.department_id
+                    WHERE rda.role_id = :rid
+                ", ['rid' => $userRoleId]) ?: [];
+                foreach ($rdaDepts as $rd) {
+                    if (!empty($rd['department_name'])) {
+                        $userAuthorizedDeptNames[] = $rd['department_name'];
+                    }
+                }
+            }
+
+            $userAuthorizedDeptNames = array_unique($userAuthorizedDeptNames);
+
+            $stopWords = ['department', 'office', 'bureau', 'division', 'service', 'services', 'and', '&', 'of', 'management', 'the', 'unit'];
+            $deptKeywords = [];
+            foreach ($userAuthorizedDeptNames as $dName) {
+                $rawWords = preg_split('/[\s,\/&\-\+]+/', strtolower($dName));
+                foreach ($rawWords as $w) {
+                    if (strlen($w) >= 3 && !in_array($w, $stopWords, true)) {
+                        $deptKeywords[] = $w;
+                    }
+                }
+            }
+            $deptKeywords = array_unique($deptKeywords);
+
             $allModules = $db->query("SELECT module_id, module_name, description, status, created_at, updated_at FROM modules ORDER BY module_id ASC") ?: [];
 
             $grantedModRows = $userRoleId ? ($db->query("
