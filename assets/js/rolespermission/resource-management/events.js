@@ -10,12 +10,16 @@ async function handleSaveResource(event) {
   const route = document.getElementById('resourceRoute').value.trim();
   const desc = document.getElementById('resourceDesc').value.trim();
 
+  const actionCheckboxes = document.querySelectorAll('.resource-action-checkbox:checked');
+  const selectedActionIds = Array.from(actionCheckboxes).map(cb => parseInt(cb.value)).filter(val => !isNaN(val));
+
   const payload = {
     module_id: parseInt(moduleId),
     resource_name: name,
     resource_route: route,
     description: desc,
-    status: status
+    status: status,
+    selected_action_ids: selectedActionIds
   };
 
   if (idVal !== '') {

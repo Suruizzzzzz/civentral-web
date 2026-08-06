@@ -42,6 +42,23 @@ async function fetchPermissionsData() {
         deptFilterSelect.value = currentVal;
       }
 
+      // Build lookup map of supported action IDs per resource from dbPermissions
+      const resourceSupportedActionsMapFromDb = {};
+      dbPermissions.forEach(p => {
+        if (p.status !== 'Inactive') {
+          const rId = (int => isNaN(int) ? null : int)(parseInt(p.resource_id));
+          const aId = (int => isNaN(int) ? null : int)(parseInt(p.action_id));
+          if (rId && aId) {
+            if (!resourceSupportedActionsMapFromDb[rId]) {
+              resourceSupportedActionsMapFromDb[rId] = [];
+            }
+            if (!resourceSupportedActionsMapFromDb[rId].includes(aId)) {
+              resourceSupportedActionsMapFromDb[rId].push(aId);
+            }
+          }
+        }
+      });
+
       // Build modulesData with nested resources
       modulesData = dbModules.map(m => {
         const resList = dbResources
@@ -49,7 +66,8 @@ async function fetchPermissionsData() {
           .map(r => ({
             id: r.resource_id,
             name: r.resource_name,
-            desc: r.description || r.resource_route || ''
+            desc: r.description || r.resource_route || '',
+            supported_action_ids: resourceSupportedActionsMapFromDb[r.resource_id] || []
           }));
         
         return {

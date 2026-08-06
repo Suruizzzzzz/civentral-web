@@ -22,12 +22,18 @@ const resourceSupportedActionsMap = {
 
 function isActionSupportedForResource(resObj, actObj) {
   if (!resObj || !actObj) return true;
+  const actId = parseInt(actObj.action_id);
   const resName = (resObj.name || '').toLowerCase().trim();
   const actName = (actObj.action_name || '').toUpperCase().trim();
+
+  if (Array.isArray(resObj.supported_action_ids) && resObj.supported_action_ids.length > 0) {
+    return resObj.supported_action_ids.includes(actId);
+  }
 
   if (resourceSupportedActionsMap[resName]) {
     return resourceSupportedActionsMap[resName].includes(actName);
   }
+
   return true;
 }
 

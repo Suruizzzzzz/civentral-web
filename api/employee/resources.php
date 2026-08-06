@@ -43,7 +43,7 @@ function respond(array $payload, int $statusCode = 200): void {
 }
 
 // Auto-grant permissions for a resource to creator, department roles & Super Admin roles
-function autoGrantResourcePermissions($db, int $resourceId, ?int $actorUserId = null, ?int $creatorRoleId = null, ?int $creatorDeptId = null): void {
+function autoGrantResourcePermissions($db, int $resourceId, ?int $actorUserId = null, ?int $creatorRoleId = null, ?int $creatorDeptId = null, ?array $selectedActionIds = null): void {
     try {
         $grantedByUserId = null;
         if ($actorUserId) {
@@ -53,8 +53,18 @@ function autoGrantResourcePermissions($db, int $resourceId, ?int $actorUserId = 
             }
         }
 
-        $allActions = $db->query("SELECT action_id FROM actions WHERE status != 'Archived' OR status IS NULL") ?: [];
-        if (empty($allActions)) return;
+        if (is_array($selectedActionIds)) {
+            if (empty($selectedActionIds)) {
+                $targetActionIds = [];
+            } else {
+                $inClause = implode(',', array_map('intval', $selectedActionIds));
+                $allActions = $db->query("SELECT action_id FROM actions WHERE (status != 'Archived' OR status IS NULL) AND action_id IN ({$inClause})") ?: [];
+                $targetActionIds = array_map('intval', array_column($allActions, 'action_id'));
+            }
+        } else {
+            $allActions = $db->query("SELECT action_id FROM actions WHERE status != 'Archived' OR status IS NULL") ?: [];
+            $targetActionIds = array_map('intval', array_column($allActions, 'action_id'));
+        }
 
         $targetRoleIds = [];
         if ($creatorRoleId) {
@@ -83,8 +93,21 @@ function autoGrantResourcePermissions($db, int $resourceId, ?int $actorUserId = 
 
         $targetRoleIds = array_unique(array_filter($targetRoleIds));
 
-        foreach ($allActions as $actRow) {
-            $actId = (int)$actRow['action_id'];
+        // If selectedActionIds was explicitly provided as an array, handle sync/cleanup of unselected action permissions for this resource
+        if (is_array($selectedActionIds)) {
+            $existingResourcePerms = $db->query("SELECT permission_id, action_id FROM permissions WHERE resource_id = :rid", ['rid' => $resourceId]) ?: [];
+            foreach ($existingResourcePerms as $erp) {
+                $pId = (int)$erp['permission_id'];
+                $aId = (int)$erp['action_id'];
+                if (!in_array($aId, $targetActionIds, true)) {
+                    $db->delete('role_permissions', ['permission_id' => $pId]);
+                    $db->delete('permissions', ['permission_id' => $pId]);
+                }
+            }
+        }
+
+        foreach ($targetActionIds as $actIdRaw) {
+            $actId = (int)$actIdRaw;
             $permKey = "res_{$resourceId}_act_{$actId}";
 
             $existingPerm = $db->query(
@@ -94,6 +117,7 @@ function autoGrantResourcePermissions($db, int $resourceId, ?int $actorUserId = 
 
             if (!empty($existingPerm)) {
                 $permId = (int)$existingPerm[0]['permission_id'];
+                $db->update('permissions', ['status' => 'Active'], ['permission_id' => $permId]);
             } else {
                 $permId = $db->insert('permissions', [
                     'resource_id' => $resourceId,
@@ -292,8 +316,24 @@ try {
             }
         }
 
+        $allPerms = $db->query("SELECT resource_id, action_id FROM permissions WHERE status = 'Active' OR status IS NULL") ?: [];
+        $resourceActionMap = [];
+        foreach ($allPerms as $pRow) {
+            $rId = (int)$pRow['resource_id'];
+            $aId = (int)$pRow['action_id'];
+            if (!isset($resourceActionMap[$rId])) {
+                $resourceActionMap[$rId] = [];
+            }
+            if (!in_array($aId, $resourceActionMap[$rId], true)) {
+                $resourceActionMap[$rId][] = $aId;
+            }
+        }
+
+        $allActionVerbs = $db->query("SELECT action_id, action_name, description, status FROM actions WHERE status != 'Archived' OR status IS NULL ORDER BY action_id ASC") ?: [];
+
         $resources = [];
         foreach ($resourcesRaw as $row) {
+            $rId = (int)$row['resource_id'];
             $resources[] = [
                 'resource_id' => $row['resource_id'],
                 'module_id' => $row['module_id'],
@@ -303,6 +343,7 @@ try {
                 'status' => $row['status'],
                 'created_at' => $row['created_at'],
                 'updated_at' => $row['updated_at'],
+                'action_ids' => $resourceActionMap[$rId] ?? [],
                 'modules' => $row['module_id'] ? [
                     'module_id' => $row['module_id'],
                     'module_name' => $row['module_name']
@@ -314,6 +355,7 @@ try {
             'status' => 'success',
             'data' => $resources,
             'modules' => $modules,
+            'actions' => $allActionVerbs,
             'current_user' => [
                 'user_id' => (int)$userId,
                 'is_superadmin' => $isSuperAdmin,
@@ -338,6 +380,13 @@ try {
         $resourceRoute = trim($data['resource_route'] ?? '');
         $description = trim($data['description'] ?? '');
         $status = in_array($data['status'] ?? '', ['Active', 'Inactive']) ? $data['status'] : 'Active';
+
+        $selectedActionIds = null;
+        if (isset($data['selected_action_ids']) && is_array($data['selected_action_ids'])) {
+            $selectedActionIds = array_map('intval', array_filter($data['selected_action_ids'], 'is_numeric'));
+        } else if (isset($data['action_ids']) && is_array($data['action_ids'])) {
+            $selectedActionIds = array_map('intval', array_filter($data['action_ids'], 'is_numeric'));
+        }
 
         if (!$moduleId || empty($resourceName)) {
             respond([
@@ -387,7 +436,7 @@ try {
         }
 
         // Auto-grant permissions for the new resource to creator, department roles & Super Admin roles
-        autoGrantResourcePermissions($db, (int)$newId, (int)$userId, $_SESSION['role_id'] ?? null, $userDeptId);
+        autoGrantResourcePermissions($db, (int)$newId, (int)$userId, $_SESSION['role_id'] ?? null, $userDeptId, $selectedActionIds);
 
         // Audit Trail
         \App\Services\AuditLogger::log([
@@ -424,6 +473,13 @@ try {
             ], 400);
         }
 
+        $selectedActionIds = null;
+        if (isset($data['selected_action_ids']) && is_array($data['selected_action_ids'])) {
+            $selectedActionIds = array_map('intval', array_filter($data['selected_action_ids'], 'is_numeric'));
+        } else if (isset($data['action_ids']) && is_array($data['action_ids'])) {
+            $selectedActionIds = array_map('intval', array_filter($data['action_ids'], 'is_numeric'));
+        }
+
         $updatePayload = ['updated_at' => date('Y-m-d H:i:s')];
 
         if (isset($data['module_id'])) {
@@ -454,7 +510,7 @@ try {
             $uRes = $db->query("SELECT p.department_id FROM users u LEFT JOIN positions p ON u.position_id = p.position_id WHERE u.user_id = :uid", ['uid' => $userId]);
             if (!empty($uRes)) $userDeptId = $uRes[0]['department_id'] ?? null;
         }
-        autoGrantResourcePermissions($db, (int)$resourceId, (int)$userId, $_SESSION['role_id'] ?? null, $userDeptId);
+        autoGrantResourcePermissions($db, (int)$resourceId, (int)$userId, $_SESSION['role_id'] ?? null, $userDeptId, $selectedActionIds);
 
         // Audit Trail with Full Data Mutation Snapshot
         \App\Services\AuditLogger::logMutation([

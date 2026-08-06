@@ -2,6 +2,7 @@
 
 window.systemResources = [];
 window.systemModulesList = [];
+window.systemActionVerbsList = [];
 window.currentUserScope = null;
 window.archiveTargetResourceId = null;
 window.selectedArchivedResourceIds = [];
@@ -9,6 +10,7 @@ window.singleDeleteTargetResourceId = null;
 
 var systemResources = window.systemResources;
 var systemModulesList = window.systemModulesList;
+var systemActionVerbsList = window.systemActionVerbsList;
 var currentUserScope = window.currentUserScope;
 var archiveTargetResourceId = window.archiveTargetResourceId;
 
@@ -27,6 +29,13 @@ async function fetchResources() {
         populateModuleSelects();
       }
 
+      if (Array.isArray(result.actions)) {
+        window.systemActionVerbsList = result.actions;
+        systemActionVerbsList = window.systemActionVerbsList;
+      } else {
+        await fetchActionVerbsList();
+      }
+
       if (Array.isArray(result.data)) {
         window.systemResources = result.data.map(r => ({
           id: r.resource_id,
@@ -36,6 +45,7 @@ async function fetchResources() {
           route: r.resource_route || '',
           desc: r.description || '',
           status: r.status || 'Active',
+          action_ids: Array.isArray(r.action_ids) ? r.action_ids : [],
           created_at: r.created_at ? r.created_at.replace('T', ' ').substring(0, 19) : '',
           updated_at: r.updated_at ? r.updated_at.replace('T', ' ').substring(0, 19) : ''
         }));
@@ -48,6 +58,20 @@ async function fetchResources() {
   } catch (err) {
     console.error('Error fetching resources FROM DATABASE:', err);
     if (typeof showToast === 'function') showToast('Network error connecting to Database.');
+  }
+}
+
+// FETCH ACTION VERBS FROM ACTION MANAGEMENT API (FALLBACK)
+async function fetchActionVerbsList() {
+  try {
+    const res = await fetch('../../api/employee/actions.php');
+    const resData = await res.json();
+    if (resData.status === 'success' && Array.isArray(resData.data)) {
+      window.systemActionVerbsList = resData.data.filter(a => a.status !== 'Archived');
+      systemActionVerbsList = window.systemActionVerbsList;
+    }
+  } catch (err) {
+    console.error('Error fetching action verbs:', err);
   }
 }
 

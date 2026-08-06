@@ -224,7 +224,7 @@ include '../../includes/sidebar.php';
 
 <!-- MODAL 1: CREATE / EDIT RESOURCE MODAL -->
 <div id="resourceModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 bg-slate-900/70 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300">
-  <div class="bg-white border border-slate-200 rounded-2xl shadow-xl w-full max-w-lg max-h-[85vh] my-auto overflow-hidden flex flex-col transform scale-95 transition-all duration-300" id="resourceModalCard">
+  <div class="bg-white border border-slate-200 rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] my-auto overflow-hidden flex flex-col transform scale-95 transition-all duration-300" id="resourceModalCard">
     
     <!-- Modal Header -->
     <div class="px-5 py-3.5 sm:px-6 sm:py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 shrink-0">
@@ -234,102 +234,174 @@ include '../../includes/sidebar.php';
         </div>
         <div>
           <h3 id="modalHeaderTitle" class="text-sm font-black text-slate-900 tracking-tight">Add New System Resource</h3>
-          <p class="text-[10px] text-slate-400 font-medium">Configure resource attributes and module mapping.</p>
+          <p class="text-[10px] text-slate-400 font-medium">Configure resource attributes, parent module mapping, and assigned action privileges.</p>
         </div>
       </div>
+      <button type="button" onclick="closeResourceModal()" class="h-7 w-7 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 flex items-center justify-center transition cursor-pointer">
+        <i class="fa-solid fa-xmark text-xs"></i>
+      </button>
     </div>
 
     <!-- Modal Form -->
-    <form id="resourceForm" onsubmit="handleSaveResource(event)" class="p-4 sm:p-6 space-y-4 overflow-y-auto custom-scrollbar flex-1">
+    <form id="resourceForm" onsubmit="handleSaveResource(event)" class="p-4 sm:p-6 overflow-y-auto custom-scrollbar flex-1 flex flex-col space-y-6">
       <input type="hidden" id="formResourceId" value="">
 
-      <!-- Parent Module Selection -->
-      <div class="space-y-1.5">
-        <label for="resourceParentModule" class="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Parent Module</label>
-        <select 
-          id="resourceParentModule" 
-          required 
-          class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs bg-white text-slate-800 focus:outline-none focus:border-brand-medium transition cursor-pointer"
-        >
-          <option value="User Management">User Management</option>
-          <option value="Citizen Management">Citizen Management</option>
-          <option value="Education & Scholarship">Education & Scholarship</option>
-          <option value="Health Services">Health Services</option>
-          <option value="BPLO Licensing & Permits">BPLO Licensing & Permits</option>
-          <option value="DRRM Dispatch & Emergency">DRRM Dispatch & Emergency</option>
-          <option value="Reports & Analytics">Reports & Analytics</option>
-          <option value="System Settings">System Settings</option>
-          <option value="Legacy Cashiering">Legacy Cashiering</option>
-          <option value="Archived Portal Gateway">Archived Portal Gateway</option>
-        </select>
-      </div>
+      <!-- Landscape 2-Column Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
+        
+        <!-- Left Column: Resource Configuration -->
+        <div class="lg:col-span-6 space-y-4">
+          <div class="border-b border-slate-100 pb-2">
+            <h4 class="text-xs font-extrabold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+              <i class="fa-solid fa-sliders text-brand-dark text-xs"></i>
+              Resource Identity & Details
+            </h4>
+          </div>
 
-      <!-- Resource Name -->
-      <div class="space-y-1.5">
-        <label for="resourceName" class="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Resource Name</label>
-        <input 
-          type="text" 
-          id="resourceName" 
-          required 
-          placeholder="e.g. Citizen Verification" 
-          class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/10 transition"
-        >
-      </div>
+          <!-- Parent Module Selection -->
+          <div class="space-y-1.5">
+            <label for="resourceParentModule" class="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Parent Module</label>
+            <select 
+              id="resourceParentModule" 
+              required 
+              class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs bg-white text-slate-800 focus:outline-none focus:border-brand-medium transition cursor-pointer"
+            >
+              <option value="User Management">User Management</option>
+              <option value="Citizen Management">Citizen Management</option>
+              <option value="Education & Scholarship">Education & Scholarship</option>
+              <option value="Health Services">Health Services</option>
+              <option value="BPLO Licensing & Permits">BPLO Licensing & Permits</option>
+              <option value="DRRM Dispatch & Emergency">DRRM Dispatch & Emergency</option>
+              <option value="Reports & Analytics">Reports & Analytics</option>
+              <option value="System Settings">System Settings</option>
+              <option value="Legacy Cashiering">Legacy Cashiering</option>
+              <option value="Archived Portal Gateway">Archived Portal Gateway</option>
+            </select>
+          </div>
 
-      <!-- Status & Created At Row -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <!-- Status Selector -->
-        <div class="space-y-1.5">
-          <label for="resourceStatus" class="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Status</label>
-          <select 
-            id="resourceStatus" 
-            required 
-            class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs bg-white text-slate-800 focus:outline-none focus:border-brand-medium transition cursor-pointer"
-          >
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
-          </select>
+          <!-- Resource Name -->
+          <div class="space-y-1.5">
+            <label for="resourceName" class="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Resource Name</label>
+            <input 
+              type="text" 
+              id="resourceName" 
+              required 
+              placeholder="e.g. Citizen Verification" 
+              class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/10 transition"
+            >
+          </div>
+
+          <!-- Status & Created At Row -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Status Selector -->
+            <div class="space-y-1.5">
+              <label for="resourceStatus" class="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Status</label>
+              <select 
+                id="resourceStatus" 
+                required 
+                class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs bg-white text-slate-800 focus:outline-none focus:border-brand-medium transition cursor-pointer"
+              >
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+              </select>
+            </div>
+
+            <!-- Created At (Non-editable) -->
+            <div class="space-y-1.5">
+              <label for="resourceCreatedAt" class="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Created At</label>
+              <input 
+                type="text" 
+                id="resourceCreatedAt" 
+                readonly 
+                disabled 
+                placeholder="Auto-generated on save" 
+                class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs text-slate-500 bg-slate-50 font-mono cursor-not-allowed"
+              >
+            </div>
+          </div>
+
+          <!-- Target Route / URI -->
+          <div class="space-y-1.5">
+            <label for="resourceRoute" class="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Target Endpoint / URI Route</label>
+            <input 
+              type="text" 
+              id="resourceRoute" 
+              required 
+              placeholder="e.g. /pages/citizen/verify.php" 
+              class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs font-mono text-slate-700 placeholder-slate-400 focus:outline-none focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/10 transition"
+            >
+          </div>
+
+          <!-- Description -->
+          <div class="space-y-1.5">
+            <label for="resourceDesc" class="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Feature Control Scope</label>
+            <textarea 
+              id="resourceDesc" 
+              rows="2.5" 
+              placeholder="Explain what this specific feature, endpoint, or page controls..." 
+              class="w-full p-3 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/10 transition leading-relaxed"
+            ></textarea>
+          </div>
         </div>
 
-        <!-- Created At (Non-editable) -->
-        <div class="space-y-1.5">
-          <label for="resourceCreatedAt" class="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Created At</label>
-          <input 
-            type="text" 
-            id="resourceCreatedAt" 
-            readonly 
-            disabled 
-            placeholder="Auto-generated on save" 
-            class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs text-slate-500 bg-slate-50 font-mono cursor-not-allowed"
-          >
+        <!-- Right Column: Action Privileges (Action Management Integration) -->
+        <div class="lg:col-span-6 bg-slate-50/80 border border-slate-200/80 rounded-xl p-4 flex flex-col space-y-3">
+          
+          <div class="flex items-center justify-between border-b border-slate-200/70 pb-2">
+            <div>
+              <h4 class="text-xs font-extrabold text-slate-900 tracking-tight flex items-center gap-1.5">
+                <i class="fa-solid fa-key text-brand-dark text-xs"></i>
+                Action Privileges
+              </h4>
+              <p class="text-[10px] text-slate-400 font-medium mt-0.5">Select action verbs enabled for this resource (reflected in permissions matrix).</p>
+            </div>
+          </div>
+
+          <!-- Quick Helper Toolbar -->
+          <div class="flex items-center justify-between bg-white border border-slate-200/80 rounded-lg p-1.5">
+            <span class="text-[10px] font-extrabold text-slate-500 uppercase px-1.5">Quick Select:</span>
+            <div class="flex items-center gap-1.5">
+              <button 
+                type="button" 
+                onclick="applyActionHelper('crud')" 
+                class="px-2.5 py-1 bg-brand-light hover:bg-brand-border/60 text-brand-dark font-extrabold text-[10px] rounded-md transition cursor-pointer flex items-center gap-1 border border-brand-border/50"
+                title="Automatically check VIEW, CREATE, EDIT, DELETE actions"
+              >
+                <i class="fa-solid fa-bolt text-[9px]"></i>
+                <span>CRUD</span>
+              </button>
+
+              <button 
+                type="button" 
+                onclick="applyActionHelper('select_all')" 
+                class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] rounded-md transition cursor-pointer flex items-center gap-1 border border-slate-200"
+              >
+                <i class="fa-solid fa-check-double text-[9px]"></i>
+                <span>Select All</span>
+              </button>
+
+              <button 
+                type="button" 
+                onclick="applyActionHelper('clear_all')" 
+                class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-[10px] rounded-md transition cursor-pointer flex items-center gap-1 border border-slate-200"
+              >
+                <i class="fa-solid fa-xmark text-[9px]"></i>
+                <span>Clear All</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Scrollable Action Verbs Checkbox Grid Container -->
+          <div id="actionCheckboxesContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[300px] overflow-y-auto custom-scrollbar p-1 flex-1">
+            <!-- Dynamically populated by JS from Action Management API -->
+          </div>
+
         </div>
+
       </div>
 
-      <!-- Target Route / URI -->
-      <div class="space-y-1.5">
-        <label for="resourceRoute" class="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Target Endpoint / URI Route</label>
-        <input 
-          type="text" 
-          id="resourceRoute" 
-          required 
-          placeholder="e.g. /pages/citizen/verify.php" 
-          class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs font-mono text-slate-700 placeholder-slate-400 focus:outline-none focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/10 transition"
-        >
-      </div>
-
-      <!-- Description -->
-      <div class="space-y-1.5">
-        <label for="resourceDesc" class="text-[10px] font-black text-slate-500 uppercase tracking-wider block">Feature Control Scope</label>
-        <textarea 
-          id="resourceDesc" 
-          rows="3" 
-          placeholder="Explain what this specific feature, endpoint, or page controls..." 
-          class="w-full p-3.5 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/10 transition leading-relaxed"
-        ></textarea>
-      </div>
-
-      <!-- Modal Actions -->
-      <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5">
+      <!-- Modal Footer Actions -->
+      <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5 shrink-0">
         <button 
           type="button" 
           onclick="closeResourceModal()" 
