@@ -382,7 +382,9 @@ try {
         $status = in_array($data['status'] ?? '', ['Active', 'Inactive']) ? $data['status'] : 'Active';
 
         $selectedActionIds = null;
-        if (isset($data['selected_action_ids']) && is_array($data['selected_action_ids'])) {
+        if (isset($data['actions']) && is_array($data['actions'])) {
+            $selectedActionIds = array_map('intval', array_filter($data['actions'], 'is_numeric'));
+        } else if (isset($data['selected_action_ids']) && is_array($data['selected_action_ids'])) {
             $selectedActionIds = array_map('intval', array_filter($data['selected_action_ids'], 'is_numeric'));
         } else if (isset($data['action_ids']) && is_array($data['action_ids'])) {
             $selectedActionIds = array_map('intval', array_filter($data['action_ids'], 'is_numeric'));
@@ -474,7 +476,9 @@ try {
         }
 
         $selectedActionIds = null;
-        if (isset($data['selected_action_ids']) && is_array($data['selected_action_ids'])) {
+        if (isset($data['actions']) && is_array($data['actions'])) {
+            $selectedActionIds = array_map('intval', array_filter($data['actions'], 'is_numeric'));
+        } else if (isset($data['selected_action_ids']) && is_array($data['selected_action_ids'])) {
             $selectedActionIds = array_map('intval', array_filter($data['selected_action_ids'], 'is_numeric'));
         } else if (isset($data['action_ids']) && is_array($data['action_ids'])) {
             $selectedActionIds = array_map('intval', array_filter($data['action_ids'], 'is_numeric'));
