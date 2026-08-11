@@ -11,7 +11,7 @@ if (!function_exists('sendIprogSMSOTP')) {
      * Send OTP via IPROG Dedicated OTP API
      */
     function sendIprogSMSOTP($toMobile) {
-        $apiToken = getenv('IPROGSMS_API_KEY') ?: ($_ENV['IPROGSMS_API_KEY'] ?? '4a370bcf7f9967169168f4f42fbc42f33d66bf57');
+        $apiToken = getenv('IPROGSMS_API_KEY') ?: ($_ENV['IPROGSMS_API_KEY'] ?? '');
         $apiUrl = 'https://www.iprogsms.com/api/v1/otp/send_otp';
 
         if (empty($toMobile)) {
@@ -62,7 +62,7 @@ if (!function_exists('verifyIprogSMSOTP')) {
      * Verify OTP via IPROG Dedicated OTP API
      */
     function verifyIprogSMSOTP($toMobile, $otpCode) {
-        $apiToken = getenv('IPROGSMS_API_KEY') ?: ($_ENV['IPROGSMS_API_KEY'] ?? '4a370bcf7f9967169168f4f42fbc42f33d66bf57');
+        $apiToken = getenv('IPROGSMS_API_KEY') ?: ($_ENV['IPROGSMS_API_KEY'] ?? '');
         $apiUrl = 'https://www.iprogsms.com/api/v1/otp/verify_otp';
 
         if (empty($toMobile) || empty($otpCode)) {
