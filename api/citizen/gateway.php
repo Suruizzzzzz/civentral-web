@@ -410,6 +410,8 @@ function handleRegister(array $input, $db): void {
     }
 
     try {
+        try { $db->query("SET innodb_lock_wait_timeout = 5;"); } catch (Throwable $e) {}
+
         if (!empty($email)) {
             $existingEmail = $db->query("SELECT citizen_user_id, status FROM citizen_users WHERE LOWER(email) = LOWER(:email) LIMIT 1", ['email' => $email]);
             
@@ -506,6 +508,8 @@ function handleVerifyOTP(array $input, $db): void {
     }
 
     try {
+        try { $db->query("SET innodb_lock_wait_timeout = 5;"); } catch (Throwable $e) {}
+
         $citizenUserId = $_SESSION['pending_citizen_user_id'] ?? null;
         $citizenUser = null;
 
