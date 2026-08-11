@@ -481,11 +481,16 @@ function handleRegister(array $input, $db): void {
             sendIprogSMSOTP($mobileNumber);
         }
 
+        $msg = !empty($mobileNumber)
+            ? 'Account created. Verification code sent to your mobile number.'
+            : 'Account created. Verification code sent to your email.';
+
         respond([
             'status' => 'success',
             'verification_required' => true,
-            'message' => 'Account created. Verification code sent to your email.',
-            'email' => $email
+            'message' => $msg,
+            'email' => $email,
+            'mobile_number' => $mobileNumber
         ], 201);
     } catch (Throwable $e) {
         error_log("Citizen Register Error: " . $e->getMessage());
