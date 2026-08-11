@@ -476,7 +476,7 @@ function handleRegister(array $input, $db): void {
         $recipientName = trim("{$firstName} {$middlePart}{$lastName}");
         sendOTPEmail($email, $recipientName, $otpCode, 'Registration');
         if (!empty($mobileNumber)) {
-            sendSMSOTP($mobileNumber, $otpCode, 'Registration');
+            sendIprogSMSOTP($mobileNumber);
         }
 
         respond([
@@ -493,6 +493,7 @@ function handleRegister(array $input, $db): void {
 
 function handleVerifyOTP(array $input, $db): void {
     $otpCode = trim($input['otp'] ?? $input['otp_code'] ?? '');
+    $mobileNumber = trim($input['mobile_number'] ?? $input['phone'] ?? $input['identifier'] ?? '');
     $email = strtolower(trim($input['email'] ?? ''));
     $purpose = trim($input['purpose'] ?? 'Registration');
 
@@ -514,7 +515,17 @@ function handleVerifyOTP(array $input, $db): void {
                 $citizenUser = $users[0];
                 $citizenUserId = intval($citizenUser['citizen_user_id']);
             }
-        } elseif ($citizenUserId) {
+        }
+
+        if (!$citizenUser && !empty($mobileNumber)) {
+            $users = $db->query("SELECT * FROM citizen_users WHERE mobile_number = :mobile LIMIT 1", ['mobile' => $mobileNumber]);
+            if (!empty($users)) {
+                $citizenUser = $users[0];
+                $citizenUserId = intval($citizenUser['citizen_user_id']);
+            }
+        }
+
+        if (!$citizenUser && $citizenUserId) {
             $users = $db->query("SELECT * FROM citizen_users WHERE citizen_user_id = :id LIMIT 1", ['id' => $citizenUserId]);
             if (!empty($users)) {
                 $citizenUser = $users[0];
@@ -522,30 +533,35 @@ function handleVerifyOTP(array $input, $db): void {
         }
 
         if (!$citizenUser || !$citizenUserId) {
-            respond(['status' => 'error', 'message' => 'Citizen user account not found. Please register or check your email.'], 404);
+            respond(['status' => 'error', 'message' => 'Citizen user account not found. Please register or check your account.'], 400);
         }
 
+        // Dedicated IPROG SMS OTP Verification
+        $userMobile = $citizenUser['mobile_number'] ?? $mobileNumber;
+        $isSmsVerified = false;
+        if (!empty($userMobile)) {
+            $isSmsVerified = verifyIprogSMSOTP($userMobile, $otpCode);
+        }
+
+        // Database Email OTP Verification (Fallback / Parallel)
+        $isEmailVerified = false;
         $otps = $db->query(
             "SELECT * FROM citizen_otps WHERE citizen_user_id = :cid AND purpose = :purpose AND is_used = 0 ORDER BY otp_id DESC LIMIT 1",
             ['cid' => $citizenUserId, 'purpose' => $purpose]
         );
 
-        if (empty($otps)) {
-            respond(['status' => 'error', 'message' => 'No active verification code found. Please request a new code.'], 400);
+        if (!empty($otps)) {
+            $otpRecord = $otps[0];
+            $currentTime = date('Y-m-d H:i:s');
+            if ($currentTime <= $otpRecord['expires_at'] && $otpRecord['otp_code'] === $otpCode) {
+                $isEmailVerified = true;
+                $db->update('citizen_otps', ['is_used' => 1], ['otp_id' => $otpRecord['otp_id']]);
+            }
         }
 
-        $otpRecord = $otps[0];
-        $currentTime = date('Y-m-d H:i:s');
-
-        if ($currentTime > $otpRecord['expires_at']) {
-            respond(['status' => 'error', 'message' => 'Verification code has expired. Please request a new code.'], 400);
+        if (!$isSmsVerified && !$isEmailVerified) {
+            respond(['status' => 'error', 'message' => 'Incorrect or expired verification code. Please check and try again.'], 400);
         }
-
-        if ($otpRecord['otp_code'] !== $otpCode) {
-            respond(['status' => 'error', 'message' => 'Incorrect verification code. Please check and try again.'], 400);
-        }
-
-        $db->update('citizen_otps', ['is_used' => 1], ['otp_id' => $otpRecord['otp_id']]);
 
         if ($purpose === 'Registration' || strtolower($purpose) === 'registration' || $citizenUser['status'] === 'Pending') {
             $db->update('citizen_users', [
@@ -636,7 +652,7 @@ function handleResendOTP(array $input, $db): void {
 
         sendOTPEmail($recipientEmail, $recipientName, $otpCode, $purpose);
         if (!empty($citizenUser['mobile_number'])) {
-            sendSMSOTP($citizenUser['mobile_number'], $otpCode, $purpose);
+            sendIprogSMSOTP($citizenUser['mobile_number']);
         }
 
         respond(['status' => 'success', 'message' => 'A new verification code has been sent to your email address.']);
