@@ -664,15 +664,19 @@ function handleCheckAccount(array $input, $db): void {
 
 function handleGetProfile(array $input, $db): void {
     try {
-        $citizenUserId = $_SESSION['citizen_user_id'] ?? filter_var($input['citizen_user_id'] ?? null, FILTER_VALIDATE_INT) ?: null;
+        $explicitUserId = filter_var($input['citizen_user_id'] ?? null, FILTER_VALIDATE_INT) ?: null;
         $email = strtolower(trim($input['email'] ?? ''));
+        $sessionUserId = $_SESSION['citizen_user_id'] ?? null;
 
         $user = null;
-        if ($citizenUserId) {
-            $users = $db->query("SELECT * FROM citizen_users WHERE citizen_user_id = :id LIMIT 1", ['id' => $citizenUserId]);
-            if (!empty($users)) $user = $users[0];
-        } elseif (!empty($email)) {
+        if (!empty($email)) {
             $users = $db->query("SELECT * FROM citizen_users WHERE LOWER(email) = LOWER(:email) LIMIT 1", ['email' => $email]);
+            if (!empty($users)) $user = $users[0];
+        } elseif ($explicitUserId) {
+            $users = $db->query("SELECT * FROM citizen_users WHERE citizen_user_id = :id LIMIT 1", ['id' => $explicitUserId]);
+            if (!empty($users)) $user = $users[0];
+        } elseif ($sessionUserId) {
+            $users = $db->query("SELECT * FROM citizen_users WHERE citizen_user_id = :id LIMIT 1", ['id' => $sessionUserId]);
             if (!empty($users)) $user = $users[0];
         }
 
