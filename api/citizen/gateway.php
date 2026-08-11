@@ -42,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../config/mailer.php';
+require_once __DIR__ . '/../../config/sms.php';
 
 /**
  * Standardized API Response Helper
@@ -466,6 +467,9 @@ function handleRegister(array $input, $db): void {
         $middlePart = !empty($middleName) ? $middleName . ' ' : '';
         $recipientName = trim("{$firstName} {$middlePart}{$lastName}");
         sendOTPEmail($email, $recipientName, $otpCode, 'Registration');
+        if (!empty($mobileNumber)) {
+            sendSMSOTP($mobileNumber, $otpCode, 'Registration');
+        }
 
         respond([
             'status' => 'success',
@@ -535,7 +539,7 @@ function handleVerifyOTP(array $input, $db): void {
 
         $db->update('citizen_otps', ['is_used' => 1], ['otp_id' => $otpRecord['otp_id']]);
 
-        if ($purpose === 'Registration') {
+        if ($purpose === 'Registration' || strtolower($purpose) === 'registration' || $citizenUser['status'] === 'Pending') {
             $db->update('citizen_users', [
                 'status' => 'Active',
                 'failed_attempts' => 0,
@@ -623,6 +627,9 @@ function handleResendOTP(array $input, $db): void {
         $recipientName = trim("{$citizenUser['first_name']} {$middlePart}{$citizenUser['last_name']}");
 
         sendOTPEmail($recipientEmail, $recipientName, $otpCode, $purpose);
+        if (!empty($citizenUser['mobile_number'])) {
+            sendSMSOTP($citizenUser['mobile_number'], $otpCode, $purpose);
+        }
 
         respond(['status' => 'success', 'message' => 'A new verification code has been sent to your email address.']);
     } catch (Throwable $e) {
