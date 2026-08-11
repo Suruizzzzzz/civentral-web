@@ -475,7 +475,7 @@ function handleRegister(array $input, $db): void {
         ], 201);
     } catch (Throwable $e) {
         error_log("Citizen Register Error: " . $e->getMessage());
-        respond(['status' => 'error', 'message' => 'Database error during registration.'], 500);
+        respond(['status' => 'error', 'message' => 'Registration error: ' . $e->getMessage()], 500);
     }
 }
 
