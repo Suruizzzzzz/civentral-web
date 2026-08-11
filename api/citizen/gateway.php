@@ -403,15 +403,16 @@ function handleRegister(array $input, $db): void {
     }
 
     try {
-        $existingEmail = $db->query("SELECT citizen_user_id, status FROM citizen_users WHERE LOWER(email) = LOWER(:email) LIMIT 1", ['email' => $email]);
-        
-        $citizenUserId = null;
-        if (!empty($existingEmail)) {
-            $existing = $existingEmail[0];
-            if ($existing['status'] === 'Pending') {
-                $citizenUserId = intval($existing['citizen_user_id']);
-            } else {
-                respond(['status' => 'error', 'message' => 'An account with this email address already exists.'], 409);
+        if (!empty($email)) {
+            $existingEmail = $db->query("SELECT citizen_user_id, status FROM citizen_users WHERE LOWER(email) = LOWER(:email) LIMIT 1", ['email' => $email]);
+            
+            if (!empty($existingEmail)) {
+                $existing = $existingEmail[0];
+                if ($existing['status'] === 'Pending') {
+                    $citizenUserId = intval($existing['citizen_user_id']);
+                } else {
+                    respond(['status' => 'error', 'message' => 'An account with this email address already exists. Please use a different email or sign in.'], 409);
+                }
             }
         }
 
@@ -424,7 +425,7 @@ function handleRegister(array $input, $db): void {
             }
             $existingMobile = $db->query($sqlMobile, $paramsMobile);
             if (!empty($existingMobile)) {
-                respond(['status' => 'error', 'message' => 'Mobile number is already associated with another account.'], 409);
+                respond(['status' => 'error', 'message' => 'This mobile number is already associated with another account. Please use a different number or sign in.'], 409);
             }
         }
 
