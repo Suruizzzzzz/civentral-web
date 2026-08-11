@@ -4,6 +4,10 @@
  * Central Gateway handling authentication, directory, accounts, profile, and security endpoints for citizens.
  */
 
+ob_start();
+error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING & ~E_DEPRECATED);
+ini_set('display_errors', '0');
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -48,6 +52,9 @@ require_once __DIR__ . '/../../config/sms.php';
  * Standardized API Response Helper
  */
 function respond(array $payload, int $statusCode = 200): void {
+    if (ob_get_length()) {
+        ob_clean();
+    }
     http_response_code($statusCode);
     echo json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     exit;
