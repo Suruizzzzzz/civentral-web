@@ -54,7 +54,7 @@
         servicesTitle: "Unified Department Public Services",
         appBadge: "Mobile Platform",
         appTitle: "Download Citizen Mobile App",
-        appDesc: "Gain direct mobile access to local permit tracking fields, emergency notices, and service scheduling pipelines. Scan the security barcode vector to safely pull down the native Android installation package."
+        appDesc: "Gain direct mobile access to local permit tracking fields, emergency notices, and service scheduling pipelines directly from your smartphone."
       },
       tl: {
         navTagline: "Lungsod ng Asenso",
@@ -75,7 +75,7 @@
         servicesTitle: "Pinag-isang mga Serbisyo ng Kagawaran",
         appBadge: "Platapormang Mobile",
         appTitle: "I-download ang Mobile App ng Mamamayan",
-        appDesc: "Kumuha ng agarang access sa pagsubaybay ng permit, mga emergency advisory, at pag-iskedyul ng mga serbisyo. I-scan ang code upang ligtas na mai-configure ang Android application package."
+        appDesc: "Kumuha ng agarang access sa pagsubaybay ng permit, mga emergency advisory, at pag-iskedyul ng mga serbisyo sa iyong smartphone."
       }
     };
 

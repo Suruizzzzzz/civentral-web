@@ -480,25 +480,112 @@
     </div>
   </section>
 
-  <!-- Mobile app showcase -->
-  <section id="download-app" class="py-12 bg-slate-50 px-4 sm:px-6">
-    <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-      <div class="md:col-span-8 space-y-3 text-center md:text-left">
-        <span class="text-xs font-bold uppercase tracking-wider text-brand-dark bg-brand-light px-3 py-1 rounded-md" id="appBadge">Mobile Platform</span>
-        <h3 class="text-2xl font-black text-slate-900 tracking-tight" id="appTitle">Download Citizen Mobile App</h3>
-        <p class="text-xs sm:text-sm text-slate-500 leading-relaxed max-w-xl" id="appDesc">
-          Gain direct mobile access to local permit tracking fields, emergency notices, and service scheduling pipelines. Scan the security barcode vector to safely pull down the native Android installation package.
-        </p>
-        <div class="pt-1 flex flex-wrap justify-center md:justify-start gap-2">
-          <span class="text-[10px] font-mono font-bold uppercase px-2 py-0.5 bg-slate-200 text-slate-600 rounded">APK Build</span>
-          <span class="text-[10px] font-mono font-bold uppercase px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded">Verified Secure</span>
+  <!-- Mobile App Showcase Section -->
+  <section id="download-app" class="py-20 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 relative overflow-hidden text-white border-y border-slate-800">
+    <!-- Ambient Background Glow Effects -->
+    <div class="absolute -top-32 -left-32 w-96 h-96 bg-brand-medium/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-brand-dark/40 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <!-- Left Content Column -->
+        <div class="lg:col-span-5 space-y-6 text-center lg:text-left">
+          <div class="inline-flex items-center space-x-2 bg-brand-medium/15 border border-brand-medium/30 px-4 py-1.5 rounded-full text-brand-medium text-xs font-bold uppercase tracking-wider backdrop-blur-md">
+            <i class="fa-solid fa-mobile-screen-button"></i>
+            <span id="appBadge">Mobile Platform</span>
+          </div>
+
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-white" id="appTitle">
+            Download Citizen Mobile App
+          </h2>
+
+          <p class="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-xl mx-auto lg:mx-0" id="appDesc">
+            Gain direct mobile access to local permit tracking fields, emergency notices, and service scheduling pipelines directly from your smartphone.
+          </p>
+
+          <!-- Feature Highlights Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 py-2 text-left">
+            <div class="flex items-start space-x-3 bg-white/5 border border-white/10 p-3.5 rounded-xl backdrop-blur-xs hover:border-brand-medium/40 transition duration-300">
+              <div class="h-9 w-9 rounded-lg bg-brand-medium/20 text-brand-medium flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-id-card text-sm"></i>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-white">Digital Resident ID</h4>
+                <p class="text-[11px] text-slate-400 mt-0.5">Instant verification anywhere</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start space-x-3 bg-white/5 border border-white/10 p-3.5 rounded-xl backdrop-blur-xs hover:border-emerald-400/40 transition duration-300">
+              <div class="h-9 w-9 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-bell text-sm"></i>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-white">Real-time Alerts</h4>
+                <p class="text-[11px] text-slate-400 mt-0.5">Emergency & weather notices</p>
+              </div>
+            </div>
+
+            <div class="flex items-start space-x-3 bg-white/5 border border-white/10 p-3.5 rounded-xl backdrop-blur-xs hover:border-amber-400/40 transition duration-300">
+              <div class="h-9 w-9 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-shield-halved text-sm"></i>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-white">Encrypted & Safe</h4>
+                <p class="text-[11px] text-slate-400 mt-0.5">Secure LGU data protection</p>
+              </div>
+            </div>
+
+            <div class="flex items-start space-x-3 bg-white/5 border border-white/10 p-3.5 rounded-xl backdrop-blur-xs hover:border-purple-400/40 transition duration-300">
+              <div class="h-9 w-9 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-moon text-sm"></i>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-white">Dark & Light Themes</h4>
+                <p class="text-[11px] text-slate-400 mt-0.5">Tailored civic experience</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Download Action Buttons -->
+          <div class="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-3">
+            <a href="#" class="inline-flex items-center justify-center space-x-3 px-6 py-3.5 bg-brand-medium hover:bg-opacity-90 text-white font-bold text-sm rounded-xl shadow-lg hover:shadow-brand-medium/25 hover:-translate-y-0.5 transition-all duration-200">
+              <i class="fa-brands fa-android text-xl"></i>
+              <div class="text-left leading-none">
+                <span class="block text-[10px] opacity-80 uppercase tracking-wider font-semibold">Download Android</span>
+                <span class="text-xs font-black">Official APK Build</span>
+              </div>
+            </a>
+            
+            <div class="flex items-center space-x-2 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-xs font-medium text-slate-300">
+              <span class="relative flex h-2.5 w-2.5">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+              </span>
+              <span>v2.4 Ready • Android 8.0+</span>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="md:col-span-4 flex flex-col items-center justify-center space-y-2 shrink-0">
-        <div class="p-3 bg-white rounded-2xl shadow-sm border border-slate-200">
-          <img src="assets/images/qr.jpg" alt="QR Asset" class="h-28 w-28 object-contain">
+
+        <!-- Right Showcase Image Column -->
+        <div class="lg:col-span-7 relative flex items-center justify-center">
+          <div class="relative group max-w-2xl w-full">
+            <!-- Ambient Glow under image -->
+            <div class="absolute inset-0 bg-gradient-to-r from-brand-medium/30 to-sky-400/30 rounded-3xl blur-2xl group-hover:blur-3xl opacity-75 transition-all duration-500"></div>
+            
+            <!-- Showcase Image Wrapper -->
+            <div class="relative rounded-3xl overflow-hidden p-3 sm:p-5 bg-gradient-to-b from-white/10 via-white/5 to-transparent border border-white/15 backdrop-blur-md shadow-2xl transition-transform duration-500 hover:scale-[1.02]">
+              <img src="assets/images/showcase.png" alt="Civentral Mobile App Showcase" class="w-full h-auto object-contain drop-shadow-2xl">
+              
+              <!-- Floating Live Badge Top Left -->
+              <div class="absolute top-6 left-6 hidden sm:flex items-center space-x-2 bg-slate-900/90 border border-white/20 text-white px-3.5 py-2 rounded-xl shadow-xl backdrop-blur-md">
+                <div class="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse"></div>
+                <span class="text-xs font-bold tracking-wide">Live Citizen Portal</span>
+              </div>
+            </div>
+          </div>
         </div>
-        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Scan to Install</span>
+
       </div>
     </div>
   </section>
