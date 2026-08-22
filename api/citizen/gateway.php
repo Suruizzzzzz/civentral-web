@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * CIVENTRAL - Citizen REST API Gateway Router
  * Central Gateway handling authentication, directory, accounts, profile, and security endpoints for citizens.
