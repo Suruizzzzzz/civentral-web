@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * CIVENTRAL - Citizen REST API Gateway Router
  * Central Gateway handling authentication, directory, accounts, profile, and security endpoints for citizens.
@@ -36,7 +36,7 @@ if (isset($_SERVER['HTTP_ORIGIN'])) {
 }
 
 header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, X-Internal-Service-Key');
 
 // Handle HTTP Preflight OPTIONS Request
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -167,6 +167,12 @@ function handleCitizenGateway(string $path = '', string $method = ''): void {
         case ($path === '/auth/reset-password' || $path === '/reset-password' || $path === '/reset-password.php'):
             if ($method !== 'POST') respond(['status' => 'error', 'message' => 'Method Not Allowed.'], 405);
             handleResetPassword($input, $db);
+            break;
+
+        // INTERNAL SERVICE: CITIZEN IDENTITY LOOKUP
+        case ($path === '/internal/profile' || $path === '/internal/get-profile'):
+            if ($method !== 'GET') respond(['status' => 'error', 'message' => 'Method Not Allowed.'], 405);
+            handleInternalCitizenProfile($input, $db);
             break;
 
         // PROFILE: GET PROFILE
@@ -702,6 +708,87 @@ function handleCheckAccount(array $input, $db): void {
     }
 }
 
+/**
+ * Internal server-to-server citizen identity lookup.
+ * Returns only the identity fields needed by internal CIVENTRAL services.
+ */
+function handleInternalCitizenProfile(array $input, $db): void {
+    $expectedKey = trim((string)(getenv('CIVENTRAL_INTERNAL_SERVICE_KEY') ?: ($_ENV['CIVENTRAL_INTERNAL_SERVICE_KEY'] ?? '')));
+
+    if ($expectedKey === '') {
+        respond([
+            'status' => 'error',
+            'message' => 'Internal service authentication is not configured.'
+        ], 503);
+    }
+
+    $providedKey = trim((string)($_SERVER['HTTP_X_INTERNAL_SERVICE_KEY'] ?? ''));
+    if ($providedKey === '' || !hash_equals($expectedKey, $providedKey)) {
+        respond([
+            'status' => 'error',
+            'message' => 'Unauthorized internal service request.'
+        ], 401);
+    }
+
+    $citizenUserId = filter_var(
+        $input['citizen_user_id'] ?? null,
+        FILTER_VALIDATE_INT,
+        ['options' => ['min_range' => 1]]
+    );
+
+    if (!$citizenUserId) {
+        respond([
+            'status' => 'error',
+            'message' => 'A valid citizen_user_id is required.'
+        ], 422);
+    }
+
+    try {
+        $users = $db->query(
+            "SELECT citizen_user_id, first_name, middle_name, has_no_middle_name, last_name, suffix
+             FROM citizen_users
+             WHERE citizen_user_id = :id
+             LIMIT 1",
+            ['id' => (int)$citizenUserId]
+        );
+
+        if (empty($users)) {
+            respond([
+                'status' => 'error',
+                'message' => 'Citizen user not found.'
+            ], 404);
+        }
+
+        $user = $users[0];
+        $middlePart = !empty($user['middle_name']) ? trim((string)$user['middle_name']) . ' ' : '';
+        $suffixPart = !empty($user['suffix']) ? ' ' . trim((string)$user['suffix']) : '';
+        $fullName = trim(
+            ($user['first_name'] ?? '') . ' ' .
+            $middlePart .
+            ($user['last_name'] ?? '') .
+            $suffixPart
+        );
+
+        respond([
+            'status' => 'success',
+            'data' => [
+                'citizen_user_id' => (int)$user['citizen_user_id'],
+                'first_name' => $user['first_name'] ?? '',
+                'middle_name' => $user['middle_name'] ?? '',
+                'has_no_middle_name' => !empty($user['has_no_middle_name']),
+                'last_name' => $user['last_name'] ?? '',
+                'suffix' => $user['suffix'] ?? '',
+                'full_name' => $fullName,
+            ]
+        ]);
+    } catch (Throwable $e) {
+        error_log('Internal Citizen Profile Lookup Error: ' . $e->getMessage());
+        respond([
+            'status' => 'error',
+            'message' => 'An internal database server error occurred.'
+        ], 500);
+    }
+}
 function handleGetProfile(array $input, $db): void {
     try {
         $explicitUserId = filter_var($input['citizen_user_id'] ?? null, FILTER_VALIDATE_INT) ?: null;
@@ -1198,5 +1285,6 @@ function handleResetPassword(array $input, $db): void {
         respond(['status' => 'error', 'message' => 'Failed to reset password.'], 500);
     }
 }
+
 
 
