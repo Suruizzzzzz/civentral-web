@@ -745,7 +745,7 @@ function handleInternalCitizenProfile(array $input, $db): void {
 
     try {
         $users = $db->query(
-            "SELECT citizen_user_id, first_name, middle_name, has_no_middle_name, last_name, suffix
+            "SELECT citizen_user_id, first_name, middle_name, has_no_middle_name, last_name, suffix, email, mobile_number
              FROM citizen_users
              WHERE citizen_user_id = :id
              LIMIT 1",
@@ -779,6 +779,9 @@ function handleInternalCitizenProfile(array $input, $db): void {
                 'last_name' => $user['last_name'] ?? '',
                 'suffix' => $user['suffix'] ?? '',
                 'full_name' => $fullName,
+                'email' => $user['email'] ?? '',
+                'mobile_number' => $user['mobile_number'] ?? '',
+                'contact_number' => $user['mobile_number'] ?? '',
             ]
         ]);
     } catch (Throwable $e) {
