@@ -43,7 +43,7 @@ function respond(array $payload, int $statusCode = 200): void {
 }
 
 // Auto-grant permissions for a resource to creator, department roles & Super Admin roles
-function autoGrantResourcePermissions($db, int $resourceId, ?int $actorUserId = null, ?int $creatorRoleId = null, ?int $creatorDeptId = null, ?array $selectedActionIds = null): void {
+function autoGrantResourcePermissions($db, int $resourceId, ?int $actorUserId = null, ?int $creatorRoleId = null, ?int $creatorDeptId = null, ?array $selectedActionIds = null, bool $throwOnFailure = false): void {
     try {
         $grantedByUserId = null;
         if ($actorUserId) {
@@ -147,6 +147,9 @@ function autoGrantResourcePermissions($db, int $resourceId, ?int $actorUserId = 
         }
     } catch (Throwable $e) {
         error_log("autoGrantResourcePermissions Error: " . $e->getMessage());
+        if ($throwOnFailure) {
+            throw $e;
+        }
     }
 }
 
@@ -390,72 +393,116 @@ try {
             $selectedActionIds = array_map('intval', array_filter($data['action_ids'], 'is_numeric'));
         }
 
-        if (!$moduleId || empty($resourceName)) {
+        // 1. Validate required: module_id, resource_name, resource_route
+        if (!$moduleId || empty($resourceName) || empty($resourceRoute)) {
             respond([
                 'status' => 'error',
-                'message' => 'Parent Module and Resource Name are required.'
+                'message' => 'Parent module, resource name, and resource route are required.'
             ], 400);
         }
 
-        // Validate parent module exists
+        // 2. Validate parent module exists
         $modCheck = $db->select('modules', ['module_id' => $moduleId]);
         if (empty($modCheck)) {
             respond([
                 'status' => 'error',
                 'message' => 'Selected parent module does not exist.'
-            ], 404);
+            ], 422);
         }
 
-        // Duplicate check within module
-        $existing = $db->query(
+        // 3. Validate duplicate: resource_route, (module_id, resource_name)
+        $routeCheck = $db->query(
+            "SELECT resource_id FROM resources WHERE LOWER(resource_route) = LOWER(:route)",
+            ['route' => $resourceRoute]
+        );
+        if (!empty($routeCheck)) {
+            respond([
+                'status' => 'error',
+                'message' => 'A resource with this route already exists.'
+            ], 409);
+        }
+
+        $nameCheck = $db->query(
             "SELECT resource_id FROM resources WHERE module_id = :mid AND LOWER(resource_name) = LOWER(:rname)",
             ['mid' => $moduleId, 'rname' => $resourceName]
         );
-        if (!empty($existing)) {
+        if (!empty($nameCheck)) {
             respond([
                 'status' => 'error',
                 'message' => 'A resource with this name already exists in the selected module.'
-            ], 400);
+            ], 409);
         }
 
-        $insertPayload = [
-            'module_id' => $moduleId,
-            'resource_name' => $resourceName,
-            'resource_route' => $resourceRoute ?: null,
-            'description' => $description ?: null,
-            'status' => $status,
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
-        ];
-
-        $newId = $db->insert('resources', $insertPayload);
-
-        // Fetch user department ID
-        $userDeptId = null;
-        if ($userId) {
-            $uRes = $db->query("SELECT p.department_id FROM users u LEFT JOIN positions p ON u.position_id = p.position_id WHERE u.user_id = :uid", ['uid' => $userId]);
-            if (!empty($uRes)) $userDeptId = $uRes[0]['department_id'] ?? null;
+        // 4. Validate supplied action IDs exist before permission creation
+        if (is_array($selectedActionIds) && !empty($selectedActionIds)) {
+            $inClause = implode(',', array_map('intval', $selectedActionIds));
+            $validActions = $db->query("SELECT action_id FROM actions WHERE (status != 'Archived' OR status IS NULL) AND action_id IN ({$inClause})") ?: [];
+            $validActionIds = array_map('intval', array_column($validActions, 'action_id'));
+            $invalidActionIds = array_diff($selectedActionIds, $validActionIds);
+            if (!empty($invalidActionIds)) {
+                respond([
+                    'status' => 'error',
+                    'message' => 'One or more supplied action IDs are invalid or do not exist.'
+                ], 422);
+            }
         }
 
-        // Auto-grant permissions for the new resource to creator, department roles & Super Admin roles
-        autoGrantResourcePermissions($db, (int)$newId, (int)$userId, $_SESSION['role_id'] ?? null, $userDeptId, $selectedActionIds);
+        // 5 & 6. Transaction & Rollback on failure
+        $pdo = $db->getPdo();
+        $pdo->beginTransaction();
 
-        // Audit Trail
-        \App\Services\AuditLogger::log([
-            'action'        => 'Create Resource',
-            'target_table'  => 'resources',
-            'target_id'     => (string)$newId,
-            'description'   => "Created resource \"{$resourceName}\" under module ID {$moduleId}",
-            'actor_user_id' => $userId,
-            'resource_id'   => $newId,
-            'module_id'     => $moduleId
-        ]);
+        try {
+            $insertPayload = [
+                'module_id' => $moduleId,
+                'resource_name' => $resourceName,
+                'resource_route' => $resourceRoute,
+                'description' => $description ?: null,
+                'status' => $status,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s')
+            ];
 
-        respond([
-            'status' => 'success',
-            'message' => "Resource \"{$resourceName}\" created successfully.",
-            'resource_id' => $newId
-        ], 201);
+            $newId = $db->insert('resources', $insertPayload);
+
+            // Fetch user department ID
+            $userDeptId = null;
+            if ($userId) {
+                $uRes = $db->query("SELECT p.department_id FROM users u LEFT JOIN positions p ON u.position_id = p.position_id WHERE u.user_id = :uid", ['uid' => $userId]);
+                if (!empty($uRes)) $userDeptId = $uRes[0]['department_id'] ?? null;
+            }
+
+            // Auto-grant permissions for the new resource to creator, department roles & Super Admin roles
+            autoGrantResourcePermissions($db, (int)$newId, (int)$userId, $_SESSION['role_id'] ?? null, $userDeptId, $selectedActionIds, true);
+
+            // Audit Trail
+            \App\Services\AuditLogger::log([
+                'action'        => 'Create Resource',
+                'target_table'  => 'resources',
+                'target_id'     => (string)$newId,
+                'description'   => "Created resource \"{$resourceName}\" under module ID {$moduleId}",
+                'actor_user_id' => $userId,
+                'resource_id'   => $newId,
+                'module_id'     => $moduleId
+            ]);
+
+            $pdo->commit();
+
+            respond([
+                'status' => 'success',
+                'message' => "Resource \"{$resourceName}\" created successfully.",
+                'resource_id' => $newId
+            ], 201);
+
+        } catch (Throwable $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            error_log("Resource POST Error: " . $e->getMessage());
+            respond([
+                'status' => 'error',
+                'message' => 'An internal database server error occurred while creating resource.'
+            ], 500);
+        }
     }
 
     if ($method === 'PUT' || $method === 'PATCH') {
@@ -514,7 +561,7 @@ try {
             $uRes = $db->query("SELECT p.department_id FROM users u LEFT JOIN positions p ON u.position_id = p.position_id WHERE u.user_id = :uid", ['uid' => $userId]);
             if (!empty($uRes)) $userDeptId = $uRes[0]['department_id'] ?? null;
         }
-        autoGrantResourcePermissions($db, (int)$resourceId, (int)$userId, $_SESSION['role_id'] ?? null, $userDeptId, $selectedActionIds);
+        autoGrantResourcePermissions($db, (int)$resourceId, (int)$userId, $_SESSION['role_id'] ?? null, $userDeptId, $selectedActionIds, false);
 
         // Audit Trail with Full Data Mutation Snapshot
         \App\Services\AuditLogger::logMutation([
