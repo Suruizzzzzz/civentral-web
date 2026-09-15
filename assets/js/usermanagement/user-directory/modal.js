@@ -166,6 +166,21 @@ function openEditModal(userId) {
   const editStatus = document.getElementById('editStatus');
   if (editStatus) editStatus.value = user.status || 'Active';
 
+  // Always reset the reset-password sub-pane to default state when opening
+  const _rpFormFields   = document.getElementById('editFormFields');
+  const _rpFooter       = document.getElementById('editModalFooter');
+  const _rpResetPane    = document.getElementById('resetPasswordPane');
+  const _rpOtpContainer = document.getElementById('otpFieldContainer');
+  const _rpConfirmBtns  = document.getElementById('resetConfirmButtons');
+  if (_rpFormFields)   _rpFormFields.classList.remove('hidden');
+  if (_rpFooter)       _rpFooter.classList.remove('hidden');
+  if (_rpResetPane)    _rpResetPane.classList.add('hidden');
+  if (_rpOtpContainer) _rpOtpContainer.classList.add('hidden');
+  if (_rpConfirmBtns)  _rpConfirmBtns.classList.remove('hidden');
+  const _rpOtpInput = document.getElementById('otpInput');
+  if (_rpOtpInput) _rpOtpInput.value = '';
+  resetPasswordTargetUserId = null;
+
   openModal('editModal');
 }
 
@@ -260,3 +275,158 @@ async function confirmArchiveUser() {
 
 window.openArchiveUserModal = openArchiveUserModal;
 window.confirmArchiveUser = confirmArchiveUser;
+
+// ADMIN RESET PASSWORD
+var resetPasswordTargetUserId = null;
+
+function triggerResetPassword() {
+  const userId = parseInt(document.getElementById('editEmpIdRef').value);
+  if (!userId) return;
+  resetPasswordTargetUserId = userId;
+
+  const user = systemUsers.find(u => u.user_id === userId);
+  const fullName = user && typeof getUserFullName === 'function' ? getUserFullName(user) : 'this user';
+  const targetEmail = user ? (user.email || '') : '';
+
+  const msgEl = document.getElementById('resetConfirmMessage');
+  if (msgEl) {
+    msgEl.innerText = `Send a password reset authorization code to ${fullName}'s registered email (${targetEmail})?`;
+  }
+
+  // Show reset pane, hide form fields and footer
+  const formFields = document.getElementById('editFormFields');
+  const footer     = document.getElementById('editModalFooter');
+  const resetPane  = document.getElementById('resetPasswordPane');
+  const otpContainer = document.getElementById('otpFieldContainer');
+  const confirmBtns  = document.getElementById('resetConfirmButtons');
+
+  if (formFields)    formFields.classList.add('hidden');
+  if (footer)        footer.classList.add('hidden');
+  if (resetPane)     resetPane.classList.remove('hidden');
+  if (otpContainer)  otpContainer.classList.add('hidden');
+  if (confirmBtns)   confirmBtns.classList.remove('hidden');
+
+  const otpInput = document.getElementById('otpInput');
+  if (otpInput) otpInput.value = '';
+}
+
+function cancelResetPassword() {
+  resetPasswordTargetUserId = null;
+
+  const formFields   = document.getElementById('editFormFields');
+  const footer       = document.getElementById('editModalFooter');
+  const resetPane    = document.getElementById('resetPasswordPane');
+  const otpContainer = document.getElementById('otpFieldContainer');
+  const confirmBtns  = document.getElementById('resetConfirmButtons');
+
+  if (formFields)   formFields.classList.remove('hidden');
+  if (footer)       footer.classList.remove('hidden');
+  if (resetPane)    resetPane.classList.add('hidden');
+  if (otpContainer) otpContainer.classList.add('hidden');
+  if (confirmBtns)  confirmBtns.classList.remove('hidden');
+
+  const otpInput = document.getElementById('otpInput');
+  if (otpInput) otpInput.value = '';
+}
+
+async function confirmResetPassword() {
+  if (!resetPasswordTargetUserId) return;
+
+  const confirmBtns  = document.getElementById('resetConfirmButtons');
+  const otpContainer = document.getElementById('otpFieldContainer');
+
+  // Show loading state
+  if (confirmBtns) {
+    confirmBtns.innerHTML = `
+      <span class="text-xs text-slate-400 flex items-center gap-1.5">
+        <i class="fa-solid fa-circle-notch animate-spin text-[10px]"></i>
+        Dispatching authorization code...
+      </span>
+    `;
+  }
+
+  try {
+    const response = await fetch('../../api/employee/admin-reset-password.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'send_otp',
+        target_user_id: resetPasswordTargetUserId
+      })
+    });
+
+    const result = await response.json();
+
+    if (result.status === 'success') {
+      // Show OTP input pane
+      if (confirmBtns)  confirmBtns.classList.add('hidden');
+      if (otpContainer) otpContainer.classList.remove('hidden');
+
+      const msgEl = document.getElementById('resetConfirmMessage');
+      if (msgEl) msgEl.innerText = result.message || 'Authorization code dispatched. Enter the 6-digit code below.';
+
+      if (typeof showToast === 'function') showToast(result.message || 'Authorization code dispatched.');
+    } else {
+      if (typeof showToast === 'function') showToast(result.message || 'Failed to dispatch authorization code.', true);
+      // Restore confirm buttons
+      if (confirmBtns) {
+        confirmBtns.innerHTML = `
+          <button type="button" onclick="cancelResetPassword()" class="border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer">Cancel</button>
+          <button type="button" onclick="confirmResetPassword()" class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-xs cursor-pointer">Confirm Reset</button>
+        `;
+      }
+    }
+  } catch (err) {
+    console.error('Admin reset password error:', err);
+    if (typeof showToast === 'function') showToast('Network error. Could not dispatch authorization code.', true);
+    if (confirmBtns) {
+      confirmBtns.innerHTML = `
+        <button type="button" onclick="cancelResetPassword()" class="border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer">Cancel</button>
+        <button type="button" onclick="confirmResetPassword()" class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition shadow-xs cursor-pointer">Confirm Reset</button>
+      `;
+    }
+  }
+}
+
+async function verifyOTP() {
+  if (!resetPasswordTargetUserId) return;
+
+  const otpInput = document.getElementById('otpInput');
+  const otpCode  = otpInput ? otpInput.value.trim() : '';
+
+  if (!otpCode || otpCode.length !== 6 || !/^\d{6}$/.test(otpCode)) {
+    if (typeof showToast === 'function') showToast('Please enter a valid 6-digit authorization code.', true);
+    return;
+  }
+
+  try {
+    const response = await fetch('../../api/employee/admin-reset-password.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'verify_and_reset',
+        target_user_id: resetPasswordTargetUserId,
+        otp_code: otpCode
+      })
+    });
+
+    const result = await response.json();
+
+    if (result.status === 'success') {
+      if (typeof showToast === 'function') showToast(result.message || 'Password reset successfully.');
+      cancelResetPassword();
+      if (typeof closeModal === 'function') closeModal('editModal');
+    } else {
+      if (typeof showToast === 'function') showToast(result.message || 'Invalid authorization code.', true);
+      if (otpInput) otpInput.value = '';
+    }
+  } catch (err) {
+    console.error('Verify OTP error:', err);
+    if (typeof showToast === 'function') showToast('Network error. Could not verify authorization code.', true);
+  }
+}
+
+window.triggerResetPassword  = triggerResetPassword;
+window.cancelResetPassword   = cancelResetPassword;
+window.confirmResetPassword  = confirmResetPassword;
+window.verifyOTP             = verifyOTP;
