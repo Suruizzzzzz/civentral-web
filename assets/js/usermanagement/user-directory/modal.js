@@ -116,11 +116,47 @@ function openEditModal(userId) {
   document.getElementById('editEmail').value = user.email;
   document.getElementById('editPhone').value = user.mobile_number || '';
   
-  const currentDeptId = (user.positions && user.positions.department_id) ? user.positions.department_id : '';
+  let currentDeptId = '';
+  let currentDeptName = '';
+  if (user.positions && user.positions.departments) {
+    currentDeptId = user.positions.departments.department_id || '';
+    currentDeptName = user.positions.departments.department_name || '';
+  } else if (user.positions && user.positions.department_id) {
+    currentDeptId = user.positions.department_id;
+  }
+
+  if (!currentDeptId && user.position_id && typeof availablePositions !== 'undefined') {
+    const matchedPos = availablePositions.find(p => p.position_id == user.position_id);
+    if (matchedPos && matchedPos.department_id) {
+      currentDeptId = matchedPos.department_id;
+    }
+  }
+
+  if (!currentDeptName && currentDeptId && typeof availableDepartments !== 'undefined') {
+    const matchedDept = availableDepartments.find(d => d.department_id == currentDeptId);
+    if (matchedDept && matchedDept.department_name) {
+      currentDeptName = matchedDept.department_name;
+    }
+  }
+
   const currentPosId = user.position_id || '';
 
   const editDept = document.getElementById('editDept');
-  if (editDept) editDept.value = currentDeptId;
+  if (editDept) {
+    if (!isSuperAdmin) {
+      editDept.innerHTML = `<option value="${currentDeptId}">${currentDeptName || 'Current Department'}</option>`;
+      editDept.value = currentDeptId;
+      editDept.disabled = true;
+      editDept.classList.add('bg-slate-100', 'cursor-not-allowed', 'text-slate-500');
+    } else {
+      if (typeof populateEditFormOptions === 'function') {
+        populateEditFormOptions();
+      }
+      editDept.value = currentDeptId;
+      editDept.disabled = false;
+      editDept.classList.remove('bg-slate-100', 'cursor-not-allowed', 'text-slate-500');
+    }
+  }
 
   if (typeof updatePositionDropdown === 'function') updatePositionDropdown(currentDeptId, currentPosId);
 

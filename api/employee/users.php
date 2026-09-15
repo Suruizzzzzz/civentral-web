@@ -57,7 +57,7 @@ try {
 
     // 3. Authorization & Scope Check
     $currentUserInfo = $db->query("
-        SELECT u.user_id, u.role_id, r.role_prefix, r.is_global_access, r.is_superadmin, p.department_id, d.department_name
+        SELECT u.user_id, u.role_id, r.role_name, r.role_prefix, r.is_global_access, r.is_superadmin, p.department_id, d.department_name
         FROM users u
         LEFT JOIN roles r ON u.role_id = r.role_id
         LEFT JOIN positions p ON u.position_id = p.position_id
@@ -66,6 +66,7 @@ try {
     ", ['uid' => $userId]);
 
     $isAuthorized = false;
+    $isSuperAdmin = false;
     $isSuperAdminOrGlobal = false;
     $userDepartmentId = null;
     $userDepartmentName = null;
@@ -614,14 +615,101 @@ try {
             ], 403);
         }
 
+        // Department Authorization & Scope Checks
+        $targetUserDeptId = null;
+        if (!empty($targetUser['position_id'])) {
+            $targetPos = $db->query("SELECT department_id FROM positions WHERE position_id = :pos_id", ['pos_id' => $targetUser['position_id']]);
+            if (!empty($targetPos)) {
+                $targetUserDeptId = (int)$targetPos[0]['department_id'];
+            }
+        }
+
+        // A. Non-Super Administrators can only modify staff accounts within their own department
+        if (!$isSuperAdmin && $userDepartmentId && $targetUserDeptId && $targetUserDeptId !== $userDepartmentId) {
+            respond([
+                'status' => 'error',
+                'message' => 'Forbidden. Department Administrators can only modify staff accounts within their own department.'
+            ], 403);
+        }
+
+        // B. Direct department_id parameter guard
+        if (isset($data['department_id']) && $targetUserDeptId !== null) {
+            $requestedDeptId = filter_var($data['department_id'], FILTER_VALIDATE_INT);
+            if ($requestedDeptId && $requestedDeptId !== $targetUserDeptId && !$isSuperAdmin) {
+                respond([
+                    'status' => 'error',
+                    'message' => 'Forbidden. Only Super Administrators can change a staff member\'s department.'
+                ], 403);
+            }
+        }
+
         $updatePayload = ['updated_at' => date('Y-m-d H:i:s')];
 
         if (isset($data['first_name'])) $updatePayload['first_name'] = trim($data['first_name']);
         if (isset($data['middle_name'])) $updatePayload['middle_name'] = trim($data['middle_name']) ?: null;
         if (isset($data['last_name'])) $updatePayload['last_name'] = trim($data['last_name']);
+
+        // Email Handling
+        if (isset($data['email'])) {
+            $email = strtolower(trim($data['email']));
+            if (empty($email)) {
+                respond([
+                    'status' => 'error',
+                    'message' => 'Email address is required.'
+                ], 400);
+            }
+
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                respond([
+                    'status' => 'error',
+                    'message' => 'Please enter a valid email address.'
+                ], 400);
+            }
+
+            if (strtolower($email) !== strtolower($targetUser['email'] ?? '')) {
+                $dupEmail = $db->query(
+                    "SELECT user_id FROM users WHERE LOWER(email) = LOWER(:email) AND user_id != :uid LIMIT 1",
+                    ['email' => $email, 'uid' => $targetUserId]
+                );
+                if (!empty($dupEmail)) {
+                    respond([
+                        'status' => 'error',
+                        'message' => 'This email address is already registered.'
+                    ], 400);
+                }
+            }
+
+            $updatePayload['email'] = $email;
+        }
+
         if (isset($data['mobile_number'])) $updatePayload['mobile_number'] = trim($data['mobile_number']) ?: null;
         if (isset($data['role_id'])) $updatePayload['role_id'] = filter_var($data['role_id'], FILTER_VALIDATE_INT);
-        if (isset($data['position_id'])) $updatePayload['position_id'] = filter_var($data['position_id'], FILTER_VALIDATE_INT);
+
+        // Position & Department-Change Authorization Guard
+        if (isset($data['position_id'])) {
+            $newPosId = filter_var($data['position_id'], FILTER_VALIDATE_INT);
+            if ($newPosId) {
+                $newPosRow = $db->query("SELECT department_id FROM positions WHERE position_id = :pos_id", ['pos_id' => $newPosId]);
+                if (empty($newPosRow)) {
+                    respond([
+                        'status' => 'error',
+                        'message' => 'The selected position does not exist.'
+                    ], 400);
+                }
+                $newPosDeptId = (int)$newPosRow[0]['department_id'];
+
+                // Non-Super Administrator cannot change department via position reassignment
+                if ($targetUserDeptId !== null && $newPosDeptId !== $targetUserDeptId && !$isSuperAdmin) {
+                    respond([
+                        'status' => 'error',
+                        'message' => 'Forbidden. Only Super Administrators can change a staff member\'s department.'
+                    ], 403);
+                }
+
+                $updatePayload['position_id'] = $newPosId;
+            }
+        }
+
         if (isset($data['status']) && in_array($data['status'], ['Active', 'Inactive', 'Locked', 'Archived'])) {
             $updatePayload['status'] = $data['status'];
             if ($data['status'] === 'Active') {
