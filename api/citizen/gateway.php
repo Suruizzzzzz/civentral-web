@@ -588,6 +588,20 @@ function handleVerifyOTP(array $input, $db): void {
             unset($_SESSION['pending_citizen_user_id']);
             $_SESSION['citizen_user_id'] = $citizenUserId;
 
+            $platform = trim($input['platform'] ?? 'Mobile');
+            $deviceId = trim($input['device_id'] ?? '');
+
+            // Create active citizen session record identical to handleLogin
+            $sessionInfo = createCitizenSession($db, $citizenUserId, $platform, $deviceId);
+            $sessionId = $sessionInfo['session_id'];
+
+            // Log successful login attempt
+            logCitizenLoginAttempt($db, $citizenUserId, $sessionId, 'Success');
+
+            $middlePart = !empty($citizenUser['middle_name']) ? trim($citizenUser['middle_name']) . ' ' : '';
+            $suffixPart = !empty($citizenUser['suffix']) ? ' ' . trim($citizenUser['suffix']) : '';
+            $fullName = trim(($citizenUser['first_name'] ?? '') . ' ' . $middlePart . ($citizenUser['last_name'] ?? '') . $suffixPart);
+
             respond([
                 'status' => 'success',
                 'message' => 'Account successfully verified and activated! Welcome to CivCentral.',
@@ -595,8 +609,16 @@ function handleVerifyOTP(array $input, $db): void {
                     'citizen_user_id' => $citizenUserId,
                     'first_name' => $citizenUser['first_name'],
                     'last_name' => $citizenUser['last_name'],
-                    'email' => $citizenUser['email']
-                ]
+                    'full_name' => $fullName,
+                    'email' => $citizenUser['email'],
+                    'mobile_number' => $citizenUser['mobile_number'] ?? null
+                ],
+                'session' => [
+                    'session_id' => $sessionId,
+                    'refresh_token' => $sessionInfo['refresh_token'],
+                    'expires_at' => $sessionInfo['expires_at']
+                ],
+                'token' => $sessionInfo['refresh_token']
             ]);
         } else {
             respond(['status' => 'success', 'message' => 'Verification code confirmed successfully.']);
