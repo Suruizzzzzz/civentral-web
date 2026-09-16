@@ -1,0 +1,129 @@
+﻿diff --git a/api/citizen/gateway.php b/api/citizen/gateway.php
+index 204e0dc..7a3628c 100644
+--- a/api/citizen/gateway.php
++++ b/api/citizen/gateway.php
+@@ -570,7 +570,7 @@ function handleVerifyOTP(array $input, $db): void {
+             $currentTime = date('Y-m-d H:i:s');
+             if ($currentTime <= $otpRecord['expires_at'] && $otpRecord['otp_code'] === $otpCode) {
+                 $isEmailVerified = true;
+-                $db->update('citizen_otps', ['is_used' => 1], ['otp_id' => $otpRecord['otp_id']]);
++                $db->update('citizen_otps', ['is_used' => 1, 'verified_at' => $currentTime], ['otp_id' => $otpRecord['otp_id']]);
+             }
+         }
+ 
+@@ -1197,7 +1197,7 @@ function handleLogout(array $input, $db): void {
+ }
+ 
+ function handleForgotPassword(array $input, $db): void {
+-    $email = strtolower(trim($input['email'] ?? ''));
++    $email = strtolower(trim($input['email'] ?? $input['identifier'] ?? ''));
+ 
+     if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+         respond(['status' => 'error', 'message' => 'Please provide a valid email address.'], 400);
+@@ -1213,11 +1213,31 @@ function handleForgotPassword(array $input, $db): void {
+         $user = $users[0];
+         $citizenUserId = intval($user['citizen_user_id']);
+ 
+-        $resetCode = sprintf('%06d', mt_rand(0, 999999));
++        // Rate limit: 60 seconds cooldown between reset code dispatches
++        $latestOtps = $db->query(
++            "SELECT created_at FROM citizen_otps WHERE citizen_user_id = :cid AND purpose = 'Password Reset' ORDER BY otp_id DESC LIMIT 1",
++            ['cid' => $citizenUserId]
++        );
++        if (!empty($latestOtps)) {
++            $secondsPassed = time() - strtotime($latestOtps[0]['created_at']);
++            if ($secondsPassed < 60) {
++                $waitTime = 60 - $secondsPassed;
++                respond(['status' => 'error', 'message' => "Please wait {$waitTime} seconds before requesting another password reset code."], 429);
++            }
++        }
++
++        // Invalidate previous unused Password Reset OTPs
++        try {
++            $db->update('citizen_otps', ['is_used' => 1], ['citizen_user_id' => $citizenUserId, 'purpose' => 'Password Reset', 'is_used' => 0]);
++        } catch (Throwable $e) {}
++
++        $resetCode = sprintf('%06d', mt_rand(100000, 999999));
+         $rawResetToken = bin2hex(random_bytes(32));
+         $resetTokenHash = hash('sha256', $rawResetToken);
+         $expiresAt = date('Y-m-d H:i:s', strtotime('+1 hour'));
++        $otpExpiresAt = date('Y-m-d H:i:s', strtotime('+10 minutes'));
+ 
++        // Store reset token
+         $db->insert('citizen_password_resets', [
+             'citizen_user_id' => $citizenUserId,
+             'reset_token_hash' => $resetTokenHash,
+@@ -1225,6 +1245,15 @@ function handleForgotPassword(array $input, $db): void {
+             'used_at' => null
+         ]);
+ 
++        // Synchronize OTP storage in citizen_otps for verification integrity
++        $db->insert('citizen_otps', [
++            'citizen_user_id' => $citizenUserId,
++            'otp_code' => (string)$resetCode,
++            'purpose' => 'Password Reset',
++            'expires_at' => $otpExpiresAt,
++            'is_used' => 0
++        ]);
++
+         $middlePart = !empty($user['middle_name']) ? $user['middle_name'] . ' ' : '';
+         $recipientName = trim("{$user['first_name']} {$middlePart}{$user['last_name']}");
+         sendOTPEmail($email, $recipientName, $resetCode, 'Password Reset');
+@@ -1243,29 +1272,47 @@ function handleForgotPassword(array $input, $db): void {
+ 
+ function handleResetPassword(array $input, $db): void {
+     $rawToken = trim($input['reset_token'] ?? $input['token'] ?? '');
+-    $email = strtolower(trim($input['email'] ?? ''));
+     $newPassword = trim($input['new_password'] ?? $input['password'] ?? '');
+ 
+     if (empty($newPassword) || strlen($newPassword) < 8) {
+         respond(['status' => 'error', 'message' => 'Password must be at least 8 characters long.'], 400);
+     }
+ 
++    if (empty($rawToken)) {
++        respond(['status' => 'error', 'message' => 'Valid reset token is required.'], 400);
++    }
++
+     try {
+         $user = null;
+-        if (!empty($rawToken)) {
+-            $tokenHash = hash('sha256', $rawToken);
+-            $resets = $db->query("SELECT * FROM citizen_password_resets WHERE reset_token_hash = :hash AND used_at IS NULL AND expires_at > NOW() LIMIT 1", ['hash' => $tokenHash]);
+-            if (!empty($resets)) {
+-                $resetRecord = $resets[0];
+-                $users = $db->query("SELECT * FROM citizen_users WHERE citizen_user_id = :cid LIMIT 1", ['cid' => $resetRecord['citizen_user_id']]);
++        $tokenHash = hash('sha256', $rawToken);
++        $resets = $db->query(
++            "SELECT * FROM citizen_password_resets WHERE reset_token_hash = :hash AND used_at IS NULL AND expires_at > NOW() LIMIT 1",
++            ['hash' => $tokenHash]
++        );
++
++        if (!empty($resets)) {
++            $resetRecord = $resets[0];
++            $citizenUserId = intval($resetRecord['citizen_user_id']);
++
++            // Enforce verified reset state: require a verified Password Reset OTP for this citizen
++            $verifiedOtps = $db->query(
++                "SELECT otp_id FROM citizen_otps 
++                 WHERE citizen_user_id = :cid 
++                   AND purpose = 'Password Reset' 
++                   AND is_used = 1 
++                   AND verified_at IS NOT NULL 
++                   AND verified_at >= DATE_SUB(:created_at, INTERVAL 5 SECOND)
++                 ORDER BY otp_id DESC LIMIT 1",
++                ['cid' => $citizenUserId, 'created_at' => $resetRecord['created_at']]
++            );
++
++            if (!empty($verifiedOtps)) {
++                $users = $db->query("SELECT * FROM citizen_users WHERE citizen_user_id = :cid LIMIT 1", ['cid' => $citizenUserId]);
+                 if (!empty($users)) {
+                     $user = $users[0];
+                     $db->update('citizen_password_resets', ['used_at' => date('Y-m-d H:i:s')], ['reset_id' => $resetRecord['reset_id']]);
+                 }
+             }
+-        } elseif (!empty($email)) {
+-            $users = $db->query("SELECT * FROM citizen_users WHERE LOWER(email) = LOWER(:email) LIMIT 1", ['email' => $email]);
+-            if (!empty($users)) $user = $users[0];
+         }
+ 
+         if (!$user) {
