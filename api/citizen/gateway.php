@@ -469,35 +469,70 @@ function handleRegister(array $input, $db): void {
 
         $_SESSION['pending_citizen_user_id'] = $citizenUserId;
 
-        $otpCode = sprintf('%06d', mt_rand(0, 999999));
-        $expiresAt = date('Y-m-d H:i:s', strtotime('+10 minutes'));
+        // Determine Registration Channel
+        $regMode = strtolower(trim($input['mode'] ?? $input['channel'] ?? $input['registration_mode'] ?? $_GET['mode'] ?? ''));
+        $rawId = trim($input['identifier'] ?? '');
+        $isPhoneRegistration = false;
 
-        $db->insert('citizen_otps', [
-            'citizen_user_id' => $citizenUserId,
-            'otp_code' => $otpCode,
-            'purpose' => 'Registration',
-            'expires_at' => $expiresAt,
-            'is_used' => 0
-        ]);
-
-        $middlePart = !empty($middleName) ? $middleName . ' ' : '';
-        $recipientName = trim("{$firstName} {$middlePart}{$lastName}");
-        sendOTPEmail($email, $recipientName, $otpCode, 'Registration');
-        if (!empty($mobileNumber)) {
-            sendIprogSMSOTP($mobileNumber);
+        if (in_array($regMode, ['phone', 'sms', 'mobile'])) {
+            $isPhoneRegistration = !empty($mobileNumber);
+        } elseif ($regMode === 'email') {
+            $isPhoneRegistration = false;
+        } else {
+            if (!empty($rawId) && strpos($rawId, '@') !== false) {
+                $isPhoneRegistration = false;
+            } elseif (!empty($mobileNumber)) {
+                $isPhoneRegistration = true;
+            }
         }
 
-        $msg = !empty($mobileNumber)
-            ? 'Account created. Verification code sent to your mobile number.'
-            : 'Account created. Verification code sent to your email.';
+        if ($isPhoneRegistration) {
+            // PHONE REGISTRATION:
+            // Single SMS OTP via IPROG only.
+            // DO NOT generate a Civentral Registration OTP.
+            // DO NOT insert a Registration OTP into citizen_otps.
+            // DO NOT send a Registration OTP email.
+            $smsSent = sendIprogSMSOTP($mobileNumber);
+            if (!$smsSent) {
+                respond([
+                    'status' => 'error',
+                    'message' => 'Unable to send SMS verification code. Please check your mobile number or try again later.'
+                ], 500);
+            }
 
-        respond([
-            'status' => 'success',
-            'verification_required' => true,
-            'message' => $msg,
-            'email' => $email,
-            'mobile_number' => $mobileNumber
-        ], 201);
+            respond([
+                'status' => 'success',
+                'verification_required' => true,
+                'message' => 'Account created. Verification code sent to your mobile number.',
+                'email' => $email,
+                'mobile_number' => $mobileNumber
+            ], 201);
+        } else {
+            // EMAIL REGISTRATION:
+            // Local Registration OTP in citizen_otps + Email dispatch only.
+            $otpCode = sprintf('%06d', mt_rand(0, 999999));
+            $expiresAt = date('Y-m-d H:i:s', strtotime('+10 minutes'));
+
+            $db->insert('citizen_otps', [
+                'citizen_user_id' => $citizenUserId,
+                'otp_code' => $otpCode,
+                'purpose' => 'Registration',
+                'expires_at' => $expiresAt,
+                'is_used' => 0
+            ]);
+
+            $middlePart = !empty($middleName) ? $middleName . ' ' : '';
+            $recipientName = trim("{$firstName} {$middlePart}{$lastName}");
+            sendOTPEmail($email, $recipientName, $otpCode, 'Registration');
+
+            respond([
+                'status' => 'success',
+                'verification_required' => true,
+                'message' => 'Account created. Verification code sent to your email.',
+                'email' => $email,
+                'mobile_number' => $mobileNumber
+            ], 201);
+        }
     } catch (Throwable $e) {
         error_log("Citizen Register Error: " . $e->getMessage());
         respond(['status' => 'error', 'message' => 'Registration error: ' . $e->getMessage()], 500);
@@ -506,8 +541,9 @@ function handleRegister(array $input, $db): void {
 
 function handleVerifyOTP(array $input, $db): void {
     $otpCode = trim($input['otp'] ?? $input['otp_code'] ?? '');
-    $mobileNumber = trim($input['mobile_number'] ?? $input['phone'] ?? $input['identifier'] ?? '');
+    $mobileNumber = trim($input['mobile_number'] ?? $input['phone'] ?? '');
     $email = strtolower(trim($input['email'] ?? ''));
+    $rawIdentifier = trim($input['identifier'] ?? '');
     $purpose = trim($input['purpose'] ?? 'Registration');
 
     if (!in_array($purpose, ['Registration', 'Login', 'Password Reset'])) {
@@ -524,7 +560,7 @@ function handleVerifyOTP(array $input, $db): void {
         $citizenUserId = $_SESSION['pending_citizen_user_id'] ?? null;
         $citizenUser = null;
 
-        if (!empty($email)) {
+        if (!empty($email) && filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $users = $db->query("SELECT * FROM citizen_users WHERE LOWER(email) = LOWER(:email) LIMIT 1", ['email' => $email]);
             if (!empty($users)) {
                 $citizenUser = $users[0];
@@ -534,6 +570,18 @@ function handleVerifyOTP(array $input, $db): void {
 
         if (!$citizenUser && !empty($mobileNumber)) {
             $users = $db->query("SELECT * FROM citizen_users WHERE mobile_number = :mobile LIMIT 1", ['mobile' => $mobileNumber]);
+            if (!empty($users)) {
+                $citizenUser = $users[0];
+                $citizenUserId = intval($citizenUser['citizen_user_id']);
+            }
+        }
+
+        if (!$citizenUser && !empty($rawIdentifier)) {
+            if (strpos($rawIdentifier, '@') !== false) {
+                $users = $db->query("SELECT * FROM citizen_users WHERE LOWER(email) = LOWER(:email) LIMIT 1", ['email' => $rawIdentifier]);
+            } else {
+                $users = $db->query("SELECT * FROM citizen_users WHERE mobile_number = :mobile LIMIT 1", ['mobile' => $rawIdentifier]);
+            }
             if (!empty($users)) {
                 $citizenUser = $users[0];
                 $citizenUserId = intval($citizenUser['citizen_user_id']);
@@ -551,31 +599,61 @@ function handleVerifyOTP(array $input, $db): void {
             respond(['status' => 'error', 'message' => 'Citizen user account not found. Please register or check your account.'], 400);
         }
 
-        // Dedicated IPROG SMS OTP Verification
-        $userMobile = $citizenUser['mobile_number'] ?? $mobileNumber;
-        $isSmsVerified = false;
-        if (!empty($userMobile)) {
-            $isSmsVerified = verifyIprogSMSOTP($userMobile, $otpCode);
-        }
+        // Determine Verification Channel
+        $verifyMode = strtolower(trim($input['mode'] ?? $input['channel'] ?? ''));
+        $isPhoneChannel = false;
 
-        // Database Email OTP Verification (Fallback / Parallel)
-        $isEmailVerified = false;
-        $otps = $db->query(
-            "SELECT * FROM citizen_otps WHERE citizen_user_id = :cid AND purpose = :purpose AND is_used = 0 ORDER BY otp_id DESC LIMIT 1",
-            ['cid' => $citizenUserId, 'purpose' => $purpose]
-        );
-
-        if (!empty($otps)) {
-            $otpRecord = $otps[0];
-            $currentTime = date('Y-m-d H:i:s');
-            if ($currentTime <= $otpRecord['expires_at'] && $otpRecord['otp_code'] === $otpCode) {
-                $isEmailVerified = true;
-                $db->update('citizen_otps', ['is_used' => 1, 'verified_at' => $currentTime], ['otp_id' => $otpRecord['otp_id']]);
+        if ($purpose === 'Registration') {
+            if (in_array($verifyMode, ['phone', 'sms', 'mobile'])) {
+                $isPhoneChannel = true;
+            } elseif ($verifyMode === 'email') {
+                $isPhoneChannel = false;
+            } else {
+                if (!empty($rawIdentifier) && strpos($rawIdentifier, '@') === false) {
+                    $isPhoneChannel = true;
+                } elseif (!empty($rawIdentifier) && strpos($rawIdentifier, '@') !== false) {
+                    $isPhoneChannel = false;
+                } elseif (!empty($mobileNumber) && strpos($mobileNumber, '@') === false && !empty($citizenUser['mobile_number'])) {
+                    $isPhoneChannel = true;
+                }
             }
         }
 
-        if (!$isSmsVerified && !$isEmailVerified) {
-            respond(['status' => 'error', 'message' => 'Incorrect or expired verification code. Please check and try again.'], 400);
+        $isVerified = false;
+
+        if ($purpose === 'Registration' && $isPhoneChannel) {
+            // PHONE REGISTRATION VERIFICATION:
+            // STRICT SECURITY: ONLY verifyIprogSMSOTP() may authorize phone registration.
+            // citizen_otps Registration OTP, email OTP, or fallbacks MUST NOT activate phone registration.
+            $userMobile = $citizenUser['mobile_number'] ?? $mobileNumber;
+            if (empty($userMobile)) {
+                respond(['status' => 'error', 'message' => 'No mobile number associated with this account for SMS verification.'], 400);
+            }
+
+            $isVerified = verifyIprogSMSOTP($userMobile, $otpCode);
+            if (!$isVerified) {
+                respond(['status' => 'error', 'message' => 'Incorrect or expired verification code. Please check and try again.'], 400);
+            }
+        } else {
+            // EMAIL REGISTRATION, PASSWORD RESET, OR OTHER PURPOSE:
+            // Verified strictly against database citizen_otps.
+            $otps = $db->query(
+                "SELECT * FROM citizen_otps WHERE citizen_user_id = :cid AND purpose = :purpose AND is_used = 0 ORDER BY otp_id DESC LIMIT 1",
+                ['cid' => $citizenUserId, 'purpose' => $purpose]
+            );
+
+            if (!empty($otps)) {
+                $otpRecord = $otps[0];
+                $currentTime = date('Y-m-d H:i:s');
+                if ($currentTime <= $otpRecord['expires_at'] && $otpRecord['otp_code'] === $otpCode) {
+                    $isVerified = true;
+                    $db->update('citizen_otps', ['is_used' => 1, 'verified_at' => $currentTime], ['otp_id' => $otpRecord['otp_id']]);
+                }
+            }
+
+            if (!$isVerified) {
+                respond(['status' => 'error', 'message' => 'Incorrect or expired verification code. Please check and try again.'], 400);
+            }
         }
 
         if ($purpose === 'Registration' || strtolower($purpose) === 'registration' || $citizenUser['status'] === 'Pending') {
@@ -631,6 +709,8 @@ function handleVerifyOTP(array $input, $db): void {
 
 function handleResendOTP(array $input, $db): void {
     $email = strtolower(trim($input['email'] ?? ''));
+    $mobileNumber = trim($input['mobile_number'] ?? $input['phone'] ?? '');
+    $rawIdentifier = trim($input['identifier'] ?? '');
     $purpose = trim($input['purpose'] ?? 'Registration');
 
     if (!in_array($purpose, ['Registration', 'Login', 'Password Reset'])) {
@@ -641,13 +721,35 @@ function handleResendOTP(array $input, $db): void {
         $citizenUserId = $_SESSION['pending_citizen_user_id'] ?? $_SESSION['citizen_user_id'] ?? null;
         $citizenUser = null;
 
-        if (!empty($email)) {
+        if (!empty($email) && filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $users = $db->query("SELECT * FROM citizen_users WHERE LOWER(email) = LOWER(:email) LIMIT 1", ['email' => $email]);
             if (!empty($users)) {
                 $citizenUser = $users[0];
                 $citizenUserId = intval($citizenUser['citizen_user_id']);
             }
-        } elseif ($citizenUserId) {
+        }
+
+        if (!$citizenUser && !empty($mobileNumber)) {
+            $users = $db->query("SELECT * FROM citizen_users WHERE mobile_number = :mobile LIMIT 1", ['mobile' => $mobileNumber]);
+            if (!empty($users)) {
+                $citizenUser = $users[0];
+                $citizenUserId = intval($citizenUser['citizen_user_id']);
+            }
+        }
+
+        if (!$citizenUser && !empty($rawIdentifier)) {
+            if (strpos($rawIdentifier, '@') !== false) {
+                $users = $db->query("SELECT * FROM citizen_users WHERE LOWER(email) = LOWER(:email) LIMIT 1", ['email' => $rawIdentifier]);
+            } else {
+                $users = $db->query("SELECT * FROM citizen_users WHERE mobile_number = :mobile LIMIT 1", ['mobile' => $rawIdentifier]);
+            }
+            if (!empty($users)) {
+                $citizenUser = $users[0];
+                $citizenUserId = intval($citizenUser['citizen_user_id']);
+            }
+        }
+
+        if (!$citizenUser && $citizenUserId) {
             $users = $db->query("SELECT * FROM citizen_users WHERE citizen_user_id = :id LIMIT 1", ['id' => $citizenUserId]);
             if (!empty($users)) {
                 $citizenUser = $users[0];
@@ -658,41 +760,91 @@ function handleResendOTP(array $input, $db): void {
             respond(['status' => 'error', 'message' => 'Citizen user account not found.'], 404);
         }
 
-        $latestOtps = $db->query(
-            "SELECT created_at FROM citizen_otps WHERE citizen_user_id = :cid AND purpose = :purpose ORDER BY otp_id DESC LIMIT 1",
-            ['cid' => $citizenUserId, 'purpose' => $purpose]
-        );
+        // Determine Channel for Resend
+        $resendMode = strtolower(trim($input['mode'] ?? $input['channel'] ?? ''));
+        $isPhoneChannel = false;
 
-        if (!empty($latestOtps)) {
-            $lastSentTime = strtotime($latestOtps[0]['created_at']);
+        if ($purpose === 'Registration') {
+            if (in_array($resendMode, ['phone', 'sms', 'mobile'])) {
+                $isPhoneChannel = true;
+            } elseif ($resendMode === 'email') {
+                $isPhoneChannel = false;
+            } else {
+                if (!empty($rawIdentifier) && strpos($rawIdentifier, '@') === false) {
+                    $isPhoneChannel = true;
+                } elseif (!empty($rawIdentifier) && strpos($rawIdentifier, '@') !== false) {
+                    $isPhoneChannel = false;
+                } elseif (!empty($mobileNumber) && strpos($mobileNumber, '@') === false && !empty($citizenUser['mobile_number'])) {
+                    $isPhoneChannel = true;
+                }
+            }
+        }
+
+        if ($purpose === 'Registration' && $isPhoneChannel) {
+            // PHONE REGISTRATION RESEND:
+            $userMobile = $citizenUser['mobile_number'] ?? $mobileNumber;
+            if (empty($userMobile)) {
+                respond(['status' => 'error', 'message' => 'No mobile number associated with this account for SMS resend.'], 400);
+            }
+
+            // Cooldown rate-limit: 60 seconds
+            $lastResend = intval($_SESSION['last_sms_resend_' . $citizenUserId] ?? 0);
+            $userUpdated = strtotime($citizenUser['updated_at'] ?? '1970-01-01');
+            $userCreated = strtotime($citizenUser['created_at'] ?? '1970-01-01');
+            $lastSentTime = max($lastResend, $userUpdated, $userCreated);
             $secondsPassed = time() - $lastSentTime;
+
             if ($secondsPassed < 60) {
                 $wait = 60 - $secondsPassed;
                 respond(['status' => 'error', 'message' => "Please wait {$wait} seconds before requesting another code."], 429);
             }
+
+            $smsSent = sendIprogSMSOTP($userMobile);
+            if (!$smsSent) {
+                respond(['status' => 'error', 'message' => 'Unable to resend SMS verification code. Please try again later.'], 500);
+            }
+
+            $_SESSION['last_sms_resend_' . $citizenUserId] = time();
+            try {
+                $db->update('citizen_users', ['updated_at' => date('Y-m-d H:i:s')], ['citizen_user_id' => $citizenUserId]);
+            } catch (Throwable $e) {}
+
+            respond(['status' => 'success', 'message' => 'A new verification code has been sent to your mobile number.']);
+        } else {
+            // EMAIL REGISTRATION OR OTHER PURPOSE:
+            $latestOtps = $db->query(
+                "SELECT created_at FROM citizen_otps WHERE citizen_user_id = :cid AND purpose = :purpose ORDER BY otp_id DESC LIMIT 1",
+                ['cid' => $citizenUserId, 'purpose' => $purpose]
+            );
+
+            if (!empty($latestOtps)) {
+                $lastSentTime = strtotime($latestOtps[0]['created_at']);
+                $secondsPassed = time() - $lastSentTime;
+                if ($secondsPassed < 60) {
+                    $wait = 60 - $secondsPassed;
+                    respond(['status' => 'error', 'message' => "Please wait {$wait} seconds before requesting another code."], 429);
+                }
+            }
+
+            $otpCode = sprintf('%06d', mt_rand(0, 999999));
+            $expiresAt = date('Y-m-d H:i:s', strtotime('+10 minutes'));
+
+            $db->insert('citizen_otps', [
+                'citizen_user_id' => $citizenUserId,
+                'otp_code' => $otpCode,
+                'purpose' => $purpose,
+                'expires_at' => $expiresAt,
+                'is_used' => 0
+            ]);
+
+            $recipientEmail = $citizenUser['email'];
+            $middlePart = !empty($citizenUser['middle_name']) ? $citizenUser['middle_name'] . ' ' : '';
+            $recipientName = trim("{$citizenUser['first_name']} {$middlePart}{$citizenUser['last_name']}");
+
+            sendOTPEmail($recipientEmail, $recipientName, $otpCode, $purpose);
+
+            respond(['status' => 'success', 'message' => 'A new verification code has been sent to your email address.']);
         }
-
-        $otpCode = sprintf('%06d', mt_rand(0, 999999));
-        $expiresAt = date('Y-m-d H:i:s', strtotime('+10 minutes'));
-
-        $db->insert('citizen_otps', [
-            'citizen_user_id' => $citizenUserId,
-            'otp_code' => $otpCode,
-            'purpose' => $purpose,
-            'expires_at' => $expiresAt,
-            'is_used' => 0
-        ]);
-
-        $recipientEmail = $citizenUser['email'];
-        $middlePart = !empty($citizenUser['middle_name']) ? $citizenUser['middle_name'] . ' ' : '';
-        $recipientName = trim("{$citizenUser['first_name']} {$middlePart}{$citizenUser['last_name']}");
-
-        sendOTPEmail($recipientEmail, $recipientName, $otpCode, $purpose);
-        if (!empty($citizenUser['mobile_number'])) {
-            sendIprogSMSOTP($citizenUser['mobile_number']);
-        }
-
-        respond(['status' => 'success', 'message' => 'A new verification code has been sent to your email address.']);
     } catch (Throwable $e) {
         error_log("Resend OTP Error: " . $e->getMessage());
         respond(['status' => 'error', 'message' => 'Server error during OTP resend.'], 500);
