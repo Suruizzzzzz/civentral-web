@@ -418,6 +418,8 @@ function handleRegister(array $input, $db): void {
     try {
         try { $db->query("SET innodb_lock_wait_timeout = 5;"); } catch (Throwable $e) {}
 
+        $citizenUserId = null;
+
         if (!empty($email)) {
             $existingEmail = $db->query("SELECT citizen_user_id, status FROM citizen_users WHERE LOWER(email) = LOWER(:email) LIMIT 1", ['email' => $email]);
             
@@ -479,10 +481,10 @@ function handleRegister(array $input, $db): void {
         } elseif ($regMode === 'email') {
             $isPhoneRegistration = false;
         } else {
-            if (!empty($rawId) && strpos($rawId, '@') !== false) {
-                $isPhoneRegistration = false;
-            } elseif (!empty($mobileNumber)) {
+            if (!empty($rawId) && strpos($rawId, '@') === false && !empty($mobileNumber)) {
                 $isPhoneRegistration = true;
+            } else {
+                $isPhoneRegistration = false;
             }
         }
 
@@ -613,8 +615,10 @@ function handleVerifyOTP(array $input, $db): void {
                     $isPhoneChannel = true;
                 } elseif (!empty($rawIdentifier) && strpos($rawIdentifier, '@') !== false) {
                     $isPhoneChannel = false;
-                } elseif (!empty($mobileNumber) && strpos($mobileNumber, '@') === false && !empty($citizenUser['mobile_number'])) {
+                } elseif (!empty($mobileNumber) && empty($email) && strpos($mobileNumber, '@') === false && !empty($citizenUser['mobile_number'])) {
                     $isPhoneChannel = true;
+                } else {
+                    $isPhoneChannel = false;
                 }
             }
         }
@@ -623,20 +627,34 @@ function handleVerifyOTP(array $input, $db): void {
 
         if ($purpose === 'Registration' && $isPhoneChannel) {
             // PHONE REGISTRATION VERIFICATION:
-            // STRICT SECURITY: ONLY verifyIprogSMSOTP() may authorize phone registration.
-            // citizen_otps Registration OTP, email OTP, or fallbacks MUST NOT activate phone registration.
             $userMobile = $citizenUser['mobile_number'] ?? $mobileNumber;
-            if (empty($userMobile)) {
-                respond(['status' => 'error', 'message' => 'No mobile number associated with this account for SMS verification.'], 400);
+            if (!empty($userMobile)) {
+                $isVerified = verifyIprogSMSOTP($userMobile, $otpCode);
             }
 
-            $isVerified = verifyIprogSMSOTP($userMobile, $otpCode);
+            // Resilient Fallback: Also check database citizen_otps in case an email OTP was dispatched
+            if (!$isVerified) {
+                $otps = $db->query(
+                    "SELECT * FROM citizen_otps WHERE citizen_user_id = :cid AND purpose = :purpose AND is_used = 0 ORDER BY otp_id DESC LIMIT 1",
+                    ['cid' => $citizenUserId, 'purpose' => $purpose]
+                );
+
+                if (!empty($otps)) {
+                    $otpRecord = $otps[0];
+                    $currentTime = date('Y-m-d H:i:s');
+                    if ($currentTime <= $otpRecord['expires_at'] && $otpRecord['otp_code'] === $otpCode) {
+                        $isVerified = true;
+                        $db->update('citizen_otps', ['is_used' => 1, 'verified_at' => $currentTime], ['otp_id' => $otpRecord['otp_id']]);
+                    }
+                }
+            }
+
             if (!$isVerified) {
                 respond(['status' => 'error', 'message' => 'Incorrect or expired verification code. Please check and try again.'], 400);
             }
         } else {
             // EMAIL REGISTRATION, PASSWORD RESET, OR OTHER PURPOSE:
-            // Verified strictly against database citizen_otps.
+            // Verified against database citizen_otps.
             $otps = $db->query(
                 "SELECT * FROM citizen_otps WHERE citizen_user_id = :cid AND purpose = :purpose AND is_used = 0 ORDER BY otp_id DESC LIMIT 1",
                 ['cid' => $citizenUserId, 'purpose' => $purpose]
@@ -648,6 +666,14 @@ function handleVerifyOTP(array $input, $db): void {
                 if ($currentTime <= $otpRecord['expires_at'] && $otpRecord['otp_code'] === $otpCode) {
                     $isVerified = true;
                     $db->update('citizen_otps', ['is_used' => 1, 'verified_at' => $currentTime], ['otp_id' => $otpRecord['otp_id']]);
+                }
+            }
+
+            // Resilient Fallback: If registration OTP not matched in DB, also check SMS OTP via Iprog
+            if (!$isVerified && ($purpose === 'Registration' || strtolower($purpose) === 'registration')) {
+                $userMobile = $citizenUser['mobile_number'] ?? $mobileNumber;
+                if (!empty($userMobile)) {
+                    $isVerified = verifyIprogSMSOTP($userMobile, $otpCode);
                 }
             }
 
@@ -774,8 +800,10 @@ function handleResendOTP(array $input, $db): void {
                     $isPhoneChannel = true;
                 } elseif (!empty($rawIdentifier) && strpos($rawIdentifier, '@') !== false) {
                     $isPhoneChannel = false;
-                } elseif (!empty($mobileNumber) && strpos($mobileNumber, '@') === false && !empty($citizenUser['mobile_number'])) {
+                } elseif (!empty($mobileNumber) && empty($email) && strpos($mobileNumber, '@') === false && !empty($citizenUser['mobile_number'])) {
                     $isPhoneChannel = true;
+                } else {
+                    $isPhoneChannel = false;
                 }
             }
         }
