@@ -12,9 +12,6 @@ $root = dirname(__DIR__, 3);
 require_once $root . '/src/Services/DriverInvitations.php';
 require_once $root . '/config/driver-invitations.php';
 try {
-    if (driverInvitationSetting('CIVENTRAL_DRIVER_INVITATIONS_ENABLED') !== 'true') {
-        throw new DriverInvitationError(503, 'integration_disabled', 'Driver invitations are not enabled.');
-    }
     $expected = driverInvitationSetting('CIVENTRAL_TRANSPORT_INVITATION_SERVICE_KEY');
     $key = (string)($_SERVER['HTTP_X_INTERNAL_SERVICE_KEY'] ?? '');
     if ($expected === '') throw new DriverInvitationError(503, 'integration_unconfigured', 'Invitation service authentication is not configured.');

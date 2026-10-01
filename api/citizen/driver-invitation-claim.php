@@ -12,7 +12,6 @@ require_once $root.'/src/Services/DriverInvitations.php';
 require_once $root.'/src/Services/DriverInvitationClaims.php';
 require_once $root.'/config/driver-invitation-claims.php';
 try {
-    if (driverInvitationSetting('CIVENTRAL_DRIVER_INVITATIONS_ENABLED')!=='true') throw new DriverInvitationError(503,'integration_disabled','Driver invitations are not enabled.');
     if (($_SERVER['REQUEST_METHOD']??'GET')!=='POST') throw new DriverInvitationError(405,'method_not_allowed','Use POST.');
     $raw=file_get_contents('php://input',false,null,0,8193);
     if (!is_string($raw) || strlen($raw)>8192) throw new DriverInvitationError(413,'request_too_large','Request is too large.');

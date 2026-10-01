@@ -4,19 +4,22 @@ declare(strict_types=1);
 use App\Services\DriverInvitationError;
 use App\Services\AuditLogger;
 
-function driverInvitationSetting(string $name): string
+function driverInvitationSetting(string $name, string $default = ''): string
 {
     $value = getenv($name);
-    if ($value !== false) return trim($value);
-    if (isset($_ENV[$name])) return trim((string)$_ENV[$name]);
+    if ($value !== false) return trim($value) === '' ? $default : trim($value);
+    if (isset($_ENV[$name])) return trim((string)$_ENV[$name]) === '' ? $default : trim((string)$_ENV[$name]);
     $file = dirname(__DIR__) . '/.env';
     if (is_file($file)) foreach (file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
         $line = trim($line);
         if ($line === '' || str_starts_with($line, '#') || !str_contains($line, '=')) continue;
         [$key, $value] = explode('=', $line, 2);
-        if (trim($key) === $name) return trim($value, " \t\n\r\0\x0B\"'");
+        if (trim($key) === $name) {
+            $value = trim($value, " \t\n\r\0\x0B\"'");
+            return $value === '' ? $default : $value;
+        }
     }
-    return '';
+    return $default;
 }
 
 function driverInvitationPayload(array $payload, string $key, string $id): string
@@ -40,9 +43,9 @@ function driverInvitationConfig(string $method = 'POST'): array
 {
     $config = ['service_key' => driverInvitationSetting('CIVENTRAL_TRANSPORT_INVITATION_SERVICE_KEY')];
     if ($method !== 'POST') return $config;
-    $ttl = filter_var(driverInvitationSetting('CIVENTRAL_DRIVER_INVITATION_TTL_SECONDS'), FILTER_VALIDATE_INT);
-    $hourlyLimit = filter_var(driverInvitationSetting('CIVENTRAL_DRIVER_INVITATION_HOURLY_LIMIT'), FILTER_VALIDATE_INT);
-    $retrySeconds = filter_var(driverInvitationSetting('CIVENTRAL_DRIVER_INVITATION_RETRY_SECONDS'), FILTER_VALIDATE_INT);
+    $ttl = filter_var(driverInvitationSetting('CIVENTRAL_DRIVER_INVITATION_TTL_SECONDS', '86400'), FILTER_VALIDATE_INT);
+    $hourlyLimit = filter_var(driverInvitationSetting('CIVENTRAL_DRIVER_INVITATION_HOURLY_LIMIT', '100'), FILTER_VALIDATE_INT);
+    $retrySeconds = filter_var(driverInvitationSetting('CIVENTRAL_DRIVER_INVITATION_RETRY_SECONDS', '60'), FILTER_VALIDATE_INT);
     if (!$ttl || $ttl < 1 || !$hourlyLimit || $hourlyLimit < 1 || !$retrySeconds || $retrySeconds < 1) {
         throw new DriverInvitationError(503, 'integration_unconfigured', 'Configure invitation expiry and limits.');
     }
@@ -51,7 +54,7 @@ function driverInvitationConfig(string $method = 'POST'): array
         'invitation_ttl_seconds' => $ttl,
         'hourly_limit' => $hourlyLimit,
         'retry_cooldown_seconds' => $retrySeconds,
-        'claim_url' => driverInvitationSetting('CIVENTRAL_DRIVER_INVITATION_CLAIM_URL'),
+        'claim_url' => driverInvitationSetting('CIVENTRAL_DRIVER_INVITATION_CLAIM_URL', 'https://transport.civentral.tech/driver-invitation.php'),
     ];
 }
 

@@ -9,9 +9,6 @@ require_once $root.'/src/Services/DriverInvitations.php';
 require_once $root.'/src/Services/DriverInvitationDelivery.php';
 require_once $root.'/config/driver-invitations.php';
 require_once $root.'/config/driver-invitation-mailer.php';
-if (driverInvitationSetting('CIVENTRAL_DRIVER_INVITATIONS_ENABLED') !== 'true') {
-    fwrite(STDERR,"Driver invitations are disabled.\n"); exit(1);
-}
 try {
     require_once $root.'/config/database.php';
     $db = Database::getInstance();
