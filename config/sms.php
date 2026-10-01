@@ -6,6 +6,8 @@
  * - POST https://www.iprogsms.com/api/v1/otp/verify_otp
  */
 
+require_once __DIR__ . '/database.php';
+
 if (!function_exists('sendIprogSMSOTP')) {
     /**
      * Send OTP via IPROG Dedicated OTP API
