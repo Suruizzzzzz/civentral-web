@@ -45,7 +45,7 @@ function renderRoles() {
 
     const card = document.createElement('button');
     card.type = 'button';
-    card.className = `w-full text-left px-4 py-3 rounded-xl transition cursor-pointer flex items-center justify-between ${activeClasses}`;
+    card.className = `w-full text-left px-4 py-3 rounded-none transition cursor-pointer flex items-center justify-between ${activeClasses}`;
     card.innerHTML = `
       <div class="space-y-0.5">
         <p class="text-xs font-bold leading-tight">${role.role_name}</p>
@@ -92,14 +92,14 @@ function renderDeptCards() {
     const icon = getDeptIcon(dept.department_name);
 
     const card = document.createElement('div');
-    card.className = `border rounded-xl p-4 flex items-center gap-3 transition cursor-pointer select-none ${cardActiveStyles}`;
+    card.className = `border rounded-none p-4 flex items-center gap-3 transition cursor-pointer select-none ${cardActiveStyles}`;
     card.innerHTML = `
       <i class="fa-solid ${icon} text-slate-450 text-sm shrink-0"></i>
       <div class="flex-1 min-w-0">
         <p class="text-xs font-bold truncate">${dept.department_name}</p>
         ${dept.department_code ? `<span class="text-[9px] text-slate-400 block">${dept.department_code}</span>` : ''}
       </div>
-      <div class="h-4.5 w-4.5 border rounded flex items-center justify-center text-[10px] shrink-0 transition ${checkIndicator}">
+      <div class="h-4.5 w-4.5 border rounded-none flex items-center justify-center text-[10px] shrink-0 transition ${checkIndicator}">
         <i class="fa-solid fa-check ${checkIconState}"></i>
       </div>
     `;

@@ -2,6 +2,10 @@
 
 // FILTER & SEARCH LOGIC COMBINATION
 function filterAndSearch() {
+  if (typeof window.resetAccountStatusPage === 'function') {
+    window.resetAccountStatusPage();
+  }
+
   const searchInput = document.getElementById('statusSearchInput');
   if (!searchInput) return;
   const query = searchInput.value.toLowerCase().trim();

@@ -1,12 +1,38 @@
 // ACCOUNT STATUS UI
 
+// PAGINATION STATE
+let currentAccountPage = 1;
+const accountPageSize = 10;
+let activeFilteredAccounts = [];
+
+window.currentAccountPage = currentAccountPage;
+
+window.resetAccountStatusPage = function() {
+  currentAccountPage = 1;
+  window.currentAccountPage = 1;
+};
+
+window.changeAccountStatusPage = function(targetPage) {
+  currentAccountPage = targetPage;
+  window.currentAccountPage = targetPage;
+  renderTable(activeFilteredAccounts);
+};
+
 // RENDER TABLE
 function renderTable(usersList = accountUsers) {
+  activeFilteredAccounts = usersList;
   const tbody = document.getElementById('statusTableBody');
   if (!tbody) return;
   tbody.innerHTML = '';
+
+  const totalItems = activeFilteredAccounts.length;
+  const totalPages = Math.ceil(totalItems / accountPageSize) || 1;
+
+  if (currentAccountPage > totalPages) currentAccountPage = totalPages;
+  if (currentAccountPage < 1) currentAccountPage = 1;
+  window.currentAccountPage = currentAccountPage;
   
-  if (usersList.length === 0) {
+  if (totalItems === 0) {
     tbody.innerHTML = `
       <tr>
         <td colspan="4" class="px-6 py-12 text-center text-slate-400 font-semibold">
@@ -16,11 +42,16 @@ function renderTable(usersList = accountUsers) {
       </tr>
     `;
     const pagText = document.getElementById('statusPaginationText');
-    if (pagText) pagText.innerText = "Showing 0 to 0 of 0 profiles";
+    if (pagText) pagText.innerText = "Showing 0 to 0 of 0 accounts";
+    renderAccountPaginationControls(0, 1, 1);
     return;
   }
 
-  usersList.forEach(user => {
+  const startIndex = (currentAccountPage - 1) * accountPageSize;
+  const endIndex = Math.min(startIndex + accountPageSize, totalItems);
+  const pageUsers = activeFilteredAccounts.slice(startIndex, endIndex);
+
+  pageUsers.forEach(user => {
     let statusStyles = '';
     let dotPulse = '';
     
@@ -58,7 +89,7 @@ function renderTable(usersList = accountUsers) {
     let avatarBg = colors[colorIndex];
 
     let avatarHTML = `
-      <div class="h-9 w-9 rounded-xl ${avatarBg} text-white font-extrabold flex items-center justify-center text-xs shadow-xs border border-white/20 shrink-0">
+      <div class="h-9 w-9 rounded-none ${avatarBg} text-white font-extrabold flex items-center justify-center text-xs shadow-xs border border-white/20 shrink-0">
         ${user.initials}
       </div>
     `;
@@ -68,42 +99,44 @@ function renderTable(usersList = accountUsers) {
         const bPath = window.civentralBasePath || '../../';
         pic = bPath + pic.replace(/^\/+/, '');
       }
-      avatarHTML = `<img src="${pic}" alt="${user.name}" class="h-9 w-9 rounded-xl object-cover border border-slate-200 shrink-0">`;
+      avatarHTML = `<img src="${pic}" alt="${user.name}" class="h-9 w-9 rounded-none object-cover border border-slate-200 shrink-0">`;
     }
 
     const row = `
-      <tr class="hover:bg-slate-50/50 transition">
+      <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition group">
         <!-- User Details -->
-        <td class="px-6 py-3.5 flex items-center space-x-3">
-          ${avatarHTML}
-          <div class="flex flex-col">
-            <span class="font-extrabold text-slate-800 tracking-tight leading-snug">${user.name}</span>
-            <span class="text-[10px] text-slate-400 font-mono font-medium">${user.id} &bull; ${user.position}</span>
+        <td class="py-3 px-4 border-b border-slate-100 dark:border-slate-800/60 align-middle">
+          <div class="flex items-center space-x-3">
+            ${avatarHTML}
+            <div class="flex flex-col">
+              <span class="font-semibold text-slate-900 dark:text-slate-100 text-xs tracking-tight leading-snug">${user.name}</span>
+              <span class="text-[11px] font-normal text-slate-500 dark:text-slate-400 font-mono">${user.id} &bull; ${user.position}</span>
+            </div>
           </div>
         </td>
 
         <!-- Current Status Badge -->
-        <td class="px-6 py-3.5">
-          <span class="text-[10px] font-black uppercase px-2.5 py-1 rounded-full border ${statusStyles} inline-flex items-center gap-1.5">
+        <td class="py-3 px-4 border-b border-slate-100 dark:border-slate-800/60 align-middle">
+          <span class="text-[10px] font-bold uppercase px-2.5 py-1 rounded-none border ${statusStyles} inline-flex items-center gap-1.5">
             ${dotPulse}
             <span>${(user.status === 'Deactivated' || user.status === 'Inactive') ? 'Inactive' : user.status}</span>
           </span>
         </td>
 
         <!-- Security Health Indicators -->
-        <td class="px-6 py-3.5 space-y-1">
+        <td class="py-3 px-4 border-b border-slate-100 dark:border-slate-800/60 align-middle space-y-1">
           <div class="flex items-center gap-1.5 text-slate-650">
             <span class="text-[9px] font-bold text-slate-400 uppercase">Last Login:</span>
-            <span class="font-semibold text-[11px]">${user.lastLogin}</span>
+            <span class="font-normal text-[11px] text-slate-600 dark:text-slate-300">${user.lastLogin}</span>
           </div>
           <div class="flex items-center gap-1.5 text-slate-650">
             <span class="text-[9px] font-bold text-slate-400 uppercase">Failed attempts:</span>
-            <span class="font-semibold text-[11px]">${attemptsText}</span>
+            <span class="font-normal text-[11px] text-slate-600 dark:text-slate-300">${attemptsText}</span>
           </div>
         </td>
 
         <!-- Action Controls -->
-        <td class="px-6 py-3.5 text-right whitespace-nowrap">
+        <td class="py-3 px-4 text-right whitespace-nowrap border-b border-slate-100 dark:border-slate-800/60 align-middle">
           <div class="inline-flex items-center space-x-3">
             
             <!-- iOS-style Status Toggle Switch -->
@@ -113,12 +146,12 @@ function renderTable(usersList = accountUsers) {
             </label>
 
             <!-- Lock/Unlock toggle button -->
-            <button onclick="if(typeof triggerLockToggle === 'function') triggerLockToggle('${user.id}')" class="border p-1.5 rounded-lg transition cursor-pointer flex items-center justify-center ${lockBtnIcon}" title="${lockBtnTitle}">
+            <button onclick="if(typeof triggerLockToggle === 'function') triggerLockToggle('${user.id}')" class="border p-1.5 rounded-none transition cursor-pointer flex items-center justify-center ${lockBtnIcon}" title="${lockBtnTitle}">
               <i class="fa-solid ${user.status === 'Locked' ? 'fa-lock' : 'fa-lock-open'} text-xs"></i>
             </button>
 
             <!-- Archive/Restore toggle button -->
-            <button onclick="if(typeof triggerArchiveToggle === 'function') triggerArchiveToggle('${user.id}')" class="border p-1.5 rounded-lg transition cursor-pointer flex items-center justify-center ${archiveBtnIcon}" title="${archiveBtnTitle}">
+            <button onclick="if(typeof triggerArchiveToggle === 'function') triggerArchiveToggle('${user.id}')" class="border p-1.5 rounded-none transition cursor-pointer flex items-center justify-center ${archiveBtnIcon}" title="${archiveBtnTitle}">
               <i class="fa-solid ${user.status === 'Archived' ? 'fa-arrow-rotate-left' : 'fa-box-archive'} text-xs"></i>
             </button>
 
@@ -130,7 +163,107 @@ function renderTable(usersList = accountUsers) {
   });
 
   const pagText = document.getElementById('statusPaginationText');
-  if (pagText) pagText.innerText = `Showing 1 to ${usersList.length} of ${usersList.length} profiles`;
+  if (pagText) pagText.innerText = `Showing ${startIndex + 1} to ${endIndex} of ${totalItems} accounts`;
+  renderAccountPaginationControls(totalItems, totalPages, currentAccountPage);
+}
+
+// RENDER ACCOUNT STATUS PAGINATION CONTROLS
+function renderAccountPaginationControls(totalItems, totalPages, currentPage) {
+  const prevBtn = document.getElementById('statusPrevBtn');
+  const nextBtn = document.getElementById('statusNextBtn');
+  const pageNumbersContainer = document.getElementById('statusPageNumbers');
+
+  if (prevBtn) {
+    const isPrevDisabled = currentPage <= 1 || totalItems === 0;
+    prevBtn.disabled = isPrevDisabled;
+    if (isPrevDisabled) {
+      prevBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white text-slate-300 cursor-not-allowed transition";
+    } else {
+      prevBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 cursor-pointer transition";
+    }
+    prevBtn.onclick = () => {
+      if (!isPrevDisabled) window.changeAccountStatusPage(currentPage - 1);
+    };
+  }
+
+  if (nextBtn) {
+    const isNextDisabled = currentPage >= totalPages || totalItems === 0;
+    nextBtn.disabled = isNextDisabled;
+    if (isNextDisabled) {
+      nextBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white text-slate-300 cursor-not-allowed transition";
+    } else {
+      nextBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 cursor-pointer transition";
+    }
+    nextBtn.onclick = () => {
+      if (!isNextDisabled) window.changeAccountStatusPage(currentPage + 1);
+    };
+  }
+
+  if (pageNumbersContainer) {
+    pageNumbersContainer.innerHTML = '';
+    if (totalItems === 0) {
+      pageNumbersContainer.innerHTML = `<button class="px-3 py-1.5 rounded-none bg-brand-light border border-brand-border text-brand-dark font-extrabold shadow-2xs" disabled>1</button>`;
+      return;
+    }
+
+    let startPage = 1;
+    let endPage = totalPages;
+
+    if (totalPages > 7) {
+      if (currentPage <= 4) {
+        startPage = 1;
+        endPage = 5;
+      } else if (currentPage >= totalPages - 3) {
+        startPage = totalPages - 4;
+        endPage = totalPages;
+      } else {
+        startPage = currentPage - 2;
+        endPage = currentPage + 2;
+      }
+    }
+
+    if (startPage > 1) {
+      const firstBtn = document.createElement('button');
+      firstBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold cursor-pointer transition";
+      firstBtn.textContent = '1';
+      firstBtn.onclick = () => window.changeAccountStatusPage(1);
+      pageNumbersContainer.appendChild(firstBtn);
+
+      if (startPage > 2) {
+        const dots = document.createElement('span');
+        dots.className = "px-1.5 text-slate-400 font-bold select-none";
+        dots.textContent = '...';
+        pageNumbersContainer.appendChild(dots);
+      }
+    }
+
+    for (let p = startPage; p <= endPage; p++) {
+      const pageBtn = document.createElement('button');
+      if (p === currentPage) {
+        pageBtn.className = "px-3 py-1.5 rounded-none bg-brand-light border border-brand-border text-brand-dark font-extrabold shadow-2xs cursor-pointer";
+      } else {
+        pageBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold cursor-pointer transition";
+      }
+      pageBtn.textContent = p;
+      pageBtn.onclick = () => window.changeAccountStatusPage(p);
+      pageNumbersContainer.appendChild(pageBtn);
+    }
+
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        const dots = document.createElement('span');
+        dots.className = "px-1.5 text-slate-400 font-bold select-none";
+        dots.textContent = '...';
+        pageNumbersContainer.appendChild(dots);
+      }
+
+      const lastBtn = document.createElement('button');
+      lastBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold cursor-pointer transition";
+      lastBtn.textContent = totalPages;
+      lastBtn.onclick = () => window.changeAccountStatusPage(totalPages);
+      pageNumbersContainer.appendChild(lastBtn);
+    }
+  }
 }
 
 // UPDATE FILTER COUNTS

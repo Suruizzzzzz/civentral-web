@@ -139,7 +139,7 @@ function renderActionCheckboxes(selectedActionIds = null) {
     const badgeStyle = badgeColorMap[actNameUpper] || 'bg-slate-100 text-slate-700 border-slate-200';
 
     html += `
-      <label class="flex items-center justify-between p-2.5 bg-white border border-slate-200 rounded-xl hover:border-brand-medium/50 hover:shadow-2xs transition cursor-pointer select-none group">
+      <label class="flex items-center justify-between p-2.5 bg-white border border-slate-200 rounded-none hover:border-brand-medium/50 hover:shadow-2xs transition cursor-pointer select-none group">
         <div class="flex items-center gap-2.5 min-w-0 pr-1">
           <input 
             type="checkbox" 
@@ -153,7 +153,7 @@ function renderActionCheckboxes(selectedActionIds = null) {
             ${act.description ? `<span class="text-[9.5px] text-slate-400 font-medium block truncate" title="${act.description}">${act.description}</span>` : ''}
           </div>
         </div>
-        <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-full border ${badgeStyle} shrink-0">
+        <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-none border ${badgeStyle} shrink-0">
           ${actNameUpper}
         </span>
       </label>

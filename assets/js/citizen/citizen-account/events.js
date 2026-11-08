@@ -29,23 +29,23 @@ function triggerStateChange(citId, selectEl) {
 
   // Mapped styling based on chosen action
   if (action === 'Activate' || action === 'Unlock' || action === 'Restore') {
-    if (confirmBtn) confirmBtn.className = "bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition cursor-pointer shadow-xs";
+    if (confirmBtn) confirmBtn.className = "bg-teal-600 hover:bg-teal-700 text-white font-medium px-4 py-2 rounded-none text-xs transition cursor-pointer shadow-xs focus:outline-none focus:ring-2 focus:ring-teal-500/40";
     if (iconBox) {
-      iconBox.className = "h-10 w-10 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0";
+      iconBox.className = "h-10 w-10 rounded-none bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0";
       iconBox.innerHTML = '<i class="fa-solid fa-circle-check text-base animate-pulse"></i>';
     }
     if (mText) mText.innerText = `Confirm releasing lockouts. This grants immediate Caloocan portal access credentials.`;
   } else if (action === 'Deactivate') {
-    if (confirmBtn) confirmBtn.className = "bg-slate-700 hover:bg-slate-800 text-white font-bold px-4 py-2 rounded-xl text-xs transition cursor-pointer shadow-xs";
+    if (confirmBtn) confirmBtn.className = "bg-slate-700 hover:bg-slate-800 text-white font-bold px-4 py-2 rounded-none text-xs transition cursor-pointer shadow-xs";
     if (iconBox) {
-      iconBox.className = "h-10 w-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 shrink-0";
+      iconBox.className = "h-10 w-10 rounded-none bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 shrink-0";
       iconBox.innerHTML = '<i class="fa-solid fa-circle-minus text-base"></i>';
     }
     if (mText) mText.innerText = `Confirm deactivating profile. Access remains blocked until reactivated manually.`;
   } else if (action === 'Lock' || action === 'Suspend') {
-    if (confirmBtn) confirmBtn.className = "bg-rose-600 hover:bg-rose-700 text-white font-bold px-4 py-2 rounded-xl text-xs transition cursor-pointer shadow-xs";
+    if (confirmBtn) confirmBtn.className = "bg-rose-600 hover:bg-rose-700 text-white font-bold px-4 py-2 rounded-none text-xs transition cursor-pointer shadow-xs";
     if (iconBox) {
-      iconBox.className = "h-10 w-10 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-500 shrink-0";
+      iconBox.className = "h-10 w-10 rounded-none bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-500 shrink-0";
       iconBox.innerHTML = action === 'Lock' ? '<i class="fa-solid fa-lock text-base"></i>' : '<i class="fa-solid fa-triangle-exclamation text-base"></i>';
     }
     if (mText) mText.innerText = `Confirm placing security holds on this account. All logins will fail validation tests immediately.`;

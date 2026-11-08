@@ -9,14 +9,14 @@
 
     // DROPDOWN
     function toggleDropdown(id, chevronId) {
-      if (typeof isCollapsed !== 'undefined' && isCollapsed) return; 
+      if ((typeof isCollapsed !== 'undefined' && isCollapsed) || window.isCollapsed) return; 
 
       const dropdown = document.getElementById(id);
       const chevron = document.getElementById(chevronId);
       if (!dropdown) return;
       
-      const dropdowns = ['userDropdown', 'roleDropdown', 'deptDropdown', 'citizenDropdown', 'scholarshipDropdown', 'auditDropdown'];
-      const chevrons = ['userChevron', 'roleChevron', 'deptChevron', 'citizenChevron', 'scholarshipChevron', 'auditChevron'];
+      const dropdowns = ['userDropdown', 'roleDropdown', 'deptDropdown', 'citizenDropdown', 'auditDropdown'];
+      const chevrons = ['userChevron', 'roleChevron', 'deptChevron', 'citizenChevron', 'auditChevron'];
       
       dropdowns.forEach((d, i) => {
         if (d !== id) {
@@ -37,7 +37,7 @@
     }
 
     // SIDEBAR RESPONSIVE
-  let isCollapsed = false;
+  let isCollapsed = (typeof window.isCollapsed !== 'undefined') ? window.isCollapsed : (localStorage.getItem('civentral_sidebar_collapsed') === 'true');
 
 function toggleSidebar() {
 
@@ -57,6 +57,7 @@ function toggleSidebar() {
     ];
 
     isCollapsed = !isCollapsed;
+    window.isCollapsed = isCollapsed;
 
     if (isCollapsed) {
 
@@ -121,4 +122,8 @@ function toggleSidebar() {
         });
 
     }
+
+    try {
+        localStorage.setItem("civentral_sidebar_collapsed", isCollapsed ? "true" : "false");
+    } catch (e) {}
 }

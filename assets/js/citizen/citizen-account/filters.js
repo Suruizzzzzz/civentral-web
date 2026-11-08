@@ -1,7 +1,10 @@
 // CITIZEN ACCOUNT FILTERS
 
-// MULTI-FILTER COMPILER
+// DYNAMIC ADVANCED FILTER CONTROLLER
 function filterControlTable() {
+  if (typeof window.resetControlPage === 'function') {
+    window.resetControlPage();
+  }
   const searchInput = document.getElementById('ctrlSearchInput');
   const statusFilter = document.getElementById('ctrlStatusFilter');
   const flaggedFilter = document.getElementById('flaggedFilter');

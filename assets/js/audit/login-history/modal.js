@@ -42,7 +42,7 @@ window.civAudit.loginHistory.modal = {
     // Setup Status Badge
     const statusBadge = document.getElementById('modalStatusBadge');
     statusBadge.innerText = status;
-    let statusBadgeClasses = "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ";
+    let statusBadgeClasses = "inline-flex items-center px-2 py-0.5 rounded-none text-[10px] font-bold ";
     if (status === 'Successful Login') {
       statusBadgeClasses += "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20";
     } else if (status === 'Failed Login') {
@@ -65,36 +65,36 @@ window.civAudit.loginHistory.modal = {
     const statusMsg = document.getElementById('modalStatusMsg');
 
     if (status === 'Successful Login') {
-      statusBanner.className = "p-4 rounded-xl flex items-center gap-3 bg-emerald-50 border border-emerald-100 text-emerald-800";
-      statusIconCont.className = "h-8 w-8 rounded-lg flex items-center justify-center shrink-0 bg-emerald-100 text-emerald-700";
+      statusBanner.className = "p-4 rounded-none flex items-center gap-3 bg-emerald-50 border border-emerald-100 text-emerald-800";
+      statusIconCont.className = "h-8 w-8 rounded-none flex items-center justify-center shrink-0 bg-emerald-100 text-emerald-700";
       statusIconCont.innerHTML = `<i class="fa-solid fa-circle-check text-base"></i>`;
       statusTitle.innerText = "Successful Login";
       statusMsg.innerText = "Auth session established successfully. Security keys verified.";
       statusMsg.className = "text-[10px] leading-relaxed font-semibold text-emerald-600 mt-0.5";
     } else if (status === 'Failed Login') {
-      statusBanner.className = "p-4 rounded-xl flex items-center gap-3 bg-rose-50 border border-rose-100 text-rose-800";
-      statusIconCont.className = "h-8 w-8 rounded-lg flex items-center justify-center shrink-0 bg-rose-100 text-rose-700";
+      statusBanner.className = "p-4 rounded-none flex items-center gap-3 bg-rose-50 border border-rose-100 text-rose-800";
+      statusIconCont.className = "h-8 w-8 rounded-none flex items-center justify-center shrink-0 bg-rose-100 text-rose-700";
       statusIconCont.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-base"></i>`;
       statusTitle.innerText = "Failed Login Attempt";
       statusMsg.innerText = "Authorization request rejected due to invalid credential verification keys.";
       statusMsg.className = "text-[10px] leading-relaxed font-semibold text-rose-600 mt-0.5";
     } else if (status === 'Account Locked') {
-      statusBanner.className = "p-4 rounded-xl flex items-center gap-3 bg-red-950/15 border border-red-200/50 text-red-950";
-      statusIconCont.className = "h-8 w-8 rounded-lg flex items-center justify-center shrink-0 bg-red-200 text-red-900";
+      statusBanner.className = "p-4 rounded-none flex items-center gap-3 bg-red-950/15 border border-red-200/50 text-red-950";
+      statusIconCont.className = "h-8 w-8 rounded-none flex items-center justify-center shrink-0 bg-red-200 text-red-900";
       statusIconCont.innerHTML = `<i class="fa-solid fa-user-lock text-base"></i>`;
       statusTitle.innerText = "Account Locked";
       statusMsg.innerText = "User account has been locked due to excessive authentication failures.";
       statusMsg.className = "text-[10px] leading-relaxed font-semibold text-red-700 mt-0.5";
     } else if (status === 'Session Expired') {
-      statusBanner.className = "p-4 rounded-xl flex items-center gap-3 bg-amber-50 border border-amber-100 text-amber-800";
-      statusIconCont.className = "h-8 w-8 rounded-lg flex items-center justify-center shrink-0 bg-amber-100 text-amber-700";
+      statusBanner.className = "p-4 rounded-none flex items-center gap-3 bg-amber-50 border border-amber-100 text-amber-800";
+      statusIconCont.className = "h-8 w-8 rounded-none flex items-center justify-center shrink-0 bg-amber-100 text-amber-700";
       statusIconCont.innerHTML = `<i class="fa-solid fa-hourglass-end text-base"></i>`;
       statusTitle.innerText = "Session Expired";
       statusMsg.innerText = "Authentication credentials expired due to standard idle inactivity triggers.";
       statusMsg.className = "text-[10px] leading-relaxed font-semibold text-amber-600 mt-0.5";
     } else {
-      statusBanner.className = "p-4 rounded-xl flex items-center gap-3 bg-slate-50 border border-slate-200 text-slate-800";
-      statusIconCont.className = "h-8 w-8 rounded-lg flex items-center justify-center shrink-0 bg-slate-200 text-slate-600";
+      statusBanner.className = "p-4 rounded-none flex items-center gap-3 bg-slate-50 border border-slate-200 text-slate-800";
+      statusIconCont.className = "h-8 w-8 rounded-none flex items-center justify-center shrink-0 bg-slate-200 text-slate-600";
       statusIconCont.innerHTML = `<i class="fa-solid fa-circle-xmark text-base"></i>`;
       statusTitle.innerText = status;
       statusMsg.innerText = "Authentication trace event resolved successfully.";

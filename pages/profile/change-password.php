@@ -10,27 +10,19 @@ include '../../includes/sidebar.php';
 
 <main class="flex-1 p-6 md:p-8 w-full space-y-6 overflow-y-auto">
 
-  <!-- BREADCRUMB & HEADER -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/60 pb-5">
+  <!-- Page Header -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/60 dark:border-slate-800 pb-5">
     <div class="space-y-1">
-      <div class="flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-slate-400">
-        <span>My Account</span>
-        <i class="fa-solid fa-chevron-right text-[8px] opacity-60"></i>
-        <a href="<?php echo $basePath; ?>pages/profile/settings.php" class="hover:text-brand-dark transition">Account Settings</a>
-        <i class="fa-solid fa-chevron-right text-[8px] opacity-60"></i>
-        <span class="text-brand-dark">Security & Password</span>
-      </div>
-      <h1 class="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2 mt-4">
-        <i class="fa-solid fa-lock text-brand-dark"></i>
+      <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
         Change Password & Security
       </h1>
-      <p class="text-xs text-slate-500 max-w-2xl leading-relaxed">
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-normal max-w-2xl leading-relaxed">
         Update your login credentials securely to maintain system integrity and account safety.
       </p>
     </div>
 
     <!-- Security Session Badge -->
-    <div class="shrink-0 flex items-center gap-2 bg-emerald-50 border border-emerald-200/80 text-emerald-700 text-[10px] font-black uppercase tracking-wider px-3.5 py-2.5 rounded-xl shadow-xs">
+    <div class="shrink-0 flex items-center gap-2 bg-emerald-50 border border-emerald-200/80 text-emerald-700 text-[10px] font-black uppercase tracking-wider px-3.5 py-2.5 rounded-none shadow-xs">
       <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
       <span>2FA Verified Session</span>
     </div>
@@ -43,7 +35,7 @@ include '../../includes/sidebar.php';
     <div class="lg:col-span-5 space-y-5">
 
       <!-- ACCOUNT SECURITY PROFILE CARD -->
-      <div class="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xs space-y-5">
+      <div class="bg-white border border-slate-200/80 rounded-none p-6 shadow-xs space-y-5">
         <div class="flex items-center gap-4 border-b border-slate-100 pb-5">
           <div class="relative">
             <img
@@ -58,7 +50,7 @@ include '../../includes/sidebar.php';
           </div>
           <div class="space-y-0.5">
             <p id="pwAccountName" class="text-sm font-black text-slate-800 tracking-tight">Loading profile...</p>
-            <span id="pwAccountRole" class="inline-block text-[9px] font-black uppercase tracking-widest text-brand-dark bg-brand-light border border-brand-border/60 px-2 py-0.5 rounded-full">...</span>
+            <span id="pwAccountRole" class="inline-block text-[9px] font-black uppercase tracking-widest text-brand-dark bg-brand-light border border-brand-border/60 px-2 py-0.5 rounded-none">...</span>
             <p id="pwAccountEmail" class="text-[10px] text-slate-400 font-semibold pt-0.5">...</p>
           </div>
         </div>
@@ -71,7 +63,7 @@ include '../../includes/sidebar.php';
           <div class="border-t border-slate-100"></div>
           <div class="flex items-center justify-between">
             <span class="text-slate-400 font-semibold">Credential Health</span>
-            <span class="inline-flex items-center gap-1.5 text-emerald-700 bg-emerald-50 border border-emerald-200/80 font-black px-2 py-0.5 rounded-full text-[9px] uppercase tracking-wider">
+            <span class="inline-flex items-center gap-1.5 text-emerald-700 bg-emerald-50 border border-emerald-200/80 font-black px-2 py-0.5 rounded-none text-[9px] uppercase tracking-wider">
               <i class="fa-solid fa-shield-check text-[10px] text-emerald-500"></i> Protected
             </span>
           </div>
@@ -84,13 +76,13 @@ include '../../includes/sidebar.php';
       </div>
 
       <!-- PASSWORD POLICY TIP CARD -->
-      <div class="bg-gradient-to-br from-slate-900 via-slate-850 to-slate-950 rounded-2xl p-6 space-y-4 shadow-md text-white border border-slate-800">
+      <div class="bg-gradient-to-br from-slate-900 via-slate-850 to-slate-950 rounded-none p-6 space-y-4 shadow-md text-white border border-slate-800">
         <div class="flex items-center gap-3">
-          <div class="h-9 w-9 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center shrink-0">
+          <div class="h-9 w-9 rounded-none bg-white/10 border border-white/10 flex items-center justify-center shrink-0">
             <i class="fa-solid fa-vault text-brand-medium text-sm"></i>
           </div>
           <div>
-            <h3 class="text-xs font-black tracking-tight text-white">CIVENTRAL Password Standard</h3>
+            <h3 class="text-xs font-black tracking-tight text-white">Civentral Password Standard</h3>
             <p class="text-[10px] text-slate-400 font-semibold">Enforced by Municipal Security Directives</p>
           </div>
         </div>
@@ -124,7 +116,7 @@ include '../../includes/sidebar.php';
       </div>
 
       <!-- SECURITY WARNING NOTICE -->
-      <div class="flex items-start gap-3 bg-amber-50/70 border border-amber-200/80 rounded-2xl p-4.5">
+      <div class="flex items-start gap-3 bg-amber-50/70 border border-amber-200/80 rounded-none p-4.5">
         <i class="fa-solid fa-triangle-exclamation text-amber-500 text-sm shrink-0 mt-0.5"></i>
         <div class="space-y-1">
           <p class="text-[10px] font-black text-amber-800 uppercase tracking-wider">Security Awareness</p>
@@ -139,12 +131,12 @@ include '../../includes/sidebar.php';
     <!-- RIGHT COLUMN: CHANGE PASSWORD FORM CARD (7 cols) -->
     <div class="lg:col-span-7 space-y-6">
 
-      <div class="bg-white border border-slate-200/80 rounded-2xl shadow-xs overflow-hidden">
+      <div class="bg-white border border-slate-200/80 rounded-none shadow-xs overflow-hidden">
 
         <!-- Card Header -->
         <div class="bg-slate-50 border-b border-slate-200/60 px-6 py-4 flex items-center justify-between">
           <div class="flex items-center gap-2.5">
-            <div class="h-7 w-7 rounded-lg bg-brand-light border border-brand-border flex items-center justify-center">
+            <div class="h-7 w-7 rounded-none bg-brand-light border border-brand-border flex items-center justify-center">
               <i class="fa-solid fa-key text-brand-dark text-xs"></i>
             </div>
             <div>
@@ -152,7 +144,7 @@ include '../../includes/sidebar.php';
               <span class="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">Verify current password and set your new credentials</span>
             </div>
           </div>
-          <span class="text-[9px] font-black uppercase tracking-wider text-slate-400 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-lg">Encrypted</span>
+          <span class="text-[9px] font-black uppercase tracking-wider text-slate-400 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-none">Encrypted</span>
         </div>
 
         <!-- Form Body -->
@@ -172,7 +164,7 @@ include '../../includes/sidebar.php';
                 id="currentPassword"
                 placeholder="Enter your current account password"
                 autocomplete="current-password"
-                class="pl-10 pr-11 py-3 border border-slate-200 bg-white rounded-xl text-xs w-full font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition placeholder:text-slate-300 tracking-widest"
+                class="pl-10 pr-11 py-3 border border-slate-200 bg-white rounded-none text-xs w-full font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition placeholder:text-slate-300 tracking-widest"
               >
               <button
                 type="button"
@@ -201,7 +193,7 @@ include '../../includes/sidebar.php';
                 placeholder="Create a strong new password"
                 autocomplete="new-password"
                 oninput="checkPasswordStrength()"
-                class="pl-10 pr-11 py-3 border border-slate-200 bg-white rounded-xl text-xs w-full font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition placeholder:text-slate-300 tracking-widest"
+                class="pl-10 pr-11 py-3 border border-slate-200 bg-white rounded-none text-xs w-full font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition placeholder:text-slate-300 tracking-widest"
               >
               <button
                 type="button"
@@ -225,7 +217,7 @@ include '../../includes/sidebar.php';
             </div>
 
             <!-- Live Checklist -->
-            <div class="pt-3 bg-slate-50/70 border border-slate-150 rounded-xl p-4 space-y-2">
+            <div class="pt-3 bg-slate-50/70 border border-slate-150 rounded-none p-4 space-y-2">
               <p class="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-3">Live Validation Checks</p>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 <div id="rule-length" class="flex items-center gap-2 text-[10px] font-semibold text-slate-400 transition-all duration-200">
@@ -279,7 +271,7 @@ include '../../includes/sidebar.php';
                 placeholder="Re-enter your new password"
                 autocomplete="new-password"
                 oninput="checkConfirmMatch()"
-                class="pl-10 pr-11 py-3 border border-slate-200 bg-white rounded-xl text-xs w-full font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition placeholder:text-slate-300 tracking-widest"
+                class="pl-10 pr-11 py-3 border border-slate-200 bg-white rounded-none text-xs w-full font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition placeholder:text-slate-300 tracking-widest"
               >
               <button
                 type="button"
@@ -306,14 +298,14 @@ include '../../includes/sidebar.php';
           </p>
           <div class="flex items-center gap-2.5 shrink-0">
             <a href="<?php echo $basePath; ?>pages/profile/settings.php"
-              class="border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 cursor-pointer transition">
+              class="border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold px-4 py-2.5 rounded-none text-xs flex items-center gap-2 cursor-pointer transition">
               <i class="fa-solid fa-arrow-left text-[10px]"></i>
               Cancel
             </a>
             <button
               onclick="savePassword()"
               id="savePasswordBtn"
-              class="bg-[#0f172a] hover:bg-slate-800 text-white font-bold px-5 py-2.5 rounded-xl text-xs flex items-center gap-2 cursor-pointer transition shadow-xs">
+              class="bg-teal-600 hover:bg-teal-700 text-white font-medium px-5 py-2.5 rounded-none text-xs flex items-center gap-2 cursor-pointer transition shadow-xs focus:outline-none focus:ring-2 focus:ring-teal-500/40">
               <i class="fa-solid fa-floppy-disk text-[10px]"></i>
               Update Password
             </button>
@@ -328,16 +320,6 @@ include '../../includes/sidebar.php';
 
 </main>
 
-<!-- TOAST NOTIFICATION HUB -->
-<div id="pwToast" class="fixed bottom-5 right-5 z-50 flex items-center gap-3 bg-slate-900 text-white text-xs font-bold px-5 py-3.5 rounded-xl shadow-2xl transform translate-y-4 opacity-0 pointer-events-none transition-all duration-300 max-w-xs">
-  <div id="pwToastIcon" class="h-6 w-6 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[11px] shrink-0">
-    <i class="fa-solid fa-check"></i>
-  </div>
-  <div class="flex flex-col leading-tight">
-    <span id="pwToastMsg" class="tracking-wide">Password updated successfully!</span>
-    <span id="pwToastSub" class="text-[9px] text-slate-400 font-semibold mt-0.5"></span>
-  </div>
-</div>
 
 
 

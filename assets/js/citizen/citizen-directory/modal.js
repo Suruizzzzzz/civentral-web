@@ -137,7 +137,7 @@ function openLockModal(citId) {
     if (mText) mText.innerText = `Confirm unlocking ${cit.name}'s profile. This immediately clears verification blocks.`;
     if (mConfirm) {
       mConfirm.innerText = "Unlock Account";
-      mConfirm.className = "bg-[#0f172a] hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer shadow-xs";
+      mConfirm.className = "bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-none text-xs font-medium transition cursor-pointer shadow-xs focus:outline-none focus:ring-2 focus:ring-teal-500/40";
     }
     if (iconBox) {
       iconBox.className = "h-10 w-10 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0";

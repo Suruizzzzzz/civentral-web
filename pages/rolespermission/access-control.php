@@ -11,37 +11,31 @@ include '../../includes/sidebar.php';
 
 <main class="flex-1 p-6 md:p-8 w-full space-y-6 overflow-y-auto">
 
-  <!-- Breadcrumb & Page Header -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/60 pb-5">
+  <!-- Page Header -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/60 dark:border-slate-800 pb-5">
     <div class="space-y-1">
-      <div class="flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-slate-400">
-        <span>Role & Permissions</span>
-        <i class="fa-solid fa-chevron-right text-[8px] opacity-60"></i>
-        <span class="text-brand-dark">Access Control (RBAC)</span>
-      </div>
-      <h1 class="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2 mt-4">
-        <i class="fa-solid fa-sliders text-brand-dark"></i>
+      <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
         Resource Access Control Mapping
       </h1>
-      <p class="text-xs text-slate-500 max-w-2xl leading-relaxed">
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-normal max-w-2xl leading-relaxed">
         Configure organizational boundaries, department restrictions, and resource scopes for system roles.
       </p>
     </div>
   </div>
 
   <!-- SSO Concept Ribbon -->
-  <div class="bg-blue-50/70 border border-blue-200/50 rounded-2xl p-4 flex items-center gap-4 text-xs shadow-xs text-blue-900">
-    <div class="h-9 w-9 rounded-xl bg-blue-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+  <div class="bg-blue-50/70 border border-blue-200/50 rounded-none p-4 flex items-center gap-4 text-xs shadow-xs text-blue-900">
+    <div class="h-9 w-9 rounded-none bg-blue-500 text-white flex items-center justify-center shrink-0 shadow-xs">
       <i class="fa-solid fa-key text-sm"></i>
     </div>
     <div class="space-y-1">
-      <p class="font-extrabold tracking-tight">CIVENTRAL Identity & Access Management (SSO)</p>
+      <p class="font-extrabold tracking-tight">Civentral Identity & Access Management (SSO)</p>
       <div class="flex flex-wrap items-center gap-2 font-bold text-blue-800">
-        <span class="bg-blue-100/60 px-2 py-0.5 rounded border border-blue-200/40 text-[10px]">1. Who are you? (Role)</span>
+        <span class="bg-blue-100/60 px-2 py-0.5 rounded-none border border-blue-200/40 text-[10px]">1. Who are you? (Role)</span>
         <i class="fa-solid fa-arrow-right text-[9px] opacity-50"></i>
-        <span class="bg-blue-100/60 px-2 py-0.5 rounded border border-blue-200/40 text-[10px]">2. What can you do? (Permissions)</span>
+        <span class="bg-blue-100/60 px-2 py-0.5 rounded-none border border-blue-200/40 text-[10px]">2. What can you do? (Permissions)</span>
         <i class="fa-solid fa-arrow-right text-[9px] opacity-50"></i>
-        <span class="bg-blue-100/60 px-2 py-0.5 rounded border border-blue-200/40 text-[10px]">3. Where can you do it? (Access Scope)</span>
+        <span class="bg-blue-100/60 px-2 py-0.5 rounded-none border border-blue-200/40 text-[10px]">3. Where can you do it? (Access Scope)</span>
       </div>
     </div>
   </div>
@@ -51,7 +45,7 @@ include '../../includes/sidebar.php';
 
     <!-- Column 1: Select Role or User (1/3 width) -->
     <div class="space-y-4">
-      <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs space-y-4">
+      <div class="bg-white border border-slate-200/80 rounded-none p-5 shadow-xs space-y-4">
         <div class="space-y-1">
           <h3 class="text-xs font-black uppercase tracking-wider text-slate-700">Security Profiles</h3>
           <p class="text-[10px] text-slate-400">Select a security role designation to map department resource access scopes.</p>
@@ -68,7 +62,7 @@ include '../../includes/sidebar.php';
     <div class="lg:col-span-2 space-y-6">
       
       <!-- Scope Panel Details -->
-      <div class="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xs space-y-6">
+      <div class="bg-white border border-slate-200/80 rounded-none p-6 shadow-xs space-y-6">
         
         <!-- Header status -->
         <div class="border-b border-slate-100 pb-4">
@@ -77,7 +71,7 @@ include '../../includes/sidebar.php';
         </div>
 
         <!-- Scope Toggles -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 bg-slate-50 p-4 border border-slate-200/60 rounded-xl">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 bg-slate-50 p-4 border border-slate-200/60 rounded-none">
           <!-- Switch 1: Global Access -->
           <div class="flex items-start justify-between gap-4">
             <div class="space-y-0.5">
@@ -118,17 +112,17 @@ include '../../includes/sidebar.php';
             Core API SSO Authorization Token Preview
           </label>
           
-          <div class="bg-[#0f172a] text-slate-300 rounded-xl p-4 font-mono text-[10px] leading-relaxed shadow-inner border border-slate-900 overflow-x-auto select-all">
+          <div class="bg-[#0f172a] text-slate-300 rounded-none p-4 font-mono text-[10px] leading-relaxed shadow-inner border border-slate-900 overflow-x-auto select-all">
             <pre><code id="tokenJsonCode"><!-- JSON preview --></code></pre>
           </div>
         </div>
 
         <!-- Action Footer -->
         <div class="border-t border-slate-100 pt-5 flex items-center justify-end space-x-3">
-          <button onclick="discardScopeChanges()" class="border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 px-5 py-2.5 rounded-xl text-xs font-bold cursor-pointer transition shadow-xs">
+          <button onclick="discardScopeChanges()" class="border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 px-5 py-2.5 rounded-none text-xs font-bold cursor-pointer transition shadow-xs">
             Discard Changes
           </button>
-          <button onclick="saveScopeChanges()" class="bg-[#0f172a] hover:bg-slate-800 text-white font-bold px-5 py-2.5 rounded-xl text-xs cursor-pointer transition shadow-xs">
+          <button onclick="saveScopeChanges()" class="bg-teal-600 hover:bg-teal-700 text-white font-medium px-5 py-2.5 rounded-none text-xs cursor-pointer transition shadow-xs focus:outline-none focus:ring-2 focus:ring-teal-500/40">
             Save Boundary Rules
           </button>
         </div>
@@ -138,15 +132,6 @@ include '../../includes/sidebar.php';
 
   </div>
 
-  <!-- ========================================================================= -->
-  <!-- TOAST NOTIFICATION HUB -->
-  <!-- ========================================================================= -->
-  <div id="toast" class="fixed bottom-4 right-4 z-50 bg-slate-900 text-white text-xs font-bold px-4 py-3.5 rounded-xl shadow-lg flex items-center gap-3 transform translate-y-4 opacity-0 pointer-events-none transition-all duration-300">
-    <div id="toastIconBox" class="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[10px]">
-      <i id="toastIconSymbol" class="fa-solid fa-check"></i>
-    </div>
-    <span id="toastMsg" class="tracking-wide">Access boundary rules successfully compiled.</span>
-  </div>
 
 </main>
 

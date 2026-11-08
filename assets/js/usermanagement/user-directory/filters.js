@@ -2,6 +2,10 @@
 
 // FILTER & SEARCH HANDLER
 function filterAndSearch() {
+  if (typeof window.resetUserDirectoryPage === 'function') {
+    window.resetUserDirectoryPage();
+  }
+
   const searchInput = document.getElementById('searchInput');
   const roleFilter = document.getElementById('roleFilter');
   const deptFilter = document.getElementById('deptFilter');

@@ -124,7 +124,7 @@ window.civAudit.loginHistory.ui = {
         const isDark = document.documentElement.classList.contains('dark');
         const btn = document.createElement('button');
         btn.onclick = () => this.goToPage(p);
-        btn.className = `h-7 min-w-[28px] px-2 rounded-lg text-xs font-bold transition cursor-pointer ${
+        btn.className = `h-7 min-w-[28px] px-2 rounded-none text-xs font-bold transition cursor-pointer ${
           p === this.currentPage
             ? 'bg-[#86B6F6] text-white shadow-sm ring-2 ring-[#86B6F6]/30'
             : isDark
@@ -200,7 +200,7 @@ window.civAudit.loginHistory.ui = {
 
       const tr = document.createElement('tr');
       tr.onclick = function() { window.civAudit.loginHistory.modal.openSessionModal(this); };
-      tr.className = 'hover:bg-slate-50/70 transition cursor-pointer';
+      tr.className = 'hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition cursor-pointer group';
       tr.setAttribute('data-id', `#LOG-${log.login_id}`);
       tr.setAttribute('data-date', dateVal);
       tr.setAttribute('data-actor', actor);
@@ -219,43 +219,43 @@ window.civAudit.loginHistory.ui = {
 
       let statusBadgeHtml = '';
       if (statusText === 'Successful Login') {
-        statusBadgeHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20">🟢 Success</span>`;
+        statusBadgeHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-none text-[10px] font-bold bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20">🟢 Success</span>`;
       } else if (statusText === 'Logout') {
-        statusBadgeHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 ring-1 ring-slate-600/10">⚪ Logged Out</span>`;
+        statusBadgeHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-none text-[10px] font-bold bg-slate-100 text-slate-600 ring-1 ring-slate-600/10">⚪ Logged Out</span>`;
       } else if (statusText === 'Account Locked') {
-        statusBadgeHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-red-100 text-red-900 ring-1 ring-red-800/30"><i class="fa-solid fa-user-lock text-[9px]"></i> Account Locked</span>`;
+        statusBadgeHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-none text-[10px] font-black bg-red-100 text-red-900 ring-1 ring-red-800/30"><i class="fa-solid fa-user-lock text-[9px]"></i> Account Locked</span>`;
       } else if (statusText === 'Failed Login') {
-        statusBadgeHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 ring-1 ring-rose-600/20">🔴 Failed ${log.failure_reason ? '- ' + log.failure_reason : ''}</span>`;
+        statusBadgeHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-none text-[10px] font-bold bg-rose-50 text-rose-700 ring-1 ring-rose-600/20">🔴 Failed ${log.failure_reason ? '- ' + log.failure_reason : ''}</span>`;
       } else {
-        statusBadgeHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 ring-1 ring-indigo-600/20">🔑 ${statusText}</span>`;
+        statusBadgeHtml = `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-none text-[10px] font-bold bg-indigo-50 text-indigo-700 ring-1 ring-indigo-600/20">🔑 ${statusText}</span>`;
       }
 
       let loginTimeSub = '';
       if (log.logout_time) {
-        loginTimeSub = `<div class="text-[10px] text-slate-400 font-semibold mt-0.5">Logout: ${logoutTimeFormatted}</div>`;
+        loginTimeSub = `<div class="text-[11px] text-slate-500 dark:text-slate-400 font-normal mt-0.5">Logout: ${logoutTimeFormatted}</div>`;
       } else if (log.login_status === 'Success') {
-        loginTimeSub = `<div class="text-[10px] text-emerald-600 font-bold mt-0.5 flex items-center gap-1"><span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Active Session</div>`;
+        loginTimeSub = `<div class="text-[11px] text-emerald-600 font-bold mt-0.5 flex items-center gap-1"><span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Active Session</div>`;
       } else {
-        loginTimeSub = `<div class="text-[10px] text-slate-400 font-semibold mt-0.5">—</div>`;
+        loginTimeSub = `<div class="text-[11px] text-slate-400 font-normal mt-0.5">—</div>`;
       }
 
       const esc = window.escapeHtml || (s => s);
 
       tr.innerHTML = `
-        <td class="py-4 px-5 font-mono text-[11px] font-bold text-slate-500">#LOG-${esc(log.login_id)}</td>
-        <td class="py-4 px-5">
-          <div class="font-bold text-slate-800">${esc(actor)}</div>
-          <div class="text-[10px] text-slate-400 font-semibold mt-0.5">${esc(role)} | ${esc(department)}</div>
+        <td class="py-3 px-4 font-mono text-[11px] font-normal text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800/60 align-middle">#LOG-${esc(log.login_id)}</td>
+        <td class="py-3 px-4 border-b border-slate-100 dark:border-slate-800/60 align-middle">
+          <div class="font-semibold text-slate-900 dark:text-slate-100 text-xs">${esc(actor)}</div>
+          <div class="text-[11px] font-normal text-slate-500 dark:text-slate-400 mt-0.5">${esc(role)} | ${esc(department)}</div>
         </td>
-        <td class="py-4 px-5">
-          <div class="font-semibold text-slate-800">Login: ${esc(loginTimeFormatted)}</div>
+        <td class="py-3 px-4 border-b border-slate-100 dark:border-slate-800/60 align-middle">
+          <div class="text-xs text-slate-600 dark:text-slate-300 font-normal">Login: ${esc(loginTimeFormatted)}</div>
           ${loginTimeSub}
         </td>
-        <td class="py-4 px-5 text-center font-semibold text-slate-700">${esc(lifespan)}</td>
-        <td class="py-4 px-5">${statusBadgeHtml}</td>
-        <td class="py-4 px-5">
-          <div class="font-mono font-bold text-slate-700 text-[11px]">${esc(ip)}</div>
-          <div class="text-[10px] text-slate-400 font-semibold mt-0.5">${esc(device)} / Caloocan City, PH</div>
+        <td class="py-3 px-4 text-center text-xs text-slate-600 dark:text-slate-300 font-normal border-b border-slate-100 dark:border-slate-800/60 align-middle">${esc(lifespan)}</td>
+        <td class="py-3 px-4 border-b border-slate-100 dark:border-slate-800/60 align-middle">${statusBadgeHtml}</td>
+        <td class="py-3 px-4 border-b border-slate-100 dark:border-slate-800/60 align-middle">
+          <div class="font-mono text-slate-500 dark:text-slate-400 text-[11px] font-normal">${esc(ip)}</div>
+          <div class="text-[11px] font-normal text-slate-500 dark:text-slate-400 mt-0.5">${esc(device)} / Caloocan City, PH</div>
         </td>
       `;
 

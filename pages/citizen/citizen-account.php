@@ -11,19 +11,13 @@ include '../../includes/sidebar.php';
 
 <main class="flex-1 p-6 md:p-8 w-full space-y-6 overflow-y-auto">
 
-  <!-- Breadcrumb -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/60 pb-5">
+  <!-- Page Header -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/60 dark:border-slate-800 pb-5">
     <div class="space-y-1">
-      <div class="flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-slate-400">
-        <span>Citizen Management</span>
-        <i class="fa-solid fa-chevron-right text-[8px] opacity-60"></i>
-        <span class="text-brand-dark">Citizen Account Status</span>
-      </div>
-      <h1 class="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2 mt-4">
-        <i class="fa-solid fa-user-shield text-brand-dark"></i>
+      <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
         Citizen Account Status Control
       </h1>
-      <p class="text-xs text-slate-500 max-w-2xl leading-relaxed">
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-normal max-w-2xl leading-relaxed">
         Manage operational status, suspend access under investigation, release security locks, and restore deactivated portal credentials.
       </p>
     </div>
@@ -31,56 +25,56 @@ include '../../includes/sidebar.php';
 
   <!-- ACTIVE -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-    <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs flex items-center justify-between group relative overflow-hidden">
+    <div class="bg-white border border-slate-200/80 rounded-none p-5 shadow-xs flex items-center justify-between group relative overflow-hidden">
       <div class="absolute top-0 left-0 w-1.5 h-full bg-emerald-500"></div>
       <div class="space-y-1">
         <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Active Status</span>
         <h3 id="statActiveCount" class="text-2xl font-black text-slate-900 tracking-tight">0 Accounts</h3>
       </div>
-      <div class="h-10 w-10 rounded-lg bg-emerald-50/40 border border-emerald-100 flex items-center justify-center text-emerald-600 transition">
+      <div class="h-10 w-10 rounded-none bg-emerald-50/40 border border-emerald-100 flex items-center justify-center text-emerald-600 transition">
         <i class="fa-solid fa-circle-check text-sm animate-pulse"></i>
       </div>
     </div>
 
     <!-- INACTIVE -->
-    <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs flex items-center justify-between group relative overflow-hidden">
+    <div class="bg-white border border-slate-200/80 rounded-none p-5 shadow-xs flex items-center justify-between group relative overflow-hidden">
       <div class="absolute top-0 left-0 w-1.5 h-full bg-slate-400"></div>
       <div class="space-y-1">
         <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Inactive Status</span>
         <h3 id="statInactiveCount" class="text-2xl font-black text-slate-900 tracking-tight">0 Accounts</h3>
       </div>
-      <div class="h-10 w-10 rounded-lg bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 transition">
+      <div class="h-10 w-10 rounded-none bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 transition">
         <i class="fa-solid fa-circle-minus text-sm"></i>
       </div>
     </div>
 
     <!-- LOCKED -->
-    <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs flex items-center justify-between group relative overflow-hidden">
+    <div class="bg-white border border-slate-200/80 rounded-none p-5 shadow-xs flex items-center justify-between group relative overflow-hidden">
       <div class="absolute top-0 left-0 w-1.5 h-full bg-rose-500"></div>
       <div class="space-y-1">
         <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Locked Status</span>
         <h3 id="statLockedCount" class="text-2xl font-black text-slate-900 tracking-tight">0 Accounts</h3>
       </div>
-      <div class="h-10 w-10 rounded-lg bg-rose-50/40 border border-rose-100 flex items-center justify-center text-rose-500 transition">
+      <div class="h-10 w-10 rounded-none bg-rose-50/40 border border-rose-100 flex items-center justify-center text-rose-500 transition">
         <i class="fa-solid fa-user-lock text-sm"></i>
       </div>
     </div>
 
     <!-- SUSPENDED -->
-    <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs flex items-center justify-between group relative overflow-hidden">
+    <div class="bg-white border border-slate-200/80 rounded-none p-5 shadow-xs flex items-center justify-between group relative overflow-hidden">
       <div class="absolute top-0 left-0 w-1.5 h-full bg-amber-500"></div>
       <div class="space-y-1">
         <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Suspended Status</span>
         <h3 id="statSuspendedCount" class="text-2xl font-black text-slate-900 tracking-tight">0 Accounts</h3>
       </div>
-      <div class="h-10 w-10 rounded-lg bg-amber-50/40 border border-amber-100 flex items-center justify-center text-amber-600 transition">
+      <div class="h-10 w-10 rounded-none bg-amber-50/40 border border-amber-100 flex items-center justify-center text-amber-600 transition">
         <i class="fa-solid fa-triangle-exclamation text-sm"></i>
       </div>
     </div>
   </div>
 
   <!-- CONTROL-->
-  <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
+  <div class="bg-white p-5 rounded-none border border-slate-200/80 shadow-xs space-y-4">
     <div class="flex items-center justify-between border-b border-slate-100 pb-3">
       <div class="flex items-center space-x-2">
         <i class="fa-solid fa-sliders text-brand-dark text-xs"></i>
@@ -96,11 +90,11 @@ include '../../includes/sidebar.php';
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 flex-1 max-w-4xl">
         <div class="relative">
           <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-          <input type="text" id="ctrlSearchInput" oninput="filterControlTable()" placeholder="Search ID, name, or email..." class="pl-8 pr-3 py-2 border border-slate-200 rounded-xl text-xs w-full bg-slate-50/50 focus:bg-white focus:outline-none focus:border-brand-medium transition">
+          <input type="text" id="ctrlSearchInput" oninput="filterControlTable()" placeholder="Search ID, name, or email..." class="pl-8 pr-3 py-2 border border-slate-200 rounded-none text-xs w-full bg-slate-50/50 focus:bg-white focus:outline-none focus:border-brand-medium transition">
         </div>
 
         <!-- FILTER -->
-        <select id="ctrlStatusFilter" onchange="filterControlTable()" class="border border-slate-200 rounded-xl px-3 py-2 text-xs w-full bg-slate-50/50 focus:bg-white focus:outline-none focus:border-brand-medium transition cursor-pointer font-semibold text-slate-650">
+        <select id="ctrlStatusFilter" onchange="filterControlTable()" class="border border-slate-200 rounded-none px-3 py-2 text-xs w-full bg-slate-50/50 focus:bg-white focus:outline-none focus:border-brand-medium transition cursor-pointer font-semibold text-slate-650">
           <option value="All">All Statuses</option>
           <option value="Active">Active</option>
           <option value="Inactive">Inactive</option>
@@ -110,7 +104,7 @@ include '../../includes/sidebar.php';
 
         <!-- FLAG -->
         <div class="flex items-center space-x-2.5 pl-2 select-none">
-          <input type="checkbox" id="flaggedFilter" onchange="filterControlTable()" class="rounded border-slate-300 text-brand-medium focus:ring-brand-medium/20 h-4 w-4 cursor-pointer">
+          <input type="checkbox" id="flaggedFilter" onchange="filterControlTable()" class="rounded-none border-slate-300 text-brand-medium focus:ring-brand-medium/20 h-4 w-4 cursor-pointer">
           <label for="flaggedFilter" class="text-xs font-bold text-slate-650 cursor-pointer flex items-center gap-1.5">
             <i class="fa-solid fa-flag text-rose-500 animate-pulse text-[10px]"></i>
             <span>Show Flagged Warnings Only</span>
@@ -119,7 +113,7 @@ include '../../includes/sidebar.php';
       </div>
       
       <!-- EXCEL -->
-      <button onclick="exportControlCsv()" class="border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2 cursor-pointer transition shadow-xs">
+      <button onclick="exportControlCsv()" class="border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold px-4 py-2 rounded-none text-xs flex items-center gap-2 cursor-pointer transition shadow-xs">
         <i class="fa-solid fa-download"></i>
         <span>Export Log</span>
       </button>
@@ -127,16 +121,16 @@ include '../../includes/sidebar.php';
   </div>
 
   <!-- STATUS CONTROL -->
-  <div class="bg-white border border-slate-200/80 rounded-2xl shadow-xs overflow-hidden">
+  <div class="bg-white border border-slate-200/80 rounded-none shadow-xs overflow-hidden">
     <div class="overflow-x-auto">
       <table class="w-full text-left border-collapse">
         <thead>
-          <tr class="bg-slate-50 border-b border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-wider">
-            <th class="px-6 py-4">Citizen ID</th>
-            <th class="px-6 py-4">Citizen User</th>
-            <th class="px-6 py-4">Current Security Status</th>
-            <th class="px-6 py-4">Access Violations / Security Log</th>
-            <th class="px-6 py-4 text-right">State Controller Actions</th>
+          <tr class="bg-slate-50/70 dark:bg-slate-800/40 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <th class="py-3 px-4">Citizen ID</th>
+            <th class="py-3 px-4">Citizen User</th>
+            <th class="py-3 px-4">Current Security Status</th>
+            <th class="py-3 px-4">Access Violations / Security Log</th>
+            <th class="py-3 px-4 text-right">State Controller Actions</th>
           </tr>
         </thead>
         <tbody id="controlTableBody" class="divide-y divide-slate-100/80 text-xs">
@@ -147,13 +141,14 @@ include '../../includes/sidebar.php';
     <!-- PAGINATION -->
     <div class="bg-slate-50 px-6 py-4 border-t border-slate-100 flex items-center justify-between text-[11px] font-bold text-slate-400">
       <div id="ctrlPaginationText">
+        Showing 0 to 0 of 0 accounts
       </div>
-      <div class="flex items-center space-x-1">
-        <button class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 cursor-not-allowed transition" disabled>
+      <div class="flex items-center space-x-1" id="ctrlPaginationControls">
+        <button id="ctrlPrevBtn" class="px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 cursor-not-allowed transition" disabled>
           <i class="fa-solid fa-chevron-left text-[9px]"></i>
         </button>
-        <button class="px-3 py-1.5 rounded-lg bg-brand-light border border-brand-border text-brand-dark font-extrabold">1</button>
-        <button class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 cursor-not-allowed transition" disabled>
+        <div id="ctrlPageNumbers" class="flex items-center space-x-1"></div>
+        <button id="ctrlNextBtn" class="px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 cursor-not-allowed transition" disabled>
           <i class="fa-solid fa-chevron-right text-[9px]"></i>
         </button>
       </div>
@@ -166,7 +161,7 @@ include '../../includes/sidebar.php';
 
 <!-- CHANGE ACCOUNT MODAL -->
 <div id="stateChangeModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/70 backdrop-blur-sm">
-  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[85vh] my-auto overflow-y-auto transform scale-95 transition-all duration-300">
+  <div class="bg-white rounded-none shadow-xl w-full max-w-md max-h-[85vh] my-auto overflow-y-auto transform scale-95 transition-all duration-300">
     <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
       <div class="flex items-center space-x-2">
         <i id="stateModalIcon" class="fa-solid fa-user-gear text-brand-medium"></i>
@@ -179,7 +174,7 @@ include '../../includes/sidebar.php';
       
       <div class="p-6 space-y-4">
         <div class="flex items-start gap-3">
-          <div id="stateIconBox" class="h-10 w-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-700 shrink-0">
+          <div id="stateIconBox" class="h-10 w-10 rounded-none bg-slate-50 flex items-center justify-center text-slate-700 shrink-0">
             <i class="fa-solid fa-circle-info text-base animate-pulse"></i>
           </div>
           <div class="space-y-1">
@@ -190,12 +185,12 @@ include '../../includes/sidebar.php';
 
         <div class="space-y-1.5">
           <label class="text-[10px] font-black text-slate-400 uppercase tracking-wider block">Administrative Reason / Justification</label>
-          <textarea id="stateReason" required placeholder="Write detail log justification for this security audit database update..." rows="3" class="border border-slate-200 rounded-xl px-3 py-2.5 text-xs w-full focus:outline-none focus:border-brand-medium transition resize-none"></textarea>
+          <textarea id="stateReason" required placeholder="Write detail log justification for this security audit database update..." rows="3" class="border border-slate-200 rounded-none px-3 py-2.5 text-xs w-full focus:outline-none focus:border-brand-medium transition resize-none"></textarea>
         </div>
       </div>
       <div class="bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-end space-x-2">
-        <button type="button" onclick="closeModal('stateChangeModal')" class="border border-slate-200 bg-white hover:bg-slate-50 text-slate-650 font-bold px-4 py-2 rounded-xl text-xs transition cursor-pointer">Cancel</button>
-        <button type="submit" id="stateConfirmBtn" class="bg-[#0f172a] hover:bg-slate-800 text-white font-bold px-4 py-2 rounded-xl text-xs transition cursor-pointer shadow-xs">Confirm Action</button>
+        <button type="button" onclick="closeModal('stateChangeModal')" class="border border-slate-200 bg-white hover:bg-slate-50 text-slate-650 font-bold px-4 py-2 rounded-none text-xs transition cursor-pointer">Cancel</button>
+        <button type="submit" id="stateConfirmBtn" class="bg-teal-600 hover:bg-teal-700 text-white font-medium px-4 py-2 rounded-none text-xs transition cursor-pointer shadow-xs focus:outline-none focus:ring-2 focus:ring-teal-500/40">Confirm Action</button>
       </div>
     </form>
   </div>
@@ -203,7 +198,7 @@ include '../../includes/sidebar.php';
 
 <!-- SECURITY AUDIT MODAL -->
 <div id="timelineModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/70 backdrop-blur-sm">
-  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[85vh] my-auto overflow-hidden flex flex-col transform scale-95 transition-all duration-300">
+  <div class="bg-white rounded-none shadow-xl w-full max-w-md max-h-[85vh] my-auto overflow-hidden flex flex-col transform scale-95 transition-all duration-300">
     <div class="bg-slate-900 text-white px-5 py-3.5 sm:px-6 sm:py-4 flex items-center justify-between shrink-0">
       <div class="flex items-center space-x-2">
         <i class="fa-solid fa-clock-rotate-left text-brand-medium"></i>
@@ -221,19 +216,11 @@ include '../../includes/sidebar.php';
       </div>
     </div>
     <div class="bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-end shrink-0">
-      <button onclick="closeModal('timelineModal')" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer">Close Log Trails</button>
+      <button onclick="closeModal('timelineModal')" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-none text-xs font-bold transition cursor-pointer">Close Log Trails</button>
     </div>
   </div>
 </div>
 
-<!-- TOAST POPUP -->
-
-<div id="toast" class="fixed bottom-4 right-4 z-50 bg-slate-900 text-white text-xs font-bold px-4 py-3.5 rounded-xl shadow-lg flex items-center gap-3 transform translate-y-4 opacity-0 pointer-events-none transition-all duration-300">
-  <div class="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[10px]">
-    <i class="fa-solid fa-check"></i>
-  </div>
-  <span id="toastMsg" class="tracking-wide">Action executed successfully.</span>
-</div>
 
 <script src="<?php echo $basePath ?? '../'; ?>assets/js/citizen/citizen-account.js"></script>
 

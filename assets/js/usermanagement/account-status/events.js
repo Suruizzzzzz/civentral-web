@@ -59,10 +59,10 @@ function triggerLockToggle(userId) {
     if (mMsg) mMsg.innerText = "Unlocking this account immediately resets the failed login attempts counter back to 0/5, restoring validation access keycards.";
     if (mConfirm) {
       mConfirm.innerText = "Unlock Access";
-      mConfirm.className = "bg-[#0f172a] hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer shadow-xs";
+      mConfirm.className = "bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-none text-xs font-medium transition cursor-pointer shadow-xs focus:outline-none focus:ring-2 focus:ring-teal-500/40";
     }
     if (iconBox) {
-      iconBox.className = "h-10 w-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0";
+      iconBox.className = "h-10 w-10 rounded-none bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shrink-0";
       iconBox.innerHTML = '<i class="fa-solid fa-shield-halved text-base"></i>';
     }
   } else {
@@ -72,10 +72,10 @@ function triggerLockToggle(userId) {
     if (mMsg) mMsg.innerText = "Suspending this account places an administrative lock. The user will be prohibited from logging in until manually unlocked.";
     if (mConfirm) {
       mConfirm.innerText = "Lock Account";
-      mConfirm.className = "bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer shadow-xs";
+      mConfirm.className = "bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-none text-xs font-bold transition cursor-pointer shadow-xs";
     }
     if (iconBox) {
-      iconBox.className = "h-10 w-10 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-500 shrink-0";
+      iconBox.className = "h-10 w-10 rounded-none bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-500 shrink-0";
       iconBox.innerHTML = '<i class="fa-solid fa-user-lock text-base"></i>';
     }
   }
@@ -117,10 +117,10 @@ function triggerArchiveToggle(userId) {
     if (mMsg) mMsg.innerText = `Are you sure you want to restore this profile from archives? This will return the staff directory record to active status.`;
     if (mConfirm) {
       mConfirm.innerText = "Confirm Restore";
-      mConfirm.className = "bg-[#0f172a] hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer shadow-xs";
+      mConfirm.className = "bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-none text-xs font-medium transition cursor-pointer shadow-xs focus:outline-none focus:ring-2 focus:ring-teal-500/40";
     }
     if (iconBox) {
-      iconBox.className = "h-10 w-10 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0";
+      iconBox.className = "h-10 w-10 rounded-none bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0";
       iconBox.innerHTML = '<i class="fa-solid fa-circle-check text-base"></i>';
     }
   } else {
@@ -130,10 +130,10 @@ function triggerArchiveToggle(userId) {
     if (mMsg) mMsg.innerText = `Warning: Archiving soft-deletes this user from main roster indexes. All active terminal sessions terminate instantly. Records remain logged.`;
     if (mConfirm) {
       mConfirm.innerText = "Confirm Archive";
-      mConfirm.className = "bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer shadow-xs";
+      mConfirm.className = "bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-none text-xs font-bold transition cursor-pointer shadow-xs";
     }
     if (iconBox) {
-      iconBox.className = "h-10 w-10 rounded-full bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shrink-0";
+      iconBox.className = "h-10 w-10 rounded-none bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shrink-0";
       iconBox.innerHTML = '<i class="fa-solid fa-circle-exclamation text-base"></i>';
     }
   }

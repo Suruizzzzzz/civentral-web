@@ -1,45 +1,54 @@
 // Shared Toast Notification for Roles & Permissions
 
-let rolesToastTimer = null;
+function deriveModalTitle(msgStr, isErr, isWarn) {
+  if (isErr) {
+    if (/conflict|already exist|duplicate/i.test(msgStr)) return 'Conflict Detected';
+    if (/invalid|required|missing|provide/i.test(msgStr)) return 'Validation Error';
+    if (/unauthorized|forbidden|denied|permission/i.test(msgStr)) return 'Access Denied';
+    if (/not found/i.test(msgStr)) return 'Record Not Found';
+    return 'Action Failed';
+  }
+
+  if (isWarn) return 'Attention Required';
+
+  // Contextual Success Titles based on action verb
+  if (/created|registered|added/i.test(msgStr)) return 'Successfully Created';
+  if (/updated|modified|saved|changes/i.test(msgStr)) return 'Successfully Updated';
+  if (/deleted|removed|purged|archived/i.test(msgStr)) return 'Successfully Removed';
+  if (/status|activated|deactivated|enabled|disabled|locked|unlocked/i.test(msgStr)) return 'Status Updated';
+  if (/password|credential|reset/i.test(msgStr)) return 'Security Updated';
+  if (/imported|exported|downloaded/i.test(msgStr)) return 'Data Transfer Complete';
+
+  return 'Action Completed';
+}
 
 function showToast(message, isError = false) {
-  const toast = document.getElementById('toast');
-  const toastMsg = document.getElementById('toastMsg');
-  const iconBox = document.getElementById('toastIconBox');
-  const iconSymbol = document.getElementById('toastIconSymbol');
-  
-  if (!toast || !toastMsg) return;
+  const msgStr = String(message || '');
+  const isErr = isError === true || isError === 'error' || isError === 'danger' || 
+                /error|failed|invalid|required|denied|conflict|exist|already/i.test(msgStr);
+  const isWarn = isError === 'warning';
+  const modalTitle = deriveModalTitle(msgStr, isErr, isWarn);
 
-  const msgLower = message.toLowerCase();
-  if (!isError && (msgLower.includes('error') || msgLower.includes('failed') || msgLower.includes('invalid') || msgLower.includes('network') || msgLower.includes('require'))) {
-    isError = true;
-  }
-
-  toastMsg.innerText = message;
-  
-  if (isError) {
-      toast.classList.replace('bg-emerald-500', 'bg-rose-500');
+  if (window.Swal) {
+    Swal.fire({
+      icon: isErr ? 'error' : (isWarn ? 'warning' : 'success'),
+      title: modalTitle,
+      text: msgStr,
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#0D9488', // Vibrant Teal
+      customClass: {
+        confirmButton: 'rounded-none px-6 py-2 font-medium tracking-wide shadow-none'
+      }
+    });
+  } else if (typeof window.swal === 'function') {
+    window.swal({
+      title: modalTitle,
+      text: msgStr,
+      icon: isErr ? 'error' : 'success',
+      button: 'OK'
+    });
   } else {
-      toast.classList.replace('bg-rose-500', 'bg-emerald-500');
+    alert(modalTitle + ': ' + msgStr);
   }
-
-  if (iconBox && iconSymbol) {
-    if (isError) {
-      iconBox.className = "h-5 w-5 rounded-full bg-rose-500 flex items-center justify-center text-white text-[10px]";
-      iconSymbol.className = "fa-solid fa-xmark";
-    } else {
-      iconBox.className = "h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[10px]";
-      iconSymbol.className = "fa-solid fa-check";
-    }
-  }
-
-  toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
-  toast.classList.add('opacity-100', 'translate-y-0');
-
-  if (rolesToastTimer) clearTimeout(rolesToastTimer);
-  
-  rolesToastTimer = setTimeout(() => {
-    toast.classList.remove('opacity-100', 'translate-y-0');
-    toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
-  }, 3200);
 }
+window.showToast = showToast;

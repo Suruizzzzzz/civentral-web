@@ -83,12 +83,12 @@ function renderRoleSelector(filterQuery = null) {
 
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = `w-full text-left px-3 py-2.5 rounded-lg text-xs transition cursor-pointer flex items-center justify-between ${activeClasses}`;
+    btn.className = `w-full text-left px-3 py-2.5 rounded-none text-xs transition cursor-pointer flex items-center justify-between ${activeClasses}`;
     btn.innerHTML = `
       <div class="flex flex-col min-w-0 pr-2">
         <div class="flex items-center gap-1.5 truncate">
           <span class="truncate">${roleObj.role_name}</span>
-          ${isOwnRole ? `<span class="text-[8px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.5 rounded shrink-0">Your Role</span>` : ''}
+          ${isOwnRole ? `<span class="text-[8px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.5 rounded-none shrink-0">Your Role</span>` : ''}
         </div>
         ${roleObj.department_name ? `<span class="text-[9px] text-slate-400 font-medium truncate">${roleObj.department_name}</span>` : ''}
       </div>
@@ -116,9 +116,9 @@ function renderAccordions() {
 
   if (isEditingOwnRole) {
     const noticeDiv = document.createElement('div');
-    noticeDiv.className = 'bg-amber-50 border border-amber-200/80 rounded-2xl p-4 text-xs text-amber-900 font-bold flex items-center gap-3 shadow-xs';
+    noticeDiv.className = 'bg-amber-50 border border-amber-200/80 rounded-none p-4 text-xs text-amber-900 font-bold flex items-center gap-3 shadow-xs';
     noticeDiv.innerHTML = `
-      <div class="h-8 w-8 rounded-xl bg-amber-100 border border-amber-200 flex items-center justify-center text-amber-700 shrink-0">
+      <div class="h-8 w-8 rounded-none bg-amber-100 border border-amber-200 flex items-center justify-center text-amber-700 shrink-0">
         <i class="fa-solid fa-user-lock text-sm"></i>
       </div>
       <div>
@@ -143,7 +143,7 @@ function renderAccordions() {
     const masterChecked = (typeof isModuleMasterChecked === 'function') ? isModuleMasterChecked(mod, rolePermissions) : false;
 
     const card = document.createElement('div');
-    card.className = 'bg-white border border-slate-200/80 rounded-2xl shadow-xs overflow-hidden transition-all duration-200';
+    card.className = 'bg-white border border-slate-200/80 rounded-none shadow-xs overflow-hidden transition-all duration-200';
 
     const header = document.createElement('div');
     header.className = 'px-5 py-4 flex items-center justify-between gap-4 bg-slate-50 border-b border-slate-100 hover:bg-slate-100/40 transition select-none cursor-pointer';
@@ -157,7 +157,7 @@ function renderAccordions() {
 
     header.innerHTML = `
       <div class="flex items-center gap-3 flex-1 min-w-0">
-        <div class="h-8 w-8 rounded-lg bg-white border border-slate-200/60 flex items-center justify-center text-slate-500 shrink-0">
+        <div class="h-8 w-8 rounded-none bg-white border border-slate-200/60 flex items-center justify-center text-slate-500 shrink-0">
           <i class="fa-solid ${mod.icon || 'fa-folder-tree'} text-xs"></i>
         </div>
         <div class="space-y-0.5 min-w-0">
@@ -168,7 +168,7 @@ function renderAccordions() {
 
       <div class="flex items-center gap-5 shrink-0">
         <label class="checkbox-container flex items-center gap-1.5 ${!isMasterClickable ? 'opacity-40 cursor-not-allowed pointer-events-none' : 'cursor-pointer'} text-[10px] font-black text-slate-500 uppercase tracking-wide" title="${!isMasterClickable ? 'You cannot delegate this module because your own role does not have access to it' : ''}">
-          <input type="checkbox" data-module-master="${mod.name}" ${masterChecked ? 'checked' : ''} ${!isMasterClickable ? 'disabled' : ''} onchange="if(typeof toggleModuleMaster === 'function') toggleModuleMaster(this)" class="h-4.5 w-4.5 rounded border-slate-350 text-brand-dark focus:ring-brand-dark/20 ${!isMasterClickable ? 'cursor-not-allowed' : 'cursor-pointer'}">
+          <input type="checkbox" data-module-master="${mod.name}" ${masterChecked ? 'checked' : ''} ${!isMasterClickable ? 'disabled' : ''} onchange="if(typeof toggleModuleMaster === 'function') toggleModuleMaster(this)" class="h-4.5 w-4.5 rounded-none border-slate-350 text-brand-dark focus:ring-brand-dark/20 ${!isMasterClickable ? 'cursor-not-allowed' : 'cursor-pointer'}">
           <span class="hidden sm:inline">Master Access</span>
         </label>
         
@@ -216,10 +216,10 @@ function renderAccordions() {
             <div class="space-y-0.5 min-w-0">
               <div class="flex items-center gap-2">
                 <h5 class="font-extrabold text-slate-800 tracking-tight text-[11px] leading-snug">${res.name}</h5>
-                <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-full border ${isFeatureEnabled ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-500 border-slate-200'}">
+                <span class="text-[9px] font-extrabold px-2 py-0.5 rounded-none border ${isFeatureEnabled ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-slate-100 text-slate-500 border-slate-200'}">
                   ${isFeatureEnabled ? 'Feature Enabled' : 'Disabled (Hidden in Sidebar)'}
                 </span>
-                ${!isMyRoleHasResource ? `<span class="text-[8px] bg-rose-50 text-rose-700 border border-rose-200 font-bold px-1.5 py-0.5 rounded">Not Granted To You</span>` : ''}
+                ${!isMyRoleHasResource ? `<span class="text-[8px] bg-rose-50 text-rose-700 border border-rose-200 font-bold px-1.5 py-0.5 rounded-none">Not Granted To You</span>` : ''}
               </div>
               <p class="text-[9px] text-slate-400 font-medium leading-relaxed">${res.desc}</p>
             </div>
@@ -269,7 +269,7 @@ function renderAccordions() {
 
   if (accordionsContainer.innerHTML === '') {
     accordionsContainer.innerHTML = `
-      <div class="bg-white border border-slate-200/80 rounded-2xl p-8 text-center shadow-xs">
+      <div class="bg-white border border-slate-200/80 rounded-none p-8 text-center shadow-xs">
         <i class="fa-solid fa-folder-open text-slate-300 text-2xl mb-2"></i>
         <p class="text-xs text-slate-400 font-bold">No system modules or resources matched your search filter</p>
       </div>

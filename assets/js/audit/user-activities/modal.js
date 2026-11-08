@@ -49,7 +49,7 @@ window.civAudit.userActivities.modal = {
     // Setup Actor Badge Color
     const actorRoleDiv = document.getElementById('modalActorRole');
     if (actorRoleDiv) {
-      let actorBadgeClasses = "inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-black uppercase ";
+      let actorBadgeClasses = "inline-flex items-center px-1.5 py-0.5 rounded-none text-[9px] font-black uppercase ";
       if (roleColor === 'purple') actorBadgeClasses += "bg-purple-50 text-purple-700 ring-1 ring-purple-600/20";
       else if (roleColor === 'blue') actorBadgeClasses += "bg-blue-50 text-blue-700 ring-1 ring-blue-600/20";
       else actorBadgeClasses += "bg-slate-100 text-slate-600 ring-1 ring-slate-600/10";
@@ -60,7 +60,7 @@ window.civAudit.userActivities.modal = {
     const actionBadge = document.getElementById('modalActionBadge');
     if (actionBadge) {
       actionBadge.innerText = action;
-      actionBadge.className = "inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-black uppercase ";
+      actionBadge.className = "inline-flex items-center px-1.5 py-0.5 rounded-none text-[9px] font-black uppercase ";
       if (action === 'Approve') actionBadge.className += "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20";
       else if (action === 'Create') actionBadge.className += "bg-blue-50 text-blue-700 ring-1 ring-blue-600/20";
       else if (action === 'Update' || action === 'Edit') actionBadge.className += "bg-amber-50 text-amber-800 ring-1 ring-amber-600/20";
@@ -76,15 +76,15 @@ window.civAudit.userActivities.modal = {
 
     if (statusBanner && statusIconCont && statusTitle && statusMsg) {
       if (status === 'Success') {
-        statusBanner.className = "p-4 rounded-xl flex items-center gap-3 bg-emerald-50 border border-emerald-100 text-emerald-800";
-        statusIconCont.className = "h-8 w-8 rounded-lg flex items-center justify-center shrink-0 bg-emerald-100 text-emerald-700";
+        statusBanner.className = "p-4 rounded-none flex items-center gap-3 bg-emerald-50 border border-emerald-100 text-emerald-800";
+        statusIconCont.className = "h-8 w-8 rounded-none flex items-center justify-center shrink-0 bg-emerald-100 text-emerald-700";
         statusIconCont.innerHTML = `<i class="fa-solid fa-circle-check text-base"></i>`;
         statusTitle.innerText = "Transaction Success";
         statusMsg.innerText = "The operations were processed, audited, and committed successfully within Caloocan LGU security layers.";
         statusMsg.className = "text-[10px] leading-relaxed font-semibold text-emerald-600 mt-0.5";
       } else {
-        statusBanner.className = "p-4 rounded-xl flex items-center gap-3 bg-rose-50 border border-rose-100 text-rose-800";
-        statusIconCont.className = "h-8 w-8 rounded-lg flex items-center justify-center shrink-0 bg-rose-100 text-rose-700";
+        statusBanner.className = "p-4 rounded-none flex items-center gap-3 bg-rose-50 border border-rose-100 text-rose-800";
+        statusIconCont.className = "h-8 w-8 rounded-none flex items-center justify-center shrink-0 bg-rose-100 text-rose-700";
         statusIconCont.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-base"></i>`;
         statusTitle.innerText = "Transaction Blocked / Failed";
         statusMsg.innerText = "The request failed validation checks, permission triggers, or policy locks and was blocked.";

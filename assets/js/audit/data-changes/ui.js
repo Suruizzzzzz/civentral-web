@@ -93,7 +93,7 @@ window.civAudit.dataChanges.ui = {
         const isDark = document.documentElement.classList.contains('dark');
         const btn = document.createElement('button');
         btn.onclick = () => this.goToPage(p);
-        btn.className = `h-7 min-w-[28px] px-2 rounded-lg text-xs font-bold transition cursor-pointer ${
+        btn.className = `h-7 min-w-[28px] px-2 rounded-none text-xs font-bold transition cursor-pointer ${
           p === this.currentPage
             ? 'bg-[#86B6F6] text-white shadow-sm ring-2 ring-[#86B6F6]/30'
             : isDark
@@ -237,7 +237,7 @@ window.civAudit.dataChanges.ui = {
       }
 
       html += `
-        <tr class="hover:bg-slate-50/50 transition border-b border-slate-100"
+        <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition group border-b border-slate-100 dark:border-slate-800/60"
             data-id="${esc(mutId)}"
             data-audit-id="${log.audit_id}"
             data-date="${esc(isoDate)}"
@@ -255,28 +255,28 @@ window.civAudit.dataChanges.ui = {
             data-browser="${esc(log.browser || 'Unknown')}"
             data-old-json="${esc(oldJsonStr)}"
             data-new-json="${esc(newJsonStr)}">
-          <td class="py-4 px-5 font-mono text-[11px] font-bold text-slate-500">${esc(mutId)}</td>
-          <td class="py-4 px-5 whitespace-nowrap">
-            <div class="font-bold text-slate-800 font-mono">${esc(dateStr)}</div>
-            <div class="text-[10px] text-slate-400 font-semibold mt-0.5">${esc(timeStr)}</div>
+          <td class="py-3 px-4 font-mono text-[11px] font-normal text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800/60 align-middle">${esc(mutId)}</td>
+          <td class="py-3 px-4 whitespace-nowrap border-b border-slate-100 dark:border-slate-800/60 align-middle">
+            <div class="font-semibold text-slate-900 dark:text-slate-100 text-xs font-mono">${esc(dateStr)}</div>
+            <div class="text-[11px] font-normal text-slate-500 dark:text-slate-400 mt-0.5">${esc(timeStr)}</div>
           </td>
-          <td class="py-4 px-5 font-bold text-slate-800">${esc(actorName)}</td>
-          <td class="py-4 px-5">
-            <div class="font-bold text-slate-800">${esc(moduleName)}</div>
-            <div class="text-[10px] text-slate-400 font-mono mt-0.5">${esc(recordId)}</div>
+          <td class="py-3 px-4 font-semibold text-slate-900 dark:text-slate-100 text-xs border-b border-slate-100 dark:border-slate-800/60 align-middle">${esc(actorName)}</td>
+          <td class="py-3 px-4 border-b border-slate-100 dark:border-slate-800/60 align-middle">
+            <div class="font-semibold text-slate-900 dark:text-slate-100 text-xs">${esc(moduleName)}</div>
+            <div class="text-[11px] font-normal text-slate-500 dark:text-slate-400 font-mono mt-0.5">${esc(recordId)}</div>
           </td>
-          <td class="py-4 px-5">
-            <span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-black uppercase bg-slate-100 text-slate-700 border border-slate-200/50">${esc(actionField)}</span>
+          <td class="py-3 px-4 border-b border-slate-100 dark:border-slate-800/60 align-middle">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-none text-[9px] font-bold uppercase bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/50 dark:border-slate-700">${esc(actionField)}</span>
           </td>
-          <td class="py-4 px-5">
-            <span class="inline-block bg-rose-50 text-rose-700 line-through px-2.5 py-1 rounded-lg border border-rose-100 font-mono text-[10px] font-semibold max-w-[140px] truncate" title="${esc(oldVal)}">${esc(oldVal)}</span>
+          <td class="py-3 px-4 border-b border-slate-100 dark:border-slate-800/60 align-middle">
+            <span class="inline-block bg-rose-50 text-rose-700 line-through px-2.5 py-1 rounded-none border border-rose-100 font-mono text-[10px] font-semibold max-w-[140px] truncate" title="${esc(oldVal)}">${esc(oldVal)}</span>
           </td>
-          <td class="py-4 px-5">
-            <span class="inline-block ${isSuccess ? 'bg-emerald-50 text-emerald-800 border-emerald-100' : 'bg-rose-50 text-rose-800 border-rose-100'} font-bold px-2.5 py-1 rounded-lg border font-mono text-[10px] max-w-[140px] truncate" title="${esc(newVal)}">${esc(newVal)}</span>
+          <td class="py-3 px-4 border-b border-slate-100 dark:border-slate-800/60 align-middle">
+            <span class="inline-block ${isSuccess ? 'bg-emerald-50 text-emerald-800 border-emerald-100' : 'bg-rose-50 text-rose-800 border-rose-100'} font-bold px-2.5 py-1 rounded-none border font-mono text-[10px] max-w-[140px] truncate" title="${esc(newVal)}">${esc(newVal)}</span>
           </td>
-          <td class="py-4 px-5 text-slate-500 font-medium leading-relaxed max-w-xs truncate" title="${esc(log.description || '')}">${esc(log.description || 'No description.')}</td>
-          <td class="py-4 px-5 text-center">
-            <button onclick="window.civAudit.dataChanges.modal.openMutationModal(this.closest('tr'))" title="View Snapshot" class="h-8 w-8 inline-flex items-center justify-center text-slate-600 hover:text-slate-900 border border-slate-200 bg-white hover:bg-slate-100 rounded-xl shadow-xs cursor-pointer transition focus:outline-none">
+          <td class="py-3 px-4 text-slate-500 dark:text-slate-400 text-xs font-normal leading-relaxed max-w-xs truncate border-b border-slate-100 dark:border-slate-800/60 align-middle" title="${esc(log.description || '')}">${esc(log.description || 'No description.')}</td>
+          <td class="py-3 px-4 text-center border-b border-slate-100 dark:border-slate-800/60 align-middle">
+            <button onclick="window.civAudit.dataChanges.modal.openMutationModal(this.closest('tr'))" title="View Snapshot" class="h-8 w-8 inline-flex items-center justify-center text-slate-600 hover:text-slate-900 border border-slate-200 bg-white hover:bg-slate-100 rounded-none shadow-xs cursor-pointer transition focus:outline-none">
               <i class="fa-solid fa-eye text-xs"></i>
             </button>
           </td>

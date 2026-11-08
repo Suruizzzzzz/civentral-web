@@ -1,5 +1,23 @@
 // USER DIRECTORY UI
 
+// PAGINATION STATE
+let currentUserPage = 1;
+const userPageSize = 10;
+let activeFilteredUsers = [];
+
+window.currentUserPage = currentUserPage;
+
+window.resetUserDirectoryPage = function() {
+  currentUserPage = 1;
+  window.currentUserPage = 1;
+};
+
+window.changeUserDirectoryPage = function(targetPage) {
+  currentUserPage = targetPage;
+  window.currentUserPage = targetPage;
+  renderTable(activeFilteredUsers);
+};
+
 // POPULATE DYNAMIC FILTER DROPDOWNS
 function populateFilterOptions() {
   const roleFilter = document.getElementById('roleFilter');
@@ -103,11 +121,19 @@ function getUserInitials(user) {
 
 // RENDER DATATABLE FROM Database records
 function renderTable(usersList = systemUsers) {
+  activeFilteredUsers = usersList;
   const tbody = document.getElementById('directoryTableBody');
   if (!tbody) return;
   tbody.innerHTML = '';
+
+  const totalItems = activeFilteredUsers.length;
+  const totalPages = Math.ceil(totalItems / userPageSize) || 1;
+
+  if (currentUserPage > totalPages) currentUserPage = totalPages;
+  if (currentUserPage < 1) currentUserPage = 1;
+  window.currentUserPage = currentUserPage;
   
-  if (usersList.length === 0) {
+  if (totalItems === 0) {
     tbody.innerHTML = `
       <tr>
         <td colspan="6" class="px-6 py-12 text-center text-slate-400 font-semibold">
@@ -118,15 +144,20 @@ function renderTable(usersList = systemUsers) {
     `;
     const pagEl = document.getElementById('paginationText');
     if (pagEl) pagEl.innerText = "Showing 0 to 0 of 0 profiles";
+    renderUserPaginationControls(0, 1, 1);
     return;
   }
+
+  const startIndex = (currentUserPage - 1) * userPageSize;
+  const endIndex = Math.min(startIndex + userPageSize, totalItems);
+  const pageUsers = activeFilteredUsers.slice(startIndex, endIndex);
 
   const isSuperAdmin = currentUserScope ? !!currentUserScope.is_superadmin : false;
   const grantedActions = currentUserScope ? (currentUserScope.granted_actions || []) : [];
   const canEdit = isSuperAdmin || grantedActions.includes('EDIT');
   const canDelete = isSuperAdmin || grantedActions.includes('DELETE');
 
-  usersList.forEach(user => {
+  pageUsers.forEach(user => {
     const fullName = getUserFullName(user);
     const initials = getUserInitials(user);
 
@@ -161,7 +192,7 @@ function renderTable(usersList = systemUsers) {
     let avatarBg = colors[colorIndex];
 
     let avatarHTML = `
-      <div class="h-9 w-9 rounded-xl ${avatarBg} text-white font-extrabold flex items-center justify-center text-xs shadow-xs border border-white/20 shrink-0">
+      <div class="h-9 w-9 rounded-none ${avatarBg} text-white font-extrabold flex items-center justify-center text-xs shadow-xs border border-white/20 shrink-0">
         ${initials}
       </div>
     `;
@@ -171,52 +202,54 @@ function renderTable(usersList = systemUsers) {
         const bPath = window.civentralBasePath || '../../';
         pic = bPath + pic.replace(/^\/+/, '');
       }
-      avatarHTML = `<img src="${pic}" alt="${fullName}" class="h-9 w-9 rounded-xl object-cover border border-slate-200 shadow-xs shrink-0">`;
+      avatarHTML = `<img src="${pic}" alt="${fullName}" class="h-9 w-9 rounded-none object-cover border border-slate-200 shadow-xs shrink-0">`;
     }
 
     const tr = document.createElement('tr');
-    tr.className = 'hover:bg-slate-50/50 transition';
+    tr.className = 'hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition group';
     tr.innerHTML = `
-      <td class="px-6 py-3.5 flex items-center space-x-3">
-        ${avatarHTML}
-        <div class="flex flex-col">
-          <span class="font-extrabold text-slate-800 tracking-tight leading-snug">${fullName}</span>
-          <span class="text-[10px] text-slate-400 font-medium">${user.email}</span>
+      <td class="py-3 px-4 border-b border-slate-100 dark:border-slate-800/60 align-middle">
+        <div class="flex items-center space-x-3">
+          ${avatarHTML}
+          <div class="flex flex-col">
+            <span class="font-semibold text-slate-900 dark:text-slate-100 text-xs tracking-tight leading-snug">${fullName}</span>
+            <span class="text-[11px] font-normal text-slate-500 dark:text-slate-400">${user.email}</span>
+          </div>
         </div>
       </td>
-      <td class="px-6 py-3.5 font-mono text-[11px] font-bold text-slate-500">
+      <td class="py-3 px-4 font-mono text-[11px] font-normal text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800/60 align-middle">
         ${user.employee_id}
       </td>
-      <td class="px-6 py-3.5">
+      <td class="py-3 px-4 border-b border-slate-100 dark:border-slate-800/60 align-middle">
         <div class="flex flex-col">
-          <span class="font-semibold text-slate-700 leading-snug">${deptName}</span>
-          <span class="text-[10px] text-slate-400 font-medium">${positionName}</span>
+          <span class="font-semibold text-slate-900 dark:text-slate-100 text-xs leading-snug">${deptName}</span>
+          <span class="text-[11px] font-normal text-slate-500 dark:text-slate-400">${positionName}</span>
         </div>
       </td>
-      <td class="px-6 py-3.5">
-        <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded-full border ${roleStyles}">
+      <td class="py-3 px-4 border-b border-slate-100 dark:border-slate-800/60 align-middle">
+        <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded-none border ${roleStyles}">
           ${roleName}
         </span>
       </td>
-      <td class="px-6 py-3.5">
-        <span class="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border ${statusStyles} flex items-center gap-1.5 w-fit">
+      <td class="py-3 px-4 border-b border-slate-100 dark:border-slate-800/60 align-middle">
+        <span class="text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-none border ${statusStyles} flex items-center gap-1.5 w-fit">
           ${dotStatus} ${user.status}
         </span>
       </td>
-      <td class="px-6 py-3.5 text-right whitespace-nowrap">
+      <td class="py-3 px-4 text-right whitespace-nowrap border-b border-slate-100 dark:border-slate-800/60 align-middle">
         <div class="inline-flex items-center space-x-1">
-          <button onclick="if(typeof openViewModal === 'function') openViewModal(${user.user_id})" class="text-slate-400 hover:text-brand-dark hover:bg-brand-light hover:border-brand-border/40 p-1.5 rounded-lg border border-transparent transition cursor-pointer" title="View Profile">
+          <button onclick="if(typeof openViewModal === 'function') openViewModal(${user.user_id})" class="text-slate-400 hover:text-brand-dark hover:bg-brand-light hover:border-brand-border/40 p-1.5 rounded-none border border-transparent transition cursor-pointer" title="View Profile">
             <i class="fa-solid fa-eye text-xs"></i>
           </button>
           ${canEdit ? `
-          <button onclick="if(typeof openEditModal === 'function') openEditModal(${user.user_id})" class="text-slate-400 hover:text-amber-600 hover:bg-amber-50 hover:border-amber-100 p-1.5 rounded-lg border border-transparent transition cursor-pointer" title="Edit Profile">
+          <button onclick="if(typeof openEditModal === 'function') openEditModal(${user.user_id})" class="text-slate-400 hover:text-amber-600 hover:bg-amber-50 hover:border-amber-100 p-1.5 rounded-none border border-transparent transition cursor-pointer" title="Edit Profile">
             <i class="fa-solid fa-pen text-xs"></i>
           </button>` : ''}
-          <button onclick="if(typeof openHistoryModal === 'function') openHistoryModal(${user.user_id})" class="text-slate-400 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-100 p-1.5 rounded-lg border border-transparent transition cursor-pointer" title="Security Audit Log">
+          <button onclick="if(typeof openHistoryModal === 'function') openHistoryModal(${user.user_id})" class="text-slate-400 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-100 p-1.5 rounded-none border border-transparent transition cursor-pointer" title="Security Audit Log">
             <i class="fa-solid fa-clock-rotate-left text-xs"></i>
           </button>
           ${canDelete ? `
-          <button onclick="if(typeof openArchiveUserModal === 'function') openArchiveUserModal(${user.user_id})" class="text-slate-400 hover:text-amber-600 hover:bg-amber-50 hover:border-amber-100 p-1.5 rounded-lg border border-transparent transition cursor-pointer ${user.status === 'Archived' ? 'opacity-40 cursor-not-allowed' : ''}" ${user.status === 'Archived' ? 'disabled' : ''} title="Archive User Account">
+          <button onclick="if(typeof openArchiveUserModal === 'function') openArchiveUserModal(${user.user_id})" class="text-slate-400 hover:text-amber-600 hover:bg-amber-50 hover:border-amber-100 p-1.5 rounded-none border border-transparent transition cursor-pointer ${user.status === 'Archived' ? 'opacity-40 cursor-not-allowed' : ''}" ${user.status === 'Archived' ? 'disabled' : ''} title="Archive User Account">
             <i class="fa-solid fa-box-archive text-xs"></i>
           </button>` : ''}
         </div>
@@ -227,7 +260,107 @@ function renderTable(usersList = systemUsers) {
 
   const pagEl = document.getElementById('paginationText');
   if (pagEl) {
-    pagEl.innerText = `Showing 1 to ${usersList.length} of ${systemUsers.length} profiles`;
+    pagEl.innerText = `Showing ${startIndex + 1} to ${endIndex} of ${totalItems} profiles`;
+  }
+  renderUserPaginationControls(totalItems, totalPages, currentUserPage);
+}
+
+// RENDER USER DIRECTORY PAGINATION CONTROLS
+function renderUserPaginationControls(totalItems, totalPages, currentPage) {
+  const prevBtn = document.getElementById('userPrevBtn');
+  const nextBtn = document.getElementById('userNextBtn');
+  const pageNumbersContainer = document.getElementById('userPageNumbers');
+
+  if (prevBtn) {
+    const isPrevDisabled = currentPage <= 1 || totalItems === 0;
+    prevBtn.disabled = isPrevDisabled;
+    if (isPrevDisabled) {
+      prevBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white text-slate-300 cursor-not-allowed transition";
+    } else {
+      prevBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 cursor-pointer transition";
+    }
+    prevBtn.onclick = () => {
+      if (!isPrevDisabled) window.changeUserDirectoryPage(currentPage - 1);
+    };
+  }
+
+  if (nextBtn) {
+    const isNextDisabled = currentPage >= totalPages || totalItems === 0;
+    nextBtn.disabled = isNextDisabled;
+    if (isNextDisabled) {
+      nextBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white text-slate-300 cursor-not-allowed transition";
+    } else {
+      nextBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 cursor-pointer transition";
+    }
+    nextBtn.onclick = () => {
+      if (!isNextDisabled) window.changeUserDirectoryPage(currentPage + 1);
+    };
+  }
+
+  if (pageNumbersContainer) {
+    pageNumbersContainer.innerHTML = '';
+    if (totalItems === 0) {
+      pageNumbersContainer.innerHTML = `<button class="px-3 py-1.5 rounded-none bg-brand-light border border-brand-border text-brand-dark font-extrabold shadow-2xs" disabled>1</button>`;
+      return;
+    }
+
+    let startPage = 1;
+    let endPage = totalPages;
+
+    if (totalPages > 7) {
+      if (currentPage <= 4) {
+        startPage = 1;
+        endPage = 5;
+      } else if (currentPage >= totalPages - 3) {
+        startPage = totalPages - 4;
+        endPage = totalPages;
+      } else {
+        startPage = currentPage - 2;
+        endPage = currentPage + 2;
+      }
+    }
+
+    if (startPage > 1) {
+      const firstBtn = document.createElement('button');
+      firstBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold cursor-pointer transition";
+      firstBtn.textContent = '1';
+      firstBtn.onclick = () => window.changeUserDirectoryPage(1);
+      pageNumbersContainer.appendChild(firstBtn);
+
+      if (startPage > 2) {
+        const dots = document.createElement('span');
+        dots.className = "px-1.5 text-slate-400 font-bold select-none";
+        dots.textContent = '...';
+        pageNumbersContainer.appendChild(dots);
+      }
+    }
+
+    for (let p = startPage; p <= endPage; p++) {
+      const pageBtn = document.createElement('button');
+      if (p === currentPage) {
+        pageBtn.className = "px-3 py-1.5 rounded-none bg-brand-light border border-brand-border text-brand-dark font-extrabold shadow-2xs cursor-pointer";
+      } else {
+        pageBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold cursor-pointer transition";
+      }
+      pageBtn.textContent = p;
+      pageBtn.onclick = () => window.changeUserDirectoryPage(p);
+      pageNumbersContainer.appendChild(pageBtn);
+    }
+
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        const dots = document.createElement('span');
+        dots.className = "px-1.5 text-slate-400 font-bold select-none";
+        dots.textContent = '...';
+        pageNumbersContainer.appendChild(dots);
+      }
+
+      const lastBtn = document.createElement('button');
+      lastBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold cursor-pointer transition";
+      lastBtn.textContent = totalPages;
+      lastBtn.onclick = () => window.changeUserDirectoryPage(totalPages);
+      pageNumbersContainer.appendChild(lastBtn);
+    }
   }
 }
 

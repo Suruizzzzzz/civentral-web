@@ -32,19 +32,6 @@ html:not(.dark) aside#sidebar .sidebar-logout-btn:hover {
   color: #dc2626 !important;
 }
 
-/* Sidebar Menu Hover Overrides in Light Mode */
-html:not(.dark) aside#sidebar a:hover,
-html:not(.dark) aside#sidebar button.dropdown-btn:hover {
-  background-color: #ffffff !important;
-  color: #176B87 !important;
-  border-color: rgba(180, 212, 255, 0.6) !important;
-  box-shadow: 0 1px 3px rgba(23, 107, 135, 0.08) !important;
-}
-
-html:not(.dark) aside#sidebar a:hover i,
-html:not(.dark) aside#sidebar button.dropdown-btn:hover i {
-  color: #176B87 !important;
-}
 
 /* Light Mode Card & Container Overrides */
 html:not(.dark) .role-metric-card,
@@ -161,30 +148,6 @@ html.dark aside#sidebar .sidebar-logout-btn:hover {
   color: #fda4af !important;
 }
 
-html.dark aside#sidebar a.bg-white,
-html.dark aside#sidebar button.bg-white {
-  background-color: #1e293b !important;
-  border-color: #334155 !important;
-  color: #86B6F6 !important;
-}
-
-/* Sidebar Menu Hover Overrides in Dark Mode */
-html.dark aside#sidebar a:hover,
-html.dark aside#sidebar button.dropdown-btn:hover,
-html.dark aside#sidebar [class*="hover:bg-white"]:hover {
-  background-color: rgba(30, 41, 59, 0.8) !important;
-  color: #86B6F6 !important;
-  border-color: rgba(51, 65, 85, 0.6) !important;
-}
-
-html.dark aside#sidebar a:hover i,
-html.dark aside#sidebar button.dropdown-btn:hover i {
-  color: #86B6F6 !important;
-}
-
-html.dark aside#sidebar i.text-brand-medium {
-  color: #86B6F6 !important;
-}
 
 html.dark main {
   background-color: #0b1329 !important;

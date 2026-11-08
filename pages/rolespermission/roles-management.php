@@ -11,20 +11,14 @@ include '../../includes/sidebar.php';
 
 <main class="flex-1 p-6 md:p-8 w-full space-y-6 overflow-y-auto relative pb-28 bg-[#F8FAFC]">
 
-  <!-- Breadcrumb & Page Header -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/60 pb-5">
+  <!-- Page Header -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/60 dark:border-slate-800 pb-5">
     <div class="space-y-1">
-      <div class="flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-slate-400">
-        <span>Role & Permissions</span>
-        <i class="fa-solid fa-chevron-right text-[8px] opacity-60"></i>
-        <span class="text-brand-dark">System Roles</span>
-      </div>
-      <h1 class="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2.5 mt-4">
-        <i class="fa-solid fa-user-shield text-brand-dark"></i>
+      <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
         System Role Management
       </h1>
-      <p class="text-xs text-slate-500 max-w-2xl leading-relaxed">
-        Define, configure, and manage system access roles, role prefixes, global access permissions, and system role protection based on the CIVENTRAL database schema.
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-normal max-w-2xl leading-relaxed">
+        Define, configure, and manage system access roles, role prefixes, global access permissions, and system role protection based on the Civentral database schema.
       </p>
     </div>
 
@@ -34,7 +28,7 @@ include '../../includes/sidebar.php';
       <button 
         type="button"
         onclick="openCreateModal()" 
-        class="bg-[#86B6F6] hover:bg-[#6FA4EE] text-slate-900 font-bold px-4.5 py-2.5 rounded-xl text-xs transition duration-200 shadow-xs flex items-center gap-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#86B6F6]/30"
+        class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold tracking-wide rounded-none transition flex items-center space-x-2 shadow-xs cursor-pointer"
       >
         <i class="fa-solid fa-plus text-xs"></i>
         <span>Create New Role</span>
@@ -50,7 +44,7 @@ include '../../includes/sidebar.php';
     <div 
       onclick="filterByCard('ALL')" 
       id="cardTotalRoles"
-      class="role-metric-card active-card bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer relative overflow-hidden flex flex-col justify-between"
+      class="role-metric-card active-card bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-none p-5 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer relative overflow-hidden flex flex-col justify-between"
       title="Click to view all registered system roles"
     >
       <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 via-teal-500 to-brand-dark opacity-90 group-hover:h-1.5 transition-all duration-300"></div>
@@ -59,7 +53,7 @@ include '../../includes/sidebar.php';
           <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 group-hover:text-brand-dark dark:group-hover:text-cyan-400 transition-colors block">Total Registered Roles</span>
           <h3 id="statTotalRoles" class="text-3xl font-black text-slate-900 dark:text-white tracking-tight">0</h3>
         </div>
-        <div class="h-12 w-12 rounded-2xl bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-200/80 dark:border-cyan-800/50 flex items-center justify-center text-brand-dark dark:text-cyan-400 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shrink-0 shadow-xs">
+        <div class="h-12 w-12 rounded-none bg-cyan-50 dark:bg-cyan-950/60 border border-cyan-200/80 dark:border-cyan-800/50 flex items-center justify-center text-brand-dark dark:text-cyan-400 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shrink-0 shadow-xs">
           <i class="fa-solid fa-users-gear text-lg"></i>
         </div>
       </div>
@@ -78,7 +72,7 @@ include '../../includes/sidebar.php';
     <div 
       onclick="filterByCard('GLOBAL')" 
       id="cardGlobalRoles"
-      class="role-metric-card bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer relative overflow-hidden flex flex-col justify-between"
+      class="role-metric-card bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-none p-5 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer relative overflow-hidden flex flex-col justify-between"
       title="Click to filter Global Scope Roles"
     >
       <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-600 opacity-90 group-hover:h-1.5 transition-all duration-300"></div>
@@ -87,7 +81,7 @@ include '../../includes/sidebar.php';
           <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors block">Global Scope Roles</span>
           <h3 id="statGlobalRoles" class="text-3xl font-black text-blue-600 dark:text-blue-400 tracking-tight">0</h3>
         </div>
-        <div class="h-12 w-12 rounded-2xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-800/50 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shrink-0 shadow-xs">
+        <div class="h-12 w-12 rounded-none bg-blue-50 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-800/50 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shrink-0 shadow-xs">
           <i class="fa-solid fa-globe text-lg"></i>
         </div>
       </div>
@@ -106,7 +100,7 @@ include '../../includes/sidebar.php';
     <div 
       onclick="filterByCard('ACTIVE')" 
       id="cardActiveRoles"
-      class="role-metric-card bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer relative overflow-hidden flex flex-col justify-between"
+      class="role-metric-card bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-none p-5 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer relative overflow-hidden flex flex-col justify-between"
       title="Click to filter Active Status Roles"
     >
       <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 via-teal-500 to-emerald-600 opacity-90 group-hover:h-1.5 transition-all duration-300"></div>
@@ -115,7 +109,7 @@ include '../../includes/sidebar.php';
           <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors block">Active Status Roles</span>
           <h3 id="statActiveRoles" class="text-3xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight">0</h3>
         </div>
-        <div class="h-12 w-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/80 dark:border-emerald-800/50 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shrink-0 shadow-xs">
+        <div class="h-12 w-12 rounded-none bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200/80 dark:border-emerald-800/50 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shrink-0 shadow-xs">
           <i class="fa-solid fa-circle-check text-lg"></i>
         </div>
       </div>
@@ -134,7 +128,7 @@ include '../../includes/sidebar.php';
     <div 
       onclick="filterByCard('SYSTEM')" 
       id="cardSystemRoles"
-      class="role-metric-card bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer relative overflow-hidden flex flex-col justify-between"
+      class="role-metric-card bg-white dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-none p-5 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer relative overflow-hidden flex flex-col justify-between"
       title="Click to filter Protected System Core Roles"
     >
       <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-600 opacity-90 group-hover:h-1.5 transition-all duration-300"></div>
@@ -143,7 +137,7 @@ include '../../includes/sidebar.php';
           <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors block">Protected System Roles</span>
           <h3 id="statSystemRoles" class="text-3xl font-black text-amber-600 dark:text-amber-400 tracking-tight">0</h3>
         </div>
-        <div class="h-12 w-12 rounded-2xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200/80 dark:border-amber-800/50 flex items-center justify-center text-amber-600 dark:text-amber-400 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shrink-0 shadow-xs">
+        <div class="h-12 w-12 rounded-none bg-amber-50 dark:bg-amber-950/60 border border-amber-200/80 dark:border-amber-800/50 flex items-center justify-center text-amber-600 dark:text-amber-400 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shrink-0 shadow-xs">
           <i class="fa-solid fa-lock text-lg"></i>
         </div>
       </div>
@@ -161,7 +155,7 @@ include '../../includes/sidebar.php';
   </div>
 
   <!-- Role Directory Table & Filters Workspace -->
-  <div class="bg-white border border-slate-200/80 rounded-2xl shadow-xs overflow-hidden space-y-4">
+  <div class="bg-white border border-slate-200/80 rounded-none shadow-xs overflow-hidden space-y-4">
     
     <!-- Control Panel & Filters Toolbar -->
     <div class="p-4 sm:p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-50/50">
@@ -173,7 +167,7 @@ include '../../includes/sidebar.php';
           id="roleSearchInput" 
           oninput="filterRoles()" 
           placeholder="Search roles by Name, Prefix (e.g. SADM), or Description..." 
-          class="pl-9 pr-3 py-2 border border-slate-200 rounded-xl text-xs w-full bg-white focus:outline-none focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/10 transition"
+          class="pl-9 pr-3 py-2 border border-slate-200 rounded-none text-xs w-full bg-white focus:outline-none focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/10 transition"
         >
       </div>
 
@@ -183,7 +177,7 @@ include '../../includes/sidebar.php';
         <select 
           id="globalAccessFilterSelect" 
           onchange="filterRoles()" 
-          class="px-3 py-2 border border-slate-200 rounded-xl text-xs bg-white text-slate-700 focus:outline-none focus:border-brand-medium transition cursor-pointer font-medium"
+          class="px-3 py-2 border border-slate-200 rounded-none text-xs bg-white text-slate-700 focus:outline-none focus:border-brand-medium transition cursor-pointer font-medium"
         >
           <option value="ALL">All Access Scopes</option>
           <option value="GLOBAL">Global City Access</option>
@@ -194,7 +188,7 @@ include '../../includes/sidebar.php';
         <select 
           id="statusFilterSelect" 
           onchange="filterRoles()" 
-          class="px-3 py-2 border border-slate-200 rounded-xl text-xs bg-white text-slate-700 focus:outline-none focus:border-brand-medium transition cursor-pointer font-medium"
+          class="px-3 py-2 border border-slate-200 rounded-none text-xs bg-white text-slate-700 focus:outline-none focus:border-brand-medium transition cursor-pointer font-medium"
         >
           <option value="ALL">All Statuses</option>
           <option value="Active">Active</option>
@@ -207,12 +201,12 @@ include '../../includes/sidebar.php';
     <div class="overflow-x-auto">
       <table class="w-full text-left border-collapse">
         <thead>
-          <tr class="bg-slate-50/80 border-b border-slate-200/80 text-[10px] font-black uppercase tracking-wider text-slate-400">
-            <th class="px-6 py-3.5">Role Designation & Prefix</th>
-            <th class="px-6 py-3.5">Scope Description & Access Level</th>
-            <th class="px-6 py-3.5">Created Date</th>
-            <th class="px-6 py-3.5 text-center">Status</th>
-            <th class="px-6 py-3.5 text-right">Actions</th>
+          <tr class="bg-slate-50/70 dark:bg-slate-800/40 border-b border-slate-200 dark:border-slate-800">
+            <th class="py-3 px-4 text-left text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Role Designation & Prefix</th>
+            <th class="py-3 px-4 text-left text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Scope Description & Access Level</th>
+            <th class="py-3 px-4 text-left text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Created Date</th>
+            <th class="py-3 px-4 text-center text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Status</th>
+            <th class="py-3 px-4 text-right text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
         <tbody id="rolesTableBody" class="divide-y divide-slate-100 text-xs font-medium">
@@ -226,12 +220,12 @@ include '../../includes/sidebar.php';
       <div id="rolesPaginationText">
         Showing 0 to 0 of 0 defined roles
       </div>
-      <div class="flex items-center space-x-1">
-        <button class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-400 cursor-not-allowed transition" disabled>
+      <div class="flex items-center space-x-1" id="rolesPaginationControls">
+        <button id="rolesPrevBtn" class="px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-400 cursor-not-allowed transition" disabled>
           <i class="fa-solid fa-chevron-left text-[9px]"></i>
         </button>
-        <button class="px-3 py-1.5 rounded-lg bg-brand-light border border-brand-border text-brand-dark font-extrabold shadow-2xs">1</button>
-        <button class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-400 cursor-not-allowed transition" disabled>
+        <div id="rolesPageNumbers" class="flex items-center space-x-1"></div>
+        <button id="rolesNextBtn" class="px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-400 cursor-not-allowed transition" disabled>
           <i class="fa-solid fa-chevron-right text-[9px]"></i>
         </button>
       </div>
@@ -245,12 +239,12 @@ include '../../includes/sidebar.php';
 
 <!-- 1. CREATE / EDIT ROLE MODAL -->
 <div id="roleModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/70 backdrop-blur-sm">
-  <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[85vh] my-auto overflow-hidden flex flex-col transform scale-95 transition-all duration-300 border border-slate-200">
+  <div class="bg-white rounded-none shadow-xl w-full max-w-lg max-h-[85vh] my-auto overflow-hidden flex flex-col transform scale-95 transition-all duration-300 border border-slate-200">
     
     <!-- Modal Header -->
     <div class="px-5 py-3.5 sm:px-6 sm:py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 shrink-0">
       <div class="flex items-center gap-2.5">
-        <div class="h-8 w-8 rounded-xl bg-brand-light border border-brand-border flex items-center justify-center text-brand-dark font-bold text-xs">
+        <div class="h-8 w-8 rounded-none bg-brand-light border border-brand-border flex items-center justify-center text-brand-dark font-bold text-xs">
           <i id="roleModalIcon" class="fa-solid fa-user-shield"></i>
         </div>
         <div>
@@ -274,7 +268,7 @@ include '../../includes/sidebar.php';
             required 
             oninput="autoGenerateRolePrefix(this.value)" 
             placeholder="e.g. Department Administrator" 
-            class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/10 transition font-medium"
+            class="w-full px-3.5 py-2.5 border border-slate-200 rounded-none text-xs text-slate-800 focus:outline-none focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/10 transition font-medium"
           >
         </div>
 
@@ -288,16 +282,16 @@ include '../../includes/sidebar.php';
             maxlength="10" 
             oninput="this.dataset.manual='true'" 
             placeholder="DADM" 
-            class="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-xs font-mono font-bold text-brand-dark bg-slate-50/50 uppercase focus:bg-white focus:outline-none focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/10 transition"
+            class="w-full px-3 py-2.5 border border-slate-200 rounded-none text-xs font-mono font-bold text-brand-dark bg-slate-50/50 uppercase focus:bg-white focus:outline-none focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/10 transition"
           >
         </div>
       </div>
 
       <!-- Global Access Toggle Checkbox -->
       <?php if (!empty($headerUser['is_superadmin'])): ?>
-      <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-3.5 space-y-1">
+      <div class="bg-slate-50 border border-slate-200/80 rounded-none p-3.5 space-y-1">
         <label class="flex items-center gap-2.5 cursor-pointer">
-          <input type="checkbox" id="roleIsGlobalAccess" class="h-4 w-4 rounded border-slate-300 text-brand-dark focus:ring-brand-dark/20 accent-brand-dark cursor-pointer">
+          <input type="checkbox" id="roleIsGlobalAccess" class="h-4 w-4 rounded-none border-slate-300 text-brand-dark focus:ring-brand-dark/20 accent-brand-dark cursor-pointer">
           <span class="text-xs font-extrabold text-slate-800">Grant Global City-Wide Access Scope</span>
         </label>
         <p class="text-[10px] text-slate-500 font-medium pl-6 leading-relaxed">
@@ -306,7 +300,7 @@ include '../../includes/sidebar.php';
       </div>
       <?php else: ?>
       <input type="hidden" id="roleIsGlobalAccess" value="0">
-      <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-3.5 space-y-1 opacity-65">
+      <div class="bg-slate-50 border border-slate-200/80 rounded-none p-3.5 space-y-1 opacity-65">
         <div class="flex items-center gap-2 text-slate-600 text-xs font-extrabold">
           <i class="fa-solid fa-lock text-slate-400"></i>
           <span>Global Access Scope (Superadmin Clearance Required)</span>
@@ -325,7 +319,7 @@ include '../../includes/sidebar.php';
           required 
           rows="3" 
           placeholder="Describe the functional scope, authorization boundaries, and unit operational duties for this role..." 
-          class="w-full p-3.5 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/10 transition leading-relaxed"
+          class="w-full p-3.5 border border-slate-200 rounded-none text-xs text-slate-800 focus:outline-none focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/10 transition leading-relaxed"
         ></textarea>
       </div>
 
@@ -335,7 +329,7 @@ include '../../includes/sidebar.php';
         <select 
           id="roleStatus" 
           required 
-          class="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-xs bg-white text-slate-800 focus:outline-none focus:border-brand-medium transition cursor-pointer font-bold"
+          class="w-full px-3 py-2.5 border border-slate-200 rounded-none text-xs bg-white text-slate-800 focus:outline-none focus:border-brand-medium transition cursor-pointer font-bold"
         >
           <option value="Active">Active</option>
           <option value="Inactive">Inactive</option>
@@ -347,13 +341,13 @@ include '../../includes/sidebar.php';
         <button 
           type="button" 
           onclick="closeModal('roleModal')" 
-          class="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold rounded-xl text-xs transition cursor-pointer"
+          class="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold rounded-none text-xs transition cursor-pointer"
         >
           Cancel
         </button>
         <button 
           type="submit" 
-          class="px-5 py-2 bg-[#86B6F6] hover:bg-[#6FA4EE] text-slate-900 font-bold rounded-xl text-xs transition shadow-xs cursor-pointer flex items-center gap-1.5"
+          class="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-none text-xs transition shadow-xs cursor-pointer flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-teal-500/40"
         >
           <i class="fa-solid fa-floppy-disk text-xs"></i>
           <span>Save Role</span>
@@ -367,7 +361,7 @@ include '../../includes/sidebar.php';
 
 <!-- 2. STATUS CHANGE CONFIRMATION MODAL -->
 <div id="statusConfirmModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/70 backdrop-blur-sm">
-  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[85vh] my-auto overflow-hidden transform scale-95 transition-all duration-300 border border-slate-200">
+  <div class="bg-white rounded-none shadow-xl w-full max-w-md max-h-[85vh] my-auto overflow-hidden transform scale-95 transition-all duration-300 border border-slate-200">
     
     <div class="bg-slate-900 text-white px-5 py-3.5 sm:px-6 sm:py-4 flex items-center justify-between shrink-0">
       <div class="flex items-center space-x-2">
@@ -378,33 +372,26 @@ include '../../includes/sidebar.php';
 
     <div class="p-6 space-y-4">
       <div class="flex items-start gap-3.5">
-        <div class="h-10 w-10 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shrink-0 shadow-2xs">
+        <div class="h-10 w-10 rounded-none bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shrink-0 shadow-2xs">
           <i class="fa-solid fa-triangle-exclamation text-base"></i>
         </div>
         <div class="space-y-1">
           <h4 class="font-bold text-slate-900 text-xs">Deactivate Role Capabilities?</h4>
           <p id="statusConfirmMessage" class="text-xs text-slate-500 leading-relaxed">
-            Are you sure you want to deactivate this system role? All assigned users may lose active operational access permissions across CIVENTRAL network.
+            Are you sure you want to deactivate this system role? All assigned users may lose active operational access permissions across Civentral network.
           </p>
         </div>
       </div>
     </div>
 
     <div class="bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-end space-x-2">
-      <button type="button" onclick="closeModal('statusConfirmModal')" class="border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer">Cancel</button>
-      <button type="button" onclick="executeStatusDeactivate()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer shadow-xs">Deactivate Role</button>
+      <button type="button" onclick="closeModal('statusConfirmModal')" class="border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 px-4 py-2 rounded-none text-xs font-bold transition cursor-pointer">Cancel</button>
+      <button type="button" onclick="executeStatusDeactivate()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-none text-xs font-bold transition cursor-pointer shadow-xs">Deactivate Role</button>
     </div>
 
   </div>
 </div>
 
-<!-- TOAST POPUP NOTIFICATION CONTAINER -->
-<div id="toast" class="fixed bottom-4 right-4 z-50 bg-slate-900 text-white text-xs font-bold px-4 py-3.5 rounded-xl shadow-lg flex items-center gap-3 transform translate-y-4 opacity-0 pointer-events-none transition-all duration-300">
-  <div class="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[10px]">
-    <i class="fa-solid fa-check"></i>
-  </div>
-  <span id="toastMsg" class="tracking-wide">Action executed successfully.</span>
-</div>
 
 <script src="<?php echo $basePath ?? '../'; ?>assets/js/rolespermission/roles-management.js"></script>
 

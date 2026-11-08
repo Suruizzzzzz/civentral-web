@@ -11,19 +11,13 @@ include '../../includes/sidebar.php';
 
 <main class="flex-1 p-6 md:p-8 w-full space-y-6 overflow-y-auto relative pb-28 bg-[#F8FAFC]">
 
-  <!-- Breadcrumb & Page Header -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/60 pb-5">
+  <!-- Page Header -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/60 dark:border-slate-800 pb-5">
     <div class="space-y-1">
-      <div class="flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-slate-400">
-        <span>Role & Permissions</span>
-        <i class="fa-solid fa-chevron-right text-[8px] opacity-60"></i>
-        <span class="text-brand-dark">Module Management</span>
-      </div>
-      <h1 class="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2.5 mt-4">
-        <i class="fa-solid fa-cubes text-brand-dark"></i>
+      <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
         System Module Management
       </h1>
-      <p class="text-xs text-slate-500 max-w-2xl leading-relaxed">
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-normal max-w-2xl leading-relaxed">
         Define, structure, and categorize central platform modules to serve as the foundation for Role-Based Access Control (RBAC).
       </p>
     </div>
@@ -34,7 +28,7 @@ include '../../includes/sidebar.php';
       <button 
         type="button"
         onclick="openCreateModuleModal()" 
-        class="bg-[#86B6F6] hover:bg-[#6FA4EE] text-slate-900 font-bold px-4.5 py-2.5 rounded-xl text-xs transition duration-200 shadow-xs flex items-center gap-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#86B6F6]/30"
+        class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold tracking-wide rounded-none transition flex items-center space-x-2 shadow-xs cursor-pointer"
       >
         <i class="fa-solid fa-plus text-xs"></i>
         <span>Create New Module</span>
@@ -46,37 +40,37 @@ include '../../includes/sidebar.php';
   <!-- RBAC Overview Metric Cards (3 columns) -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
     <!-- Total System Modules -->
-    <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs flex items-center justify-between">
+    <div class="bg-white border border-slate-200/80 rounded-none p-5 shadow-xs flex items-center justify-between">
       <div class="space-y-1">
         <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Total Registered</span>
         <h3 id="metricTotalModules" class="text-2xl font-black text-slate-900 tracking-tight">12</h3>
         <p class="text-[11px] text-slate-500 font-medium">System Modules Registered</p>
       </div>
-      <div class="h-12 w-12 rounded-2xl bg-brand-light border border-brand-border/60 flex items-center justify-center text-brand-dark shrink-0">
+      <div class="h-12 w-12 rounded-none bg-brand-light border border-brand-border/60 flex items-center justify-center text-brand-dark shrink-0">
         <i class="fa-solid fa-cubes text-lg"></i>
       </div>
     </div>
 
     <!-- Active RBAC Scopes -->
-    <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs flex items-center justify-between">
+    <div class="bg-white border border-slate-200/80 rounded-none p-5 shadow-xs flex items-center justify-between">
       <div class="space-y-1">
         <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Active Scopes</span>
         <h3 id="metricActiveModules" class="text-2xl font-black text-emerald-600 tracking-tight">10</h3>
         <p class="text-[11px] text-slate-500 font-medium">Active Functional Modules</p>
       </div>
-      <div class="h-12 w-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+      <div class="h-12 w-12 rounded-none bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
         <i class="fa-solid fa-circle-check text-lg"></i>
       </div>
     </div>
 
     <!-- Inactive & Archived Modules -->
-    <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs flex items-center justify-between">
+    <div class="bg-white border border-slate-200/80 rounded-none p-5 shadow-xs flex items-center justify-between">
       <div class="space-y-1">
         <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Inactive & Archived</span>
         <h3 id="metricInactiveModules" class="text-2xl font-black text-amber-600 tracking-tight">2</h3>
         <p class="text-[11px] text-slate-500 font-medium">Inactive or Archived Modules</p>
       </div>
-      <div class="h-12 w-12 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shrink-0">
+      <div class="h-12 w-12 rounded-none bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shrink-0">
         <i class="fa-solid fa-box-archive text-lg"></i>
       </div>
     </div>
@@ -92,7 +86,7 @@ include '../../includes/sidebar.php';
     >
       <i class="fa-solid fa-list-check text-xs"></i>
       <span>Active Modules</span>
-      <span id="tabActiveModulesBadge" class="px-2 py-0.5 text-[10px] font-black rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">0</span>
+      <span id="tabActiveModulesBadge" class="px-2 py-0.5 text-[10px] font-black rounded-none bg-emerald-50 text-emerald-700 border border-emerald-200">0</span>
     </button>
     
     <button 
@@ -103,12 +97,12 @@ include '../../includes/sidebar.php';
     >
       <i class="fa-solid fa-box-archive text-xs"></i>
       <span>Archived Modules</span>
-      <span id="tabArchivedModulesBadge" class="px-2 py-0.5 text-[10px] font-black rounded-full bg-slate-100 text-slate-600 border border-slate-200">0</span>
+      <span id="tabArchivedModulesBadge" class="px-2 py-0.5 text-[10px] font-black rounded-none bg-slate-100 text-slate-600 border border-slate-200">0</span>
     </button>
   </div>
 
   <!-- Module Directory Workspace -->
-  <div class="bg-white border border-slate-200/80 rounded-2xl shadow-xs overflow-hidden space-y-4">
+  <div class="bg-white border border-slate-200/80 rounded-none shadow-xs overflow-hidden space-y-4">
     
     <!-- Table Toolbar / Filters -->
     <div class="p-4 sm:p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-50/50">
@@ -119,7 +113,7 @@ include '../../includes/sidebar.php';
           id="moduleSearchInput" 
           oninput="filterModules()" 
           placeholder="Search modules by Module Name..." 
-          class="pl-9 pr-3 py-2 border border-slate-200 rounded-xl text-xs w-full bg-white focus:outline-none focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/10 transition"
+          class="pl-9 pr-3 py-2 border border-slate-200 rounded-none text-xs w-full bg-white focus:outline-none focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/10 transition"
         >
       </div>
 
@@ -129,7 +123,7 @@ include '../../includes/sidebar.php';
           type="button" 
           id="bulkDeleteBtn" 
           onclick="openDeleteConfirmModal()" 
-          class="hidden bg-rose-600 hover:bg-rose-700 text-white font-bold px-3.5 py-2 rounded-xl text-xs flex items-center gap-2 transition cursor-pointer shadow-2xs"
+          class="hidden bg-rose-600 hover:bg-rose-700 text-white font-bold px-3.5 py-2 rounded-none text-xs flex items-center gap-2 transition cursor-pointer shadow-2xs"
         >
           <i class="fa-solid fa-trash text-xs"></i>
           <span>Delete Selected (<span id="selectedCount">0</span>)</span>
@@ -139,7 +133,7 @@ include '../../includes/sidebar.php';
         <select 
           id="statusFilterSelect" 
           onchange="filterModules()" 
-          class="px-3 py-2 border border-slate-200 rounded-xl text-xs bg-white text-slate-700 focus:outline-none focus:border-brand-medium transition cursor-pointer"
+          class="px-3 py-2 border border-slate-200 rounded-none text-xs bg-white text-slate-700 focus:outline-none focus:border-brand-medium transition cursor-pointer"
         >
           <option value="ALL">All Statuses</option>
           <option value="Active">Active</option>
@@ -153,16 +147,16 @@ include '../../includes/sidebar.php';
     <div class="overflow-x-auto">
       <table class="w-full text-left border-collapse">
         <thead>
-          <tr id="moduleTableHeader" class="bg-slate-50/80 border-b border-slate-200/80 text-[10px] font-black uppercase tracking-wider text-slate-400">
-            <th id="checkboxTh" class="px-4 py-3.5 w-10 text-center hidden">
+          <tr id="moduleTableHeader" class="bg-slate-50/70 dark:bg-slate-800/40 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <th id="checkboxTh" class="py-3 px-4 w-10 text-center hidden">
               <input type="checkbox" id="selectAllArchived" onchange="toggleSelectAllArchived(this)" class="rounded border-slate-300 text-rose-600 focus:ring-rose-500 cursor-pointer">
             </th>
-            <th class="px-6 py-3.5">Module Name</th>
-            <th class="px-6 py-3.5">Description</th>
-            <th class="px-6 py-3.5 text-center">Status</th>
-            <th class="px-6 py-3.5">Created At</th>
-            <th class="px-6 py-3.5">Updated At</th>
-            <th class="px-6 py-3.5 text-right">Actions</th>
+            <th class="py-3 px-4">Module Name</th>
+            <th class="py-3 px-4">Description</th>
+            <th class="py-3 px-4 text-center">Status</th>
+            <th class="py-3 px-4">Created At</th>
+            <th class="py-3 px-4">Updated At</th>
+            <th class="py-3 px-4 text-right">Actions</th>
           </tr>
         </thead>
         <tbody id="moduleTableBody" class="divide-y divide-slate-100 text-xs font-medium">
@@ -184,13 +178,13 @@ include '../../includes/sidebar.php';
         Showing <span id="modulePaginationStart" class="font-bold text-brand-dark">0</span> to <span id="modulePaginationEnd" class="font-bold text-brand-dark">0</span> of <span id="modulePaginationTotal" class="font-bold text-brand-dark">0</span> modules
       </div>
       <div class="flex items-center gap-1.5" id="modulePaginationControls">
-        <button id="modulePrevPageBtn" onclick="changeModulePage(-1)" class="px-3 py-1.5 border border-slate-200 rounded-xl bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-2xs">
+        <button id="modulePrevPageBtn" onclick="changeModulePage(-1)" class="px-3 py-1.5 border border-slate-200 rounded-none bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-2xs">
           <i class="fa-solid fa-chevron-left text-[10px]"></i> Previous
         </button>
         <div id="modulePageNumbers" class="flex items-center gap-1 font-bold text-xs">
           <!-- Dynamic Page Numbers -->
         </div>
-        <button id="moduleNextPageBtn" onclick="changeModulePage(1)" class="px-3 py-1.5 border border-slate-200 rounded-xl bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-2xs">
+        <button id="moduleNextPageBtn" onclick="changeModulePage(1)" class="px-3 py-1.5 border border-slate-200 rounded-none bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-2xs">
           Next <i class="fa-solid fa-chevron-right text-[10px]"></i>
         </button>
       </div>
@@ -202,12 +196,12 @@ include '../../includes/sidebar.php';
 
 <!-- MODAL 1: CREATE / EDIT MODULE MODAL -->
 <div id="moduleModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 bg-slate-900/70 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300">
-  <div class="bg-white border border-slate-200 rounded-2xl shadow-xl w-full max-w-lg max-h-[85vh] my-auto overflow-hidden flex flex-col transform scale-95 transition-all duration-300" id="moduleModalCard">
+  <div class="bg-white border border-slate-200 rounded-none shadow-xl w-full max-w-lg max-h-[85vh] my-auto overflow-hidden flex flex-col transform scale-95 transition-all duration-300" id="moduleModalCard">
     
     <!-- Modal Header -->
     <div class="px-5 py-3.5 sm:px-6 sm:py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 shrink-0">
       <div class="flex items-center gap-2.5">
-        <div class="h-8 w-8 rounded-xl bg-brand-light border border-brand-border flex items-center justify-center text-brand-dark font-bold text-xs">
+        <div class="h-8 w-8 rounded-none bg-brand-light border border-brand-border flex items-center justify-center text-brand-dark font-bold text-xs">
           <i class="fa-solid fa-cubes"></i>
         </div>
         <div>
@@ -229,7 +223,7 @@ include '../../includes/sidebar.php';
           id="moduleName" 
           required 
           placeholder="e.g. Health Services" 
-          class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/10 transition"
+          class="w-full px-3.5 py-2.5 border border-slate-200 rounded-none text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/10 transition"
         >
       </div>
 
@@ -241,7 +235,7 @@ include '../../includes/sidebar.php';
           <select 
             id="moduleStatus" 
             required 
-            class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs bg-white text-slate-800 focus:outline-none focus:border-brand-medium transition cursor-pointer"
+            class="w-full px-3.5 py-2.5 border border-slate-200 rounded-none text-xs bg-white text-slate-800 focus:outline-none focus:border-brand-medium transition cursor-pointer"
           >
             <option value="Active">Active</option>
             <option value="Inactive">Inactive</option>
@@ -257,7 +251,7 @@ include '../../includes/sidebar.php';
             readonly 
             disabled 
             placeholder="Auto-generated on save" 
-            class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs text-slate-500 bg-slate-50 font-mono cursor-not-allowed"
+            class="w-full px-3.5 py-2.5 border border-slate-200 rounded-none text-xs text-slate-500 bg-slate-50 font-mono cursor-not-allowed"
           >
         </div>
       </div>
@@ -271,7 +265,7 @@ include '../../includes/sidebar.php';
           id="moduleDesc" 
           rows="3" 
           placeholder="Describe the functional scope and operational purpose of this system module..." 
-          class="w-full p-3.5 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/10 transition leading-relaxed"
+          class="w-full p-3.5 border border-slate-200 rounded-none text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/10 transition leading-relaxed"
         ></textarea>
       </div>
 
@@ -280,13 +274,13 @@ include '../../includes/sidebar.php';
         <button 
           type="button" 
           onclick="closeModuleModal()" 
-          class="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold rounded-xl text-xs transition cursor-pointer"
+          class="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold rounded-none text-xs transition cursor-pointer"
         >
           Cancel
         </button>
         <button 
           type="submit" 
-          class="px-5 py-2 bg-[#86B6F6] hover:bg-[#6FA4EE] text-slate-900 font-bold rounded-xl text-xs transition shadow-xs cursor-pointer flex items-center gap-1.5"
+          class="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-none text-xs transition shadow-xs cursor-pointer flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-teal-500/40"
         >
           <i class="fa-solid fa-floppy-disk text-xs"></i>
           <span>Save Module</span>
@@ -300,11 +294,11 @@ include '../../includes/sidebar.php';
 
 <!-- MODAL 2: CONFIRM ARCHIVE MODAL -->
 <div id="archiveModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 bg-slate-900/70 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300">
-  <div class="bg-white border border-slate-200 rounded-2xl shadow-xl w-full max-w-md max-h-[85vh] my-auto overflow-y-auto transform scale-95 transition-all duration-300" id="archiveModalCard">
+  <div class="bg-white border border-slate-200 rounded-none shadow-xl w-full max-w-md max-h-[85vh] my-auto overflow-y-auto transform scale-95 transition-all duration-300" id="archiveModalCard">
     <div class="p-6 space-y-4 text-center">
       
       <!-- Warning Icon -->
-      <div class="h-14 w-14 rounded-2xl bg-amber-50 border border-amber-100 text-amber-600 flex items-center justify-center mx-auto text-xl shadow-2xs">
+      <div class="h-14 w-14 rounded-none bg-amber-50 border border-amber-100 text-amber-600 flex items-center justify-center mx-auto text-xl shadow-2xs">
         <i class="fa-solid fa-triangle-exclamation"></i>
       </div>
 
@@ -314,9 +308,9 @@ include '../../includes/sidebar.php';
       </div>
 
       <!-- Warning Callout Box -->
-      <div class="bg-amber-50/80 border border-amber-200/80 rounded-xl p-3.5 text-left text-xs leading-relaxed text-amber-800 flex items-start gap-2.5">
+      <div class="bg-amber-50/80 border border-amber-200/80 rounded-none p-3.5 text-left text-xs leading-relaxed text-amber-800 flex items-start gap-2.5">
         <i class="fa-solid fa-circle-exclamation text-amber-600 text-sm mt-0.5 shrink-0"></i>
-        <span>Archiving this module will restrict all RBAC role permissions associated with it across the CIVENTRAL network.</span>
+        <span>Archiving this module will restrict all RBAC role permissions associated with it across the Civentral network.</span>
       </div>
 
       <!-- Action Buttons -->
@@ -324,14 +318,14 @@ include '../../includes/sidebar.php';
         <button 
           type="button" 
           onclick="closeArchiveModal()" 
-          class="w-1/2 py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold rounded-xl text-xs transition cursor-pointer"
+          class="w-1/2 py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold rounded-none text-xs transition cursor-pointer"
         >
           Cancel
         </button>
         <button 
           type="button" 
           onclick="confirmArchiveModule()" 
-          class="w-1/2 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-xs transition shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
+          class="w-1/2 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-none text-xs transition shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
         >
           <i class="fa-solid fa-box-archive text-xs"></i>
           <span>Confirm Archive</span>
@@ -344,11 +338,11 @@ include '../../includes/sidebar.php';
 
 <!-- MODAL 3: PERMANENT DELETE CONFIRMATION MODAL -->
 <div id="deleteConfirmModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 bg-slate-900/70 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300">
-  <div class="bg-white border border-slate-200 rounded-2xl shadow-xl w-full max-w-md max-h-[85vh] my-auto overflow-y-auto transform scale-95 transition-all duration-300" id="deleteConfirmModalCard">
+  <div class="bg-white border border-slate-200 rounded-none shadow-xl w-full max-w-md max-h-[85vh] my-auto overflow-y-auto transform scale-95 transition-all duration-300" id="deleteConfirmModalCard">
     <div class="p-6 space-y-4 text-center">
       
       <!-- Danger Icon -->
-      <div class="h-14 w-14 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 flex items-center justify-center mx-auto text-xl shadow-2xs">
+      <div class="h-14 w-14 rounded-none bg-rose-50 border border-rose-100 text-rose-600 flex items-center justify-center mx-auto text-xl shadow-2xs">
         <i class="fa-solid fa-trash-can"></i>
       </div>
 
@@ -358,7 +352,7 @@ include '../../includes/sidebar.php';
       </div>
 
       <!-- Warning Callout Box -->
-      <div class="bg-rose-50/80 border border-rose-200/80 rounded-xl p-3.5 text-left text-xs leading-relaxed text-rose-900 flex items-start gap-2.5">
+      <div class="bg-rose-50/80 border border-rose-200/80 rounded-none p-3.5 text-left text-xs leading-relaxed text-rose-900 flex items-start gap-2.5">
         <i class="fa-solid fa-triangle-exclamation text-rose-600 text-sm mt-0.5 shrink-0"></i>
         <span>This action will <strong>permanently delete</strong> the selected module(s) and all associated child resources and permissions from the database. This action <strong>cannot be undone</strong>.</span>
       </div>
@@ -368,14 +362,14 @@ include '../../includes/sidebar.php';
         <button 
           type="button" 
           onclick="closeDeleteConfirmModal()" 
-          class="w-1/2 py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold rounded-xl text-xs transition cursor-pointer"
+          class="w-1/2 py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold rounded-none text-xs transition cursor-pointer"
         >
           Cancel
         </button>
         <button 
           type="button" 
           onclick="confirmPermanentDelete()" 
-          class="w-1/2 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs transition shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
+          class="w-1/2 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-none text-xs transition shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
         >
           <i class="fa-solid fa-trash text-xs"></i>
           <span>Delete Permanently</span>
@@ -386,13 +380,6 @@ include '../../includes/sidebar.php';
   </div>
 </div>
 
-<!-- TOAST POPUP NOTIFICATION -->
-<div id="toast" class="fixed bottom-4 right-4 z-50 bg-slate-900 text-white text-xs font-bold px-4 py-3.5 rounded-xl shadow-lg flex items-center gap-3 transform translate-y-4 opacity-0 pointer-events-none transition-all duration-300">
-  <div class="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[10px]">
-    <i class="fa-solid fa-check"></i>
-  </div>
-  <span id="toastMsg" class="tracking-wide">Action executed successfully.</span>
-</div>
 
 <script src="<?php echo $basePath ?? '../'; ?>assets/js/rolespermission/module-management.js"></script>
 

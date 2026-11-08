@@ -2,6 +2,10 @@
 
 // FILTER ROLES IN REAL TIME
 function filterRoles() {
+  if (typeof window.resetRolePage === 'function') {
+    window.resetRolePage();
+  }
+
   const searchInput = document.getElementById('roleSearchInput');
   const globalAccessFilter = document.getElementById('globalAccessFilterSelect');
   const statusFilter = document.getElementById('statusFilterSelect');

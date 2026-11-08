@@ -1,5 +1,9 @@
 // Filter Directory Table
 function filterDepts() {
+  if (typeof window.resetDeptPage === 'function') {
+    window.resetDeptPage();
+  }
+
   const query = searchInput.value.toLowerCase().trim();
 
   const filtered = departmentsData.filter(dept => {

@@ -22,7 +22,7 @@ function applyUserScopeRules() {
           <p class="leading-relaxed text-amber-700">As a Department Administrator for <strong>${userDeptName}</strong>, your account creation scope is locked to your department. Available system access roles are restricted to roles for your department.</p>
         </div>
       `;
-      roleAlertBox.className = "bg-amber-50 border border-amber-200 text-amber-900 rounded-2xl p-4 flex items-start gap-3 shadow-xs transition duration-300";
+      roleAlertBox.className = "bg-amber-50 border border-amber-200 text-amber-900 rounded-none p-4 flex items-start gap-3 shadow-xs transition duration-300";
     }
 
     if (typeof fetchRolesForDepartment === 'function') {

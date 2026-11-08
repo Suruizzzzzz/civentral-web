@@ -1,51 +1,54 @@
-// Shared Toast
-// Responsible for displaying toast popup notifications across the profile module
+// Shared Toast Notification for Profile & Settings
 
-let sharedToastTimer = null;
-
-function showToast(message, type = 'success', subtitle = '') {
-  let toastId, msgId, subId, iconId;
-  
-  if (document.getElementById('settingsToast')) {
-    toastId = 'settingsToast'; msgId = 'settingsToastMsg'; subId = 'settingsToastSub'; iconId = 'settingsToastIcon';
-  } else if (document.getElementById('pwToast')) {
-    toastId = 'pwToast'; msgId = 'pwToastMsg'; subId = 'pwToastSub'; iconId = 'pwToastIcon';
-  } else if (document.getElementById('toast')) {
-    toastId = 'toast'; msgId = 'toastMsg'; subId = 'toastSub'; iconId = 'toastIcon';
-  } else {
-    return;
+function deriveModalTitle(msgStr, isErr, isWarn) {
+  if (isErr) {
+    if (/conflict|already exist|duplicate/i.test(msgStr)) return 'Conflict Detected';
+    if (/invalid|required|missing|provide/i.test(msgStr)) return 'Validation Error';
+    if (/unauthorized|forbidden|denied|permission/i.test(msgStr)) return 'Access Denied';
+    if (/not found/i.test(msgStr)) return 'Record Not Found';
+    return 'Action Failed';
   }
 
-  const toast = document.getElementById(toastId);
-  const toastMsg = document.getElementById(msgId);
-  const toastSub = document.getElementById(subId);
-  const toastIcon = document.getElementById(iconId);
+  if (isWarn) return 'Attention Required';
 
-  if (!toast || !toastMsg) return;
+  // Contextual Success Titles based on action verb
+  if (/created|registered|added/i.test(msgStr)) return 'Successfully Created';
+  if (/updated|modified|saved|changes/i.test(msgStr)) return 'Successfully Updated';
+  if (/deleted|removed|purged|archived/i.test(msgStr)) return 'Successfully Removed';
+  if (/status|activated|deactivated|enabled|disabled|locked|unlocked/i.test(msgStr)) return 'Status Updated';
+  if (/password|credential|reset/i.test(msgStr)) return 'Security Updated';
+  if (/imported|exported|downloaded/i.test(msgStr)) return 'Data Transfer Complete';
 
-  if (sharedToastTimer) clearTimeout(sharedToastTimer);
-
-  const configs = {
-    success: { iconClass: 'fa-check', iconBg: 'bg-emerald-500' },
-    error:   { iconClass: 'fa-xmark', iconBg: 'bg-rose-500' },
-    info:    { iconClass: 'fa-circle-info', iconBg: 'bg-blue-500' }
-  };
-
-  const cfg = configs[type] || configs.success;
-  
-  if (toastIcon) {
-    toastIcon.className = 'h-6 w-6 rounded-full ' + cfg.iconBg + ' flex items-center justify-center text-white text-[11px] shrink-0';
-    toastIcon.innerHTML = '<i class="fa-solid ' + cfg.iconClass + '"></i>';
-  }
-
-  toastMsg.textContent = message;
-  if (toastSub) toastSub.textContent = subtitle;
-
-  toast.classList.remove('translate-y-4', 'opacity-0', 'pointer-events-none');
-  toast.classList.add('translate-y-0', 'opacity-100');
-
-  sharedToastTimer = setTimeout(function() {
-    toast.classList.remove('translate-y-0', 'opacity-100');
-    toast.classList.add('translate-y-4', 'opacity-0', 'pointer-events-none');
-  }, 3500);
+  return 'Action Completed';
 }
+
+function showToast(message, isError = false) {
+  const msgStr = String(message || '');
+  const isErr = isError === true || isError === 'error' || isError === 'danger' || 
+                /error|failed|invalid|required|denied|conflict|exist|already/i.test(msgStr);
+  const isWarn = isError === 'warning';
+  const modalTitle = deriveModalTitle(msgStr, isErr, isWarn);
+
+  if (window.Swal) {
+    Swal.fire({
+      icon: isErr ? 'error' : (isWarn ? 'warning' : 'success'),
+      title: modalTitle,
+      text: msgStr,
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#0D9488', // Vibrant Teal
+      customClass: {
+        confirmButton: 'rounded-none px-6 py-2 font-medium tracking-wide shadow-none'
+      }
+    });
+  } else if (typeof window.swal === 'function') {
+    window.swal({
+      title: modalTitle,
+      text: msgStr,
+      icon: isErr ? 'error' : 'success',
+      button: 'OK'
+    });
+  } else {
+    alert(modalTitle + ': ' + msgStr);
+  }
+}
+window.showToast = showToast;

@@ -12,48 +12,42 @@ include '../../includes/sidebar.php';
 
 <main class="flex-1 p-6 md:p-8 w-full space-y-6 overflow-y-auto bg-slate-50">
 
-  <!-- Breadcrumb & Page Header -->
-  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-200/80 dark:border-slate-700/80 pb-5">
-    <div class="space-y-1.5">
-      <div class="flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400">
-        <span>Audit Logs</span>
-        <i class="fa-solid fa-chevron-right text-[8px] opacity-60"></i>
-        <span class="text-slate-900 dark:text-slate-200">User Activities Audit System</span>
-      </div>
-      <h1 class="text-2xl font-black text-slate-950 dark:text-white tracking-tight flex items-center gap-2.5 mt-4">
-        <i class="fa-solid fa-clock-rotate-left text-[#176B87] dark:text-[#86B6F6] shrink-0"></i>
-        <span>User Activities Audit System</span>
+  <!-- Page Header -->
+  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-200/80 dark:border-slate-800 pb-5">
+    <div class="space-y-1">
+      <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+        User Activities Audit System
       </h1>
-      <p class="text-xs text-slate-500 dark:text-slate-400 max-w-3xl leading-relaxed font-medium">
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-normal max-w-3xl leading-relaxed">
         Monitor and review decentralized operational actions, security mutations, and system transactions across all municipal divisions.
       </p>
     </div>
     
     <!-- Action Controls (Top Right) -->
     <div class="flex items-center gap-2.5 shrink-0 flex-wrap">
-      <button onclick="refreshLogs()" class="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 border border-[#B4D4FF] text-[#176B87] bg-[#EEF5FF] hover:bg-[#86B6F6]/20 font-bold rounded-xl text-xs tracking-wide transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#86B6F6]/40 shadow-sm dark:bg-slate-800 dark:border-slate-600 dark:text-[#86B6F6] dark:hover:bg-slate-700">
+      <button onclick="refreshLogs()" class="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 border border-[#B4D4FF] text-[#176B87] bg-[#EEF5FF] hover:bg-[#86B6F6]/20 font-bold rounded-none text-xs tracking-wide transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#86B6F6]/40 shadow-sm dark:bg-slate-800 dark:border-slate-600 dark:text-[#86B6F6] dark:hover:bg-slate-700">
         <i class="fa-solid fa-rotate text-[#86B6F6]"></i>
         <span>Refresh Log</span>
       </button>
 
       <div class="relative inline-block text-left" id="exportDropdownContainer">
         <button id="exportDropdownBtn" onclick="toggleExportDropdown(event)"
-          class="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl text-xs tracking-wide transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-400/50 shadow-sm">
+          class="inline-flex items-center justify-center gap-2 px-3.5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-none text-xs tracking-wide transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-400/50 shadow-sm">
           <i class="fa-solid fa-file-export"></i>
           <span>Export Logs</span>
           <i class="fa-solid fa-chevron-down text-[9px] opacity-75"></i>
         </button>
         <!-- Dropdown Card -->
-        <div id="exportDropdownMenu" class="hidden absolute right-0 mt-2 w-52 bg-white border border-[#B4D4FF] rounded-xl shadow-xl py-1.5 z-50 text-xs text-slate-600 transition-all transform scale-95 origin-top-right dark:bg-slate-800 dark:border-slate-600">
-          <a href="#" onclick="exportLogs('PDF', event)" class="flex items-center gap-2.5 px-4 py-2.5 hover:bg-[#EEF5FF] text-slate-700 transition font-bold rounded-lg mx-1 dark:text-slate-200 dark:hover:bg-slate-700">
+        <div id="exportDropdownMenu" class="hidden absolute right-0 mt-2 w-52 bg-white border border-[#B4D4FF] rounded-none shadow-xl py-1.5 z-50 text-xs text-slate-600 transition-all transform scale-95 origin-top-right dark:bg-slate-800 dark:border-slate-600">
+          <a href="#" onclick="exportLogs('PDF', event)" class="flex items-center gap-2.5 px-4 py-2.5 hover:bg-[#EEF5FF] text-slate-700 transition font-bold rounded-none mx-1 dark:text-slate-200 dark:hover:bg-slate-700">
             <i class="fa-solid fa-file-pdf text-red-500 text-sm"></i>
             <span>Export to PDF</span>
           </a>
-          <a href="#" onclick="exportLogs('Excel', event)" class="flex items-center gap-2.5 px-4 py-2.5 hover:bg-[#EEF5FF] text-slate-700 transition font-bold rounded-lg mx-1 dark:text-slate-200 dark:hover:bg-slate-700">
+          <a href="#" onclick="exportLogs('Excel', event)" class="flex items-center gap-2.5 px-4 py-2.5 hover:bg-[#EEF5FF] text-slate-700 transition font-bold rounded-none mx-1 dark:text-slate-200 dark:hover:bg-slate-700">
             <i class="fa-solid fa-file-excel text-emerald-600 text-sm"></i>
             <span>Export to Excel</span>
           </a>
-          <a href="#" onclick="exportLogs('CSV', event)" class="flex items-center gap-2.5 px-4 py-2.5 hover:bg-[#EEF5FF] text-slate-700 transition font-bold rounded-lg mx-1 dark:text-slate-200 dark:hover:bg-slate-700">
+          <a href="#" onclick="exportLogs('CSV', event)" class="flex items-center gap-2.5 px-4 py-2.5 hover:bg-[#EEF5FF] text-slate-700 transition font-bold rounded-none mx-1 dark:text-slate-200 dark:hover:bg-slate-700">
             <i class="fa-solid fa-file-csv text-emerald-500 text-sm"></i>
             <span>Download CSV</span>
           </a>
@@ -63,7 +57,7 @@ include '../../includes/sidebar.php';
   </div>
 
   <!-- Comprehensive Activity Filter Panel -->
-  <div class="bg-white border border-slate-200 rounded-2xl shadow-xs p-5 md:p-6 space-y-4">
+  <div class="bg-white border border-slate-200 rounded-none shadow-xs p-5 md:p-6 space-y-4">
     <div class="flex items-center justify-between border-b border-slate-100 pb-3">
       <div class="flex items-center gap-2 text-slate-900">
         <i class="fa-solid fa-sliders text-xs text-slate-400"></i>
@@ -85,7 +79,7 @@ include '../../includes/sidebar.php';
             <i class="fa-solid fa-calendar text-xs"></i>
           </span>
           <input type="date" id="filterDate" onchange="applyFilters()"
-            class="w-full bg-white border border-slate-200 text-slate-700 font-semibold text-xs rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:border-[#0f172a] focus:ring-2 focus:ring-[#0f172a]/10 transition">
+            class="w-full bg-white border border-slate-200 text-slate-700 font-semibold text-xs rounded-none pl-10 pr-4 py-2.5 focus:outline-none focus:border-[#0f172a] focus:ring-2 focus:ring-[#0f172a]/10 transition">
         </div>
       </div>
 
@@ -97,7 +91,7 @@ include '../../includes/sidebar.php';
             <i class="fa-solid fa-magnifying-glass text-xs"></i>
           </span>
           <input type="text" id="filterSearch" oninput="applyFilters()" placeholder="e.g. Joshua Suruiz, #ACT-90812..."
-            class="w-full bg-white border border-slate-200 text-slate-700 font-semibold text-xs rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:border-[#0f172a] focus:ring-2 focus:ring-[#0f172a]/10 transition placeholder-slate-400">
+            class="w-full bg-white border border-slate-200 text-slate-700 font-semibold text-xs rounded-none pl-10 pr-4 py-2.5 focus:outline-none focus:border-[#0f172a] focus:ring-2 focus:ring-[#0f172a]/10 transition placeholder-slate-400">
         </div>
       </div>
 
@@ -109,7 +103,7 @@ include '../../includes/sidebar.php';
             <i class="fa-solid fa-building text-xs"></i>
           </span>
           <select id="filterDepartment" onchange="applyFilters()"
-            class="w-full bg-white border border-slate-200 text-slate-700 font-semibold text-xs rounded-xl pl-10 pr-4 py-2.5 appearance-none focus:outline-none focus:border-[#0f172a] focus:ring-2 focus:ring-[#0f172a]/10 transition cursor-pointer">
+            class="w-full bg-white border border-slate-200 text-slate-700 font-semibold text-xs rounded-none pl-10 pr-4 py-2.5 appearance-none focus:outline-none focus:border-[#0f172a] focus:ring-2 focus:ring-[#0f172a]/10 transition cursor-pointer">
             <option value="All">All Departments</option>
             <option value="Education & Scholarship">Education & Scholarship</option>
             <option value="Health & Sanitation">Health & Sanitation</option>
@@ -130,7 +124,7 @@ include '../../includes/sidebar.php';
             <i class="fa-solid fa-cubes text-xs"></i>
           </span>
           <select id="filterModule" onchange="applyFilters()"
-            class="w-full bg-white border border-slate-200 text-slate-700 font-semibold text-xs rounded-xl pl-10 pr-4 py-2.5 appearance-none focus:outline-none focus:border-[#0f172a] focus:ring-2 focus:ring-[#0f172a]/10 transition cursor-pointer">
+            class="w-full bg-white border border-slate-200 text-slate-700 font-semibold text-xs rounded-none pl-10 pr-4 py-2.5 appearance-none focus:outline-none focus:border-[#0f172a] focus:ring-2 focus:ring-[#0f172a]/10 transition cursor-pointer">
             <option value="All">All Modules</option>
             <option value="User Management">User Management</option>
             <option value="Scholarship">Scholarship</option>
@@ -150,7 +144,7 @@ include '../../includes/sidebar.php';
             <i class="fa-solid fa-bolt text-xs"></i>
           </span>
           <select id="filterAction" onchange="applyFilters()"
-            class="w-full bg-white border border-slate-200 text-slate-700 font-semibold text-xs rounded-xl pl-10 pr-4 py-2.5 appearance-none focus:outline-none focus:border-[#0f172a] focus:ring-2 focus:ring-[#0f172a]/10 transition cursor-pointer">
+            class="w-full bg-white border border-slate-200 text-slate-700 font-semibold text-xs rounded-none pl-10 pr-4 py-2.5 appearance-none focus:outline-none focus:border-[#0f172a] focus:ring-2 focus:ring-[#0f172a]/10 transition cursor-pointer">
             <option value="All">All Actions</option>
             <option value="Create">Create</option>
             <option value="Update">Update</option>
@@ -172,7 +166,7 @@ include '../../includes/sidebar.php';
             <i class="fa-solid fa-shield-halved text-xs"></i>
           </span>
           <select id="filterStatus" onchange="applyFilters()"
-            class="w-full bg-white border border-slate-200 text-slate-700 font-semibold text-xs rounded-xl pl-10 pr-4 py-2.5 appearance-none focus:outline-none focus:border-[#0f172a] focus:ring-2 focus:ring-[#0f172a]/10 transition cursor-pointer">
+            class="w-full bg-white border border-slate-200 text-slate-700 font-semibold text-xs rounded-none pl-10 pr-4 py-2.5 appearance-none focus:outline-none focus:border-[#0f172a] focus:ring-2 focus:ring-[#0f172a]/10 transition cursor-pointer">
             <option value="All">All Statuses</option>
             <option value="Success">Success</option>
             <option value="Failed">Failed</option>
@@ -186,18 +180,18 @@ include '../../includes/sidebar.php';
   </div>
 
   <!-- System Audit Trail Datatable Card -->
-  <div class="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden flex flex-col">
+  <div class="bg-white border border-slate-200 rounded-none shadow-xs overflow-hidden flex flex-col">
     <div class="overflow-x-auto overflow-y-auto max-h-[600px] w-full custom-scrollbar">
       <table class="w-full text-left border-collapse min-w-[1000px]">
-        <thead class="sticky top-0 bg-slate-50 z-10 border-b border-slate-200 shadow-xs">
-          <tr>
-            <th class="py-3.5 px-5 text-[10px] font-black text-slate-400 uppercase tracking-wider">Activity ID</th>
-            <th class="py-3.5 px-5 text-[10px] font-black text-slate-400 uppercase tracking-wider">Date & Time</th>
-            <th class="py-3.5 px-5 text-[10px] font-black text-slate-400 uppercase tracking-wider">Actor Identity</th>
-            <th class="py-3.5 px-5 text-[10px] font-black text-slate-400 uppercase tracking-wider">Scope Location</th>
-            <th class="py-3.5 px-5 text-[10px] font-black text-slate-400 uppercase tracking-wider">Action & Details</th>
-            <th class="py-3.5 px-5 text-[10px] font-black text-slate-400 uppercase tracking-wider">Metadata Context</th>
-            <th class="py-3.5 px-5 text-[10px] font-black text-slate-400 uppercase tracking-wider text-center">Status</th>
+        <thead class="sticky top-0 z-10 border-b border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40">
+          <tr class="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <th class="py-3 px-4">Activity ID</th>
+            <th class="py-3 px-4">Date & Time</th>
+            <th class="py-3 px-4">Actor Identity</th>
+            <th class="py-3 px-4">Scope Location</th>
+            <th class="py-3 px-4">Action & Details</th>
+            <th class="py-3 px-4">Metadata Context</th>
+            <th class="py-3 px-4 text-center">Status</th>
           </tr>
         </thead>
         <tbody id="auditTableBody" class="divide-y divide-slate-100 text-xs">
@@ -221,13 +215,13 @@ include '../../includes/sidebar.php';
         Showing <span id="paginationStart" class="font-bold text-[#176B87] dark:text-[#86B6F6]">0</span> to <span id="paginationEnd" class="font-bold text-[#176B87] dark:text-[#86B6F6]">0</span> of <span id="paginationTotal" class="font-bold text-[#176B87] dark:text-[#86B6F6]">0</span> entries
       </div>
       <div class="flex items-center gap-1.5" id="paginationControls">
-        <button id="prevPageBtn" onclick="window.civAudit.userActivities.ui.changePage(-1)" class="px-3 py-1.5 border border-[#B4D4FF] rounded-xl bg-white hover:bg-[#EEF5FF] disabled:opacity-40 disabled:cursor-not-allowed text-[#176B87] font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-sm dark:bg-slate-800 dark:border-slate-600 dark:text-[#86B6F6] dark:hover:bg-slate-700">
+        <button id="prevPageBtn" onclick="window.civAudit.userActivities.ui.changePage(-1)" class="px-3 py-1.5 border border-[#B4D4FF] rounded-none bg-white hover:bg-[#EEF5FF] disabled:opacity-40 disabled:cursor-not-allowed text-[#176B87] font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-sm dark:bg-slate-800 dark:border-slate-600 dark:text-[#86B6F6] dark:hover:bg-slate-700">
           <i class="fa-solid fa-chevron-left text-[10px]"></i> Previous
         </button>
         <div id="pageNumbers" class="flex items-center gap-1 font-bold text-xs">
           <!-- Dynamic Page Numbers -->
         </div>
-        <button id="nextPageBtn" onclick="window.civAudit.userActivities.ui.changePage(1)" class="px-3 py-1.5 border border-[#B4D4FF] rounded-xl bg-white hover:bg-[#EEF5FF] disabled:opacity-40 disabled:cursor-not-allowed text-[#176B87] font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-sm dark:bg-slate-800 dark:border-slate-600 dark:text-[#86B6F6] dark:hover:bg-slate-700">
+        <button id="nextPageBtn" onclick="window.civAudit.userActivities.ui.changePage(1)" class="px-3 py-1.5 border border-[#B4D4FF] rounded-none bg-white hover:bg-[#EEF5FF] disabled:opacity-40 disabled:cursor-not-allowed text-[#176B87] font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-sm dark:bg-slate-800 dark:border-slate-600 dark:text-[#86B6F6] dark:hover:bg-slate-700">
           Next <i class="fa-solid fa-chevron-right text-[10px]"></i>
         </button>
       </div>
@@ -236,12 +230,12 @@ include '../../includes/sidebar.php';
 
   <!-- Detail Modal -->
   <div id="logDetailsModal" class="hidden fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[9999] overflow-y-auto p-4 sm:p-6 flex items-center justify-center transition-all duration-300">
-    <div id="modalCard" class="bg-white border border-slate-200 shadow-2xl rounded-2xl w-full max-w-xl max-h-[85vh] my-auto overflow-hidden flex flex-col transform scale-95 opacity-0 transition-all duration-300">
+    <div id="modalCard" class="bg-white border border-slate-200 shadow-2xl rounded-none w-full max-w-xl max-h-[85vh] my-auto overflow-hidden flex flex-col transform scale-95 opacity-0 transition-all duration-300">
       
       <!-- Modal Header -->
       <div class="px-5 py-3.5 sm:px-6 sm:py-4 border-b border-slate-200/80 bg-slate-50 flex items-center justify-between shrink-0">
         <div class="flex items-center gap-3">
-          <div class="h-9 w-9 rounded-xl bg-slate-905 flex items-center justify-center text-white bg-slate-900 text-sm shadow-sm">
+          <div class="h-9 w-9 rounded-none bg-slate-905 flex items-center justify-center text-white bg-slate-900 text-sm shadow-sm">
             <i class="fa-solid fa-receipt"></i>
           </div>
           <div>
@@ -254,8 +248,8 @@ include '../../includes/sidebar.php';
       <!-- Modal Content (Receipt layout) -->
       <div class="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1 custom-scrollbar">
         <!-- Status Indicator Banner -->
-        <div id="modalStatusBanner" class="p-4 rounded-xl flex items-center gap-3">
-          <div id="modalStatusIconContainer" class="h-8 w-8 rounded-lg flex items-center justify-center shrink-0">
+        <div id="modalStatusBanner" class="p-4 rounded-none flex items-center gap-3">
+          <div id="modalStatusIconContainer" class="h-8 w-8 rounded-none flex items-center justify-center shrink-0">
             <!-- Dynamic Icon -->
           </div>
           <div>
@@ -293,12 +287,12 @@ include '../../includes/sidebar.php';
           <div class="col-span-2">
             <span class="text-[9px] font-black uppercase tracking-wider text-slate-400 block mb-1">Action Performed</span>
             <div class="flex items-center gap-2 mt-1">
-              <span id="modalActionBadge" class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-black uppercase">Create</span>
+              <span id="modalActionBadge" class="inline-flex items-center px-1.5 py-0.5 rounded-none text-[9px] font-black uppercase">Create</span>
               <span id="modalActionDesc" class="font-extrabold text-slate-900 leading-snug">Created Department Admin Account</span>
             </div>
           </div>
 
-          <div class="col-span-2 grid grid-cols-2 gap-4 bg-slate-50 border border-slate-200/60 p-3.5 rounded-xl">
+          <div class="col-span-2 grid grid-cols-2 gap-4 bg-slate-50 border border-slate-200/60 p-3.5 rounded-none">
             <div>
               <span class="text-[9px] font-black uppercase tracking-wider text-slate-400 block mb-0.5">IP Address</span>
               <span id="modalIp" class="font-mono font-bold text-slate-700 text-xs">192.168.1.45</span>
@@ -319,16 +313,16 @@ include '../../includes/sidebar.php';
               Copy JSON
             </button>
           </div>
-          <pre class="bg-slate-900 text-slate-200 p-4 rounded-xl text-[10px] font-mono overflow-x-auto leading-relaxed border border-slate-800 shadow-inner max-h-48 custom-scrollbar"><code id="modalPayloadText">{}</code></pre>
+          <pre class="bg-slate-900 text-slate-200 p-4 rounded-none text-[10px] font-mono overflow-x-auto leading-relaxed border border-slate-800 shadow-inner max-h-48 custom-scrollbar"><code id="modalPayloadText">{}</code></pre>
         </div>
       </div>
 
       <!-- Modal Footer -->
       <div class="px-6 py-4 border-t border-slate-200/80 bg-slate-50 flex items-center justify-end gap-3 shrink-0">
-        <button onclick="closeLogDetailsModal()" class="px-4 py-2 border border-slate-200 text-slate-700 hover:bg-slate-100 font-bold rounded-xl text-xs tracking-wide transition cursor-pointer focus:outline-none">
+        <button onclick="closeLogDetailsModal()" class="px-4 py-2 border border-slate-200 text-slate-700 hover:bg-slate-100 font-bold rounded-none text-xs tracking-wide transition cursor-pointer focus:outline-none">
           Close Details
         </button>
-        <button onclick="printData()" class="px-4 py-2 bg-[#0f172a] hover:bg-[#1e3a8a] text-white font-bold rounded-xl text-xs tracking-wide transition flex items-center gap-1.5 cursor-pointer focus:outline-none shadow-sm">
+        <button onclick="printData()" class="px-4 py-2 bg-[#0f172a] hover:bg-[#1e3a8a] text-white font-bold rounded-none text-xs tracking-wide transition flex items-center gap-1.5 cursor-pointer focus:outline-none shadow-sm">
           <i class="fa-solid fa-print"></i>
           Print Log Entry
         </button>
@@ -337,8 +331,6 @@ include '../../includes/sidebar.php';
     </div>
   </div>
 
-  <!-- Toast Notification Container -->
-  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2"></div>
 
 </main>
 <script src="../../assets/js/audit/audit-export.js"></script>

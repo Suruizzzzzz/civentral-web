@@ -97,7 +97,7 @@ window.civAudit.userActivities.ui = {
         const isDark = document.documentElement.classList.contains('dark');
         const btn = document.createElement('button');
         btn.onclick = () => this.goToPage(p);
-        btn.className = `h-7 min-w-[28px] px-2 rounded-lg text-xs font-bold transition cursor-pointer ${
+        btn.className = `h-7 min-w-[28px] px-2 rounded-none text-xs font-bold transition cursor-pointer ${
           p === this.currentPage
             ? 'bg-[#86B6F6] text-white shadow-sm ring-2 ring-[#86B6F6]/30'
             : isDark
@@ -138,20 +138,20 @@ window.civAudit.userActivities.ui = {
       else if (item.action === 'Reject' || item.action === 'Delete') actionBadgeClass = 'bg-rose-50 text-rose-700 ring-1 ring-rose-600/20';
 
       let statusBadgeHTML = `
-        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20">
+        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-none text-[10px] font-bold bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20">
           <i class="fa-solid fa-circle-check text-[9px]"></i> Success
         </span>
       `;
       if (item.status !== 'Success') {
         statusBadgeHTML = `
-          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 ring-1 ring-rose-600/20">
+          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-none text-[10px] font-bold bg-rose-50 text-rose-700 ring-1 ring-rose-600/20">
             <i class="fa-solid fa-triangle-exclamation text-[9px]"></i> ${window.escapeHtml ? window.escapeHtml(item.status) : item.status}
           </span>
         `;
       }
 
       const tr = document.createElement('tr');
-      tr.className = 'hover:bg-slate-50/70 transition cursor-pointer';
+      tr.className = 'hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition cursor-pointer group';
       tr.setAttribute('onclick', 'window.civAudit.userActivities.modal.openLogDetailsModal(this)');
       tr.setAttribute('data-id', item.id);
       tr.setAttribute('data-date-time', item.dateTimeStr);
@@ -171,30 +171,30 @@ window.civAudit.userActivities.ui = {
       const esc = window.escapeHtml || (s => s);
 
       tr.innerHTML = `
-        <td class="py-4 px-5 font-mono text-[11px] font-bold text-slate-500">${esc(item.id)}</td>
-        <td class="py-4 px-5">
-          <div class="font-bold text-slate-800">${esc(item.datePart)}</div>
-          <div class="text-[10px] text-slate-400 font-semibold mt-0.5">${esc(item.timePart)}</div>
+        <td class="py-3 px-4 font-mono text-[11px] font-normal text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800/60 align-middle">${esc(item.id)}</td>
+        <td class="py-3 px-4 border-b border-slate-100 dark:border-slate-800/60 align-middle">
+          <div class="font-semibold text-slate-900 dark:text-slate-100 text-xs">${esc(item.datePart)}</div>
+          <div class="text-[11px] font-normal text-slate-500 dark:text-slate-400 mt-0.5">${esc(item.timePart)}</div>
         </td>
-        <td class="py-4 px-5">
-          <div class="font-bold text-slate-800">${esc(item.actor)}</div>
-          <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-black uppercase ${roleBadgeClass} mt-1">${esc(item.role)}</span>
+        <td class="py-3 px-4 border-b border-slate-100 dark:border-slate-800/60 align-middle">
+          <div class="font-semibold text-slate-900 dark:text-slate-100 text-xs">${esc(item.actor)}</div>
+          <span class="inline-flex items-center px-1.5 py-0.5 rounded-none text-[9px] font-bold uppercase ${roleBadgeClass} mt-1">${esc(item.role)}</span>
         </td>
-        <td class="py-4 px-5">
-          <div class="font-bold text-slate-800">${esc(item.department)}</div>
-          <div class="text-[10px] text-slate-400 font-semibold mt-0.5">${esc(item.module)}</div>
+        <td class="py-3 px-4 border-b border-slate-100 dark:border-slate-800/60 align-middle">
+          <div class="font-semibold text-slate-900 dark:text-slate-100 text-xs">${esc(item.department)}</div>
+          <div class="text-[11px] font-normal text-slate-500 dark:text-slate-400 mt-0.5">${esc(item.module)}</div>
         </td>
-        <td class="py-4 px-5">
+        <td class="py-3 px-4 border-b border-slate-100 dark:border-slate-800/60 align-middle">
           <div class="flex items-center gap-2">
-            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-black uppercase ${actionBadgeClass}">${esc(item.action)}</span>
-            <span class="font-bold text-slate-800">${esc(item.desc)}</span>
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded-none text-[9px] font-bold uppercase ${actionBadgeClass}">${esc(item.action)}</span>
+            <span class="text-xs text-slate-600 dark:text-slate-300 font-normal">${esc(item.desc)}</span>
           </div>
         </td>
-        <td class="py-4 px-5">
-          <div class="font-semibold text-slate-700 font-mono text-[11px]">${esc(item.ip)}</div>
-          <div class="text-[10px] text-slate-400 font-semibold mt-0.5">${esc(item.device)}</div>
+        <td class="py-3 px-4 border-b border-slate-100 dark:border-slate-800/60 align-middle">
+          <div class="text-[11px] font-mono text-slate-500 dark:text-slate-400 font-normal">${esc(item.ip)}</div>
+          <div class="text-[11px] font-normal text-slate-500 dark:text-slate-400 mt-0.5">${esc(item.device)}</div>
         </td>
-        <td class="py-4 px-5 text-center">
+        <td class="py-3 px-4 text-center border-b border-slate-100 dark:border-slate-800/60 align-middle">
           ${statusBadgeHTML}
         </td>
       `;

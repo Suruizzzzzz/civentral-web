@@ -1,12 +1,38 @@
 // ROLES MANAGEMENT UI
 
+// PAGINATION STATE
+let currentRolePage = 1;
+const rolePageSize = 10;
+let activeFilteredRoles = [];
+
+window.currentRolePage = currentRolePage;
+
+window.resetRolePage = function() {
+  currentRolePage = 1;
+  window.currentRolePage = 1;
+};
+
+window.changeRolePage = function(targetPage) {
+  currentRolePage = targetPage;
+  window.currentRolePage = targetPage;
+  renderRoles(activeFilteredRoles);
+};
+
 // RENDER ROLES TABLE BASED ON DATABASE FIELDS
 function renderRoles(dataToRender = systemRoles) {
+  activeFilteredRoles = dataToRender;
   const rolesTbody = document.getElementById('rolesTableBody');
   if (!rolesTbody) return;
   rolesTbody.innerHTML = '';
+
+  const totalItems = activeFilteredRoles.length;
+  const totalPages = Math.ceil(totalItems / rolePageSize) || 1;
+
+  if (currentRolePage > totalPages) currentRolePage = totalPages;
+  if (currentRolePage < 1) currentRolePage = 1;
+  window.currentRolePage = currentRolePage;
   
-  if (dataToRender.length === 0) {
+  if (totalItems === 0) {
     rolesTbody.innerHTML = `
       <tr>
         <td colspan="6" class="px-6 py-12 text-center text-slate-400 font-semibold">
@@ -17,15 +43,20 @@ function renderRoles(dataToRender = systemRoles) {
     `;
     const paginationEl = document.getElementById('rolesPaginationText');
     if (paginationEl) paginationEl.innerText = "Showing 0 to 0 of 0 defined roles";
+    renderRolesPaginationControls(0, 1, 1);
     if (typeof updateMetrics === 'function') updateMetrics();
     return;
   }
+
+  const startIndex = (currentRolePage - 1) * rolePageSize;
+  const endIndex = Math.min(startIndex + rolePageSize, totalItems);
+  const pageItems = activeFilteredRoles.slice(startIndex, endIndex);
 
   const isSuperAdmin = currentUserScope ? !!currentUserScope.is_superadmin : false;
   const grantedActions = currentUserScope ? (currentUserScope.granted_actions || []) : [];
   const canEdit = isSuperAdmin || grantedActions.includes('EDIT');
 
-  dataToRender.forEach(role => {
+  pageItems.forEach(role => {
     // Status Badge classes
     const statusStyles = role.status === 'Active' 
       ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
@@ -37,36 +68,36 @@ function renderRoles(dataToRender = systemRoles) {
 
     // Global Access Badge
     const globalAccessBadge = role.is_global_access
-      ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="fa-solid fa-globe text-[9px]"></i> Global Access</span>`
-      : `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200"><i class="fa-solid fa-building text-[9px]"></i> Department Scoped</span>`;
+      ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-none text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="fa-solid fa-globe text-[9px]"></i> Global Access</span>`
+      : `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-none text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200"><i class="fa-solid fa-building text-[9px]"></i> Department Scoped</span>`;
 
     // System Role Protection Badge
     const systemRoleBadge = role.is_system_role
-      ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-black bg-amber-50 text-amber-700 border border-amber-200" title="Protected System Role"><i class="fa-solid fa-lock text-[8px]"></i> System Core</span>`
-      : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-bold bg-slate-100 text-slate-600 border border-slate-200">Custom Role</span>`;
+      ? `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-none text-[9px] font-black bg-amber-50 text-amber-700 border border-amber-200" title="Protected System Role"><i class="fa-solid fa-lock text-[8px]"></i> System Core</span>`
+      : `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-none text-[9px] font-bold bg-slate-100 text-slate-600 border border-slate-200">Custom Role</span>`;
 
     const isChecked = role.status === 'Active' ? 'checked' : '';
 
     const tr = document.createElement('tr');
-    tr.className = 'hover:bg-slate-50/50 transition';
+    tr.className = 'hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition';
     tr.innerHTML = `
       <!-- Role Designation & Prefix -->
-      <td class="px-6 py-4">
+      <td class="py-3 px-4 text-xs text-slate-600 dark:text-slate-300 border-b border-slate-100 dark:border-slate-800/60 align-middle">
         <div class="flex items-center gap-3">
-          <div class="h-9 min-w-[2.25rem] px-2.5 rounded-xl bg-gradient-to-br from-brand-light to-blue-50 border border-brand-border/80 flex items-center justify-center text-brand-dark shrink-0 font-mono font-black text-xs tracking-wider shadow-2xs">
+          <div class="h-9 min-w-[2.25rem] px-2.5 rounded-none bg-gradient-to-br from-brand-light to-blue-50 border border-brand-border/80 flex items-center justify-center text-brand-dark shrink-0 font-mono font-bold text-xs tracking-wider shadow-2xs">
             ${role.role_prefix}
           </div>
           <div class="flex items-center gap-2">
-            <span class="font-extrabold text-slate-900 tracking-tight text-xs">${role.role_name}</span>
+            <span class="font-semibold text-slate-900 dark:text-slate-100 text-xs">${role.role_name}</span>
             ${systemRoleBadge}
           </div>
         </div>
       </td>
       
       <!-- Scope & Access Level -->
-      <td class="px-6 py-4">
+      <td class="py-3 px-4 text-xs text-slate-600 dark:text-slate-300 border-b border-slate-100 dark:border-slate-800/60 align-middle">
         <div class="space-y-1 max-w-xs">
-          <p class="text-[11px] text-slate-600 font-medium leading-relaxed">${role.description}</p>
+          ${role.description ? `<p class="text-[11px] font-normal text-slate-500 dark:text-slate-400 leading-relaxed">${role.description}</p>` : `<span class="italic text-[11px] text-slate-400 dark:text-slate-500">No description</span>`}
           <div class="pt-0.5">
             ${globalAccessBadge}
           </div>
@@ -74,20 +105,20 @@ function renderRoles(dataToRender = systemRoles) {
       </td>
 
       <!-- Created At -->
-      <td class="px-6 py-4 text-slate-500 font-mono text-[10px] font-bold">
+      <td class="py-3 px-4 text-[11px] font-normal text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800/60 align-middle font-mono">
         ${role.created_at}
       </td>
 
       <!-- Status Pill -->
-      <td class="px-6 py-4 text-center">
-        <span class="text-[10px] font-black uppercase px-2.5 py-1 rounded-full border ${statusStyles} inline-flex items-center gap-1.5">
+      <td class="py-3 px-4 text-center border-b border-slate-100 dark:border-slate-800/60 align-middle">
+        <span class="text-[10px] font-bold uppercase px-2.5 py-1 rounded-none border ${statusStyles} inline-flex items-center gap-1.5">
           ${dotPulse}
           <span>${role.status}</span>
         </span>
       </td>
 
       <!-- Actions -->
-      <td class="px-6 py-4 text-right whitespace-nowrap">
+      <td class="py-3 px-4 text-right whitespace-nowrap border-b border-slate-100 dark:border-slate-800/60 align-middle">
         <div class="inline-flex items-center space-x-3">
           ${canEdit ? `
           <!-- iOS Status Switch Toggle -->
@@ -97,7 +128,7 @@ function renderRoles(dataToRender = systemRoles) {
           </label>
 
           <!-- Edit button -->
-          <button type="button" onclick="if(typeof openEditModal === 'function') openEditModal(${role.role_id})" class="text-slate-400 hover:text-[#0f172a] hover:bg-slate-100 p-1.5 rounded-lg border border-slate-200 transition cursor-pointer" title="Edit Role Parameters">
+          <button type="button" onclick="if(typeof openEditModal === 'function') openEditModal(${role.role_id})" class="text-slate-400 hover:text-[#0f172a] hover:bg-slate-100 p-1.5 rounded-none border border-slate-200 transition cursor-pointer" title="Edit Role Parameters">
             <i class="fa-solid fa-pen-to-square text-xs"></i>
           </button>` : `<span class="text-[10px] text-slate-400 font-bold italic">Read-only</span>`}
         </div>
@@ -108,10 +139,110 @@ function renderRoles(dataToRender = systemRoles) {
 
   const paginationEl = document.getElementById('rolesPaginationText');
   if (paginationEl) {
-    paginationEl.innerText = `Showing 1 to ${dataToRender.length} of ${systemRoles.length} defined roles`;
+    paginationEl.innerText = `Showing ${startIndex + 1} to ${endIndex} of ${totalItems} defined roles`;
   }
 
+  renderRolesPaginationControls(totalItems, totalPages, currentRolePage);
   if (typeof updateMetrics === 'function') updateMetrics();
+}
+
+// RENDER ROLES PAGINATION CONTROLS
+function renderRolesPaginationControls(totalItems, totalPages, currentPage) {
+  const prevBtn = document.getElementById('rolesPrevBtn');
+  const nextBtn = document.getElementById('rolesNextBtn');
+  const pageNumbersContainer = document.getElementById('rolesPageNumbers');
+
+  if (prevBtn) {
+    const isPrevDisabled = currentPage <= 1 || totalItems === 0;
+    prevBtn.disabled = isPrevDisabled;
+    if (isPrevDisabled) {
+      prevBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white text-slate-300 cursor-not-allowed transition";
+    } else {
+      prevBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 cursor-pointer transition";
+    }
+    prevBtn.onclick = () => {
+      if (!isPrevDisabled) window.changeRolePage(currentPage - 1);
+    };
+  }
+
+  if (nextBtn) {
+    const isNextDisabled = currentPage >= totalPages || totalItems === 0;
+    nextBtn.disabled = isNextDisabled;
+    if (isNextDisabled) {
+      nextBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white text-slate-300 cursor-not-allowed transition";
+    } else {
+      nextBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 cursor-pointer transition";
+    }
+    nextBtn.onclick = () => {
+      if (!isNextDisabled) window.changeRolePage(currentPage + 1);
+    };
+  }
+
+  if (pageNumbersContainer) {
+    pageNumbersContainer.innerHTML = '';
+    if (totalItems === 0) {
+      pageNumbersContainer.innerHTML = `<button class="px-3 py-1.5 rounded-none bg-brand-light border border-brand-border text-brand-dark font-extrabold shadow-2xs" disabled>1</button>`;
+      return;
+    }
+
+    let startPage = 1;
+    let endPage = totalPages;
+
+    if (totalPages > 7) {
+      if (currentPage <= 4) {
+        startPage = 1;
+        endPage = 5;
+      } else if (currentPage >= totalPages - 3) {
+        startPage = totalPages - 4;
+        endPage = totalPages;
+      } else {
+        startPage = currentPage - 2;
+        endPage = currentPage + 2;
+      }
+    }
+
+    if (startPage > 1) {
+      const firstBtn = document.createElement('button');
+      firstBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold cursor-pointer transition";
+      firstBtn.textContent = '1';
+      firstBtn.onclick = () => window.changeRolePage(1);
+      pageNumbersContainer.appendChild(firstBtn);
+
+      if (startPage > 2) {
+        const dots = document.createElement('span');
+        dots.className = "px-1.5 text-slate-400 font-bold select-none";
+        dots.textContent = '...';
+        pageNumbersContainer.appendChild(dots);
+      }
+    }
+
+    for (let p = startPage; p <= endPage; p++) {
+      const pageBtn = document.createElement('button');
+      if (p === currentPage) {
+        pageBtn.className = "px-3 py-1.5 rounded-none bg-brand-light border border-brand-border text-brand-dark font-extrabold shadow-2xs cursor-pointer";
+      } else {
+        pageBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold cursor-pointer transition";
+      }
+      pageBtn.textContent = p;
+      pageBtn.onclick = () => window.changeRolePage(p);
+      pageNumbersContainer.appendChild(pageBtn);
+    }
+
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        const dots = document.createElement('span');
+        dots.className = "px-1.5 text-slate-400 font-bold select-none";
+        dots.textContent = '...';
+        pageNumbersContainer.appendChild(dots);
+      }
+
+      const lastBtn = document.createElement('button');
+      lastBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold cursor-pointer transition";
+      lastBtn.textContent = totalPages;
+      lastBtn.onclick = () => window.changeRolePage(totalPages);
+      pageNumbersContainer.appendChild(lastBtn);
+    }
+  }
 }
 
 // UPDATE SUMMARY STATISTICS CARDS

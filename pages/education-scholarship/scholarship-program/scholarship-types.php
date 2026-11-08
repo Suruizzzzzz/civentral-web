@@ -42,21 +42,13 @@ $canDelete = $isSuperAdmin || in_array('DELETE', $grantedActions) || in_array('R
 
 <main class="flex-1 p-6 md:p-8 w-full space-y-6 overflow-y-auto">
 
-  <!-- Breadcrumb & Page Header -->
+  <!-- Page Header -->
   <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/60 dark:border-slate-800 pb-5">
     <div class="space-y-1">
-      <div class="flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-slate-400">
-        <span>Education & Scholarship</span>
-        <i class="fa-solid fa-chevron-right text-[8px] opacity-60"></i>
-        <span>Scholarship Program</span>
-        <i class="fa-solid fa-chevron-right text-[8px] opacity-60"></i>
-        <span class="text-brand-dark dark:text-cyan-400">Scholarship Types</span>
-      </div>
-      <h1 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2.5 mt-4">
-        <i class="fa-solid fa-graduation-cap text-brand-dark dark:text-cyan-400"></i>
+      <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
         Scholarship Category Registry
       </h1>
-      <p class="text-xs text-slate-500 dark:text-slate-400 max-w-2xl leading-relaxed">
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-normal max-w-2xl leading-relaxed">
         Manage the master inventory of municipal scholarship programs referenced across applicant requirements, benefit allocations, and period schedules.
       </p>
     </div>
@@ -218,12 +210,12 @@ $canDelete = $isSuperAdmin || in_array('DELETE', $grantedActions) || in_array('R
     <div class="overflow-x-auto">
       <table class="w-full text-left border-collapse">
         <thead>
-          <tr class="bg-slate-50/80 dark:bg-slate-950/60 border-b border-slate-200/80 dark:border-slate-800 text-[10px] font-black uppercase tracking-wider text-slate-400">
-            <th class="px-6 py-3.5">Program Code</th>
-            <th class="px-6 py-3.5">Scholarship Title & Summary</th>
-            <th class="px-6 py-3.5">Category</th>
-            <th class="px-6 py-3.5 text-center">Status</th>
-            <th class="px-6 py-3.5 text-right">Actions</th>
+          <tr class="bg-slate-50/70 dark:bg-slate-800/40 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <th class="py-3 px-4">Program Code</th>
+            <th class="py-3 px-4">Scholarship Title & Summary</th>
+            <th class="py-3 px-4">Category</th>
+            <th class="py-3 px-4 text-center">Status</th>
+            <th class="py-3 px-4 text-right">Actions</th>
           </tr>
         </thead>
         <tbody id="scholarshipTableBody" class="divide-y divide-slate-100 dark:divide-slate-800 text-xs font-medium">
@@ -473,13 +465,6 @@ $canDelete = $isSuperAdmin || in_array('DELETE', $grantedActions) || in_array('R
   </div>
 </div>
 
-<!-- TOAST POPUP NOTIFICATION CONTAINER -->
-<div id="toast" class="fixed bottom-4 right-4 z-50 bg-slate-900 text-white text-xs font-bold px-4 py-3.5 rounded-xl shadow-lg flex items-center gap-3 transform translate-y-4 opacity-0 pointer-events-none transition-all duration-300">
-  <div class="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[10px]">
-    <i class="fa-solid fa-check"></i>
-  </div>
-  <span id="toastMsg" class="tracking-wide">Action executed successfully.</span>
-</div>
 
 <!-- INTERACTIVE FRONTEND BEHAVIOR (VANILLA JAVASCRIPT) -->
 <script>
@@ -603,38 +588,38 @@ function renderTable(data = scholarshipPrograms) {
     const isChecked = item.status === 'Active' ? 'checked' : '';
 
     const tr = document.createElement('tr');
-    tr.className = 'hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition';
+    tr.className = 'hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition group';
     tr.innerHTML = `
       <!-- Code Badge -->
-      <td class="px-6 py-4 whitespace-nowrap">
-        <div class="h-9 min-w-[5.5rem] px-3 rounded-xl bg-gradient-to-br from-brand-light to-blue-50 dark:from-slate-800 dark:to-slate-900 border border-brand-border/80 dark:border-slate-700 flex items-center justify-center text-brand-dark dark:text-cyan-400 font-mono font-black text-xs tracking-wider shadow-2xs">
+      <td class="py-3 px-4 whitespace-nowrap border-b border-slate-100 dark:border-slate-800/60 align-middle">
+        <div class="h-9 min-w-[5.5rem] px-3 rounded-none bg-gradient-to-br from-brand-light to-blue-50 dark:from-slate-800 dark:to-slate-900 border border-brand-border/80 dark:border-slate-700 flex items-center justify-center text-brand-dark dark:text-cyan-400 font-mono font-bold text-xs tracking-wider shadow-2xs">
           ${item.code}
         </div>
       </td>
 
       <!-- Scholarship Title & Summary -->
-      <td class="px-6 py-4">
+      <td class="py-3 px-4 border-b border-slate-100 dark:border-slate-800/60 align-middle">
         <div class="space-y-1 max-w-md">
-          <span class="font-extrabold text-slate-900 dark:text-white tracking-tight text-xs block">${item.title}</span>
-          <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium leading-relaxed line-clamp-2">${item.description}</p>
+          <span class="font-semibold text-slate-900 dark:text-slate-100 tracking-tight text-xs block">${item.title}</span>
+          <p class="text-xs text-slate-600 dark:text-slate-300 font-normal leading-relaxed line-clamp-2">${item.description || '<span class="italic text-[11px] text-slate-400 dark:text-slate-500">No description</span>'}</p>
         </div>
       </td>
 
       <!-- Category -->
-      <td class="px-6 py-4 whitespace-nowrap">
+      <td class="py-3 px-4 whitespace-nowrap border-b border-slate-100 dark:border-slate-800/60 align-middle">
         ${getCategoryBadge(item.category)}
       </td>
 
       <!-- Status Pill -->
-      <td class="px-6 py-4 text-center whitespace-nowrap">
-        <span class="text-[10px] font-black uppercase px-2.5 py-1 rounded-full border ${statusStyles} inline-flex items-center gap-1.5">
+      <td class="py-3 px-4 text-center whitespace-nowrap border-b border-slate-100 dark:border-slate-800/60 align-middle">
+        <span class="text-[10px] font-bold uppercase px-2.5 py-1 rounded-none border ${statusStyles} inline-flex items-center gap-1.5">
           ${dotPulse}
           <span>${item.status}</span>
         </span>
       </td>
 
       <!-- Action Controls -->
-      <td class="px-6 py-4 text-right whitespace-nowrap">
+      <td class="py-3 px-4 text-right whitespace-nowrap border-b border-slate-100 dark:border-slate-800/60 align-middle">
         <div class="inline-flex items-center space-x-2.5">
           
           <!-- iOS Status Switch Toggle (Permission Controlled) -->
@@ -890,21 +875,59 @@ function handleSaveProgram(event) {
   filterPrograms();
 }
 
-// TOAST NOTIFICATIONS
-function showToast(message) {
-  const toast = document.getElementById('toast');
-  const toastMsg = document.getElementById('toastMsg');
-  if (!toast || !toastMsg) return;
+// TOAST NOTIFICATIONS & SEMANTIC TITLE ENGINE
+function deriveModalTitle(msgStr, isErr, isWarn) {
+  if (isErr) {
+    if (/conflict|already exist|duplicate/i.test(msgStr)) return 'Conflict Detected';
+    if (/invalid|required|missing|provide/i.test(msgStr)) return 'Validation Error';
+    if (/unauthorized|forbidden|denied|permission/i.test(msgStr)) return 'Access Denied';
+    if (/not found/i.test(msgStr)) return 'Record Not Found';
+    return 'Action Failed';
+  }
 
-  toastMsg.innerText = message;
-  toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
-  toast.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0');
+  if (isWarn) return 'Attention Required';
 
-  setTimeout(() => {
-    toast.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0');
-    toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
-  }, 3000);
+  // Contextual Success Titles based on action verb
+  if (/created|registered|added/i.test(msgStr)) return 'Successfully Created';
+  if (/updated|modified|saved|changes/i.test(msgStr)) return 'Successfully Updated';
+  if (/deleted|removed|purged|archived/i.test(msgStr)) return 'Successfully Removed';
+  if (/status|activated|deactivated|enabled|disabled|locked|unlocked/i.test(msgStr)) return 'Status Updated';
+  if (/password|credential|reset/i.test(msgStr)) return 'Security Updated';
+  if (/imported|exported|downloaded/i.test(msgStr)) return 'Data Transfer Complete';
+
+  return 'Action Completed';
 }
+
+function showToast(message, isError = false) {
+  const msgStr = String(message || '');
+  const isErr = isError === true || isError === 'error' || isError === 'danger' || 
+                /error|failed|invalid|required|denied|conflict|exist|already/i.test(msgStr);
+  const isWarn = isError === 'warning';
+  const modalTitle = deriveModalTitle(msgStr, isErr, isWarn);
+
+  if (window.Swal) {
+    Swal.fire({
+      icon: isErr ? 'error' : (isWarn ? 'warning' : 'success'),
+      title: modalTitle,
+      text: msgStr,
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#0D9488', // Vibrant Teal
+      customClass: {
+        confirmButton: 'rounded-none px-6 py-2 font-medium tracking-wide shadow-none'
+      }
+    });
+  } else if (typeof window.swal === 'function') {
+    window.swal({
+      title: modalTitle,
+      text: msgStr,
+      icon: isErr ? 'error' : 'success',
+      button: 'OK'
+    });
+  } else {
+    alert(modalTitle + ': ' + msgStr);
+  }
+}
+window.showToast = showToast;
 
 // BACKDROP & ESCAPE KEY MODAL DISMISS
 document.querySelectorAll('#scholarshipModal, #viewModal, #archiveConfirmModal').forEach(modal => {

@@ -140,26 +140,26 @@ function renderModulesTable(dataToRender = systemModules, resetPage = true) {
 
   pageItems.forEach(mod => {
     const tr = document.createElement('tr');
-    tr.className = 'hover:bg-slate-50/60 transition group';
+    tr.className = 'hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition group';
 
     let statusBadgeHtml = '';
     if (mod.status === 'Active') {
       statusBadgeHtml = `
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-none text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200">
           <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
           Active
         </span>
       `;
     } else if (mod.status === 'Inactive') {
       statusBadgeHtml = `
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-slate-100 text-slate-600 border border-slate-200">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-none text-[10px] font-black bg-slate-100 text-slate-600 border border-slate-200">
           <span class="h-1.5 w-1.5 rounded-full bg-slate-400"></span>
           Inactive
         </span>
       `;
     } else {
       statusBadgeHtml = `
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-50 text-amber-700 border border-amber-200">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-none text-[10px] font-black bg-amber-50 text-amber-700 border border-amber-200">
           <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
           Archived
         </span>
@@ -171,7 +171,7 @@ function renderModulesTable(dataToRender = systemModules, resetPage = true) {
     const isItemSelected = (window.selectedArchivedIds || []).includes(mod.id);
 
     const checkboxTdHtml = isArchivedTab ? `
-      <td class="px-4 py-4 text-center">
+      <td class="py-3 px-4 text-center border-b border-slate-100 dark:border-slate-800/60 align-middle">
         <input 
           type="checkbox" 
           ${isItemSelected ? 'checked' : ''} 
@@ -183,27 +183,27 @@ function renderModulesTable(dataToRender = systemModules, resetPage = true) {
 
     tr.innerHTML = `
       ${checkboxTdHtml}
-      <td class="px-6 py-4">
-        <span class="font-extrabold text-slate-900 tracking-tight block text-xs">${mod.name}</span>
+      <td class="py-3 px-4 border-b border-slate-100 dark:border-slate-800/60 align-middle">
+        <span class="font-semibold text-slate-900 dark:text-slate-100 text-xs tracking-tight block">${mod.name}</span>
       </td>
 
-      <td class="px-6 py-4 max-w-xs">
-        <p class="text-xs text-slate-600 font-medium leading-relaxed">${mod.desc || '<span class="text-slate-400 italic">No description</span>'}</p>
+      <td class="py-3 px-4 max-w-xs border-b border-slate-100 dark:border-slate-800/60 align-middle">
+        <p class="text-xs text-slate-600 dark:text-slate-300 font-normal leading-relaxed">${mod.desc || '<span class="italic text-[11px] text-slate-400 dark:text-slate-500">No description</span>'}</p>
       </td>
 
-      <td class="px-6 py-4 text-center">
+      <td class="py-3 px-4 text-center border-b border-slate-100 dark:border-slate-800/60 align-middle">
         ${statusBadgeHtml}
       </td>
 
-      <td class="px-6 py-4 text-slate-500 font-mono text-[10px] font-bold">
+      <td class="py-3 px-4 text-[11px] font-normal text-slate-500 dark:text-slate-400 font-mono border-b border-slate-100 dark:border-slate-800/60 align-middle">
         ${mod.created_at}
       </td>
 
-      <td class="px-6 py-4 text-slate-500 font-mono text-[10px] font-bold">
+      <td class="py-3 px-4 text-[11px] font-normal text-slate-500 dark:text-slate-400 font-mono border-b border-slate-100 dark:border-slate-800/60 align-middle">
         ${mod.updated_at}
       </td>
 
-      <td class="px-6 py-4 text-right">
+      <td class="py-3 px-4 text-right border-b border-slate-100 dark:border-slate-800/60 align-middle">
         <div class="flex items-center justify-end gap-2.5">
           ${canEdit ? `
           ${!isArchived ? `
@@ -222,7 +222,7 @@ function renderModulesTable(dataToRender = systemModules, resetPage = true) {
           <button 
             type="button" 
             onclick="openEditModal(${mod.id})" 
-            class="h-8 w-8 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-600 hover:text-brand-dark flex items-center justify-center transition cursor-pointer"
+            class="h-8 w-8 rounded-none border border-slate-200 hover:bg-slate-100 text-slate-600 hover:text-brand-dark flex items-center justify-center transition cursor-pointer"
             title="Edit Module Parameters"
           >
             <i class="fa-solid fa-pen-to-square text-xs"></i>
@@ -234,7 +234,7 @@ function renderModulesTable(dataToRender = systemModules, resetPage = true) {
           <button 
             type="button" 
             onclick="restoreModule(${mod.id})" 
-            class="px-2.5 py-1.5 rounded-lg border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-[11px] flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
+            class="px-2.5 py-1.5 rounded-none border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-[11px] flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
             title="Restore Module to Active Tab"
           >
             <i class="fa-solid fa-rotate-left text-xs"></i>
@@ -246,7 +246,7 @@ function renderModulesTable(dataToRender = systemModules, resetPage = true) {
           <button 
             type="button" 
             onclick="openDeleteConfirmModal(${mod.id})" 
-            class="h-8 w-8 rounded-lg border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center transition cursor-pointer"
+            class="h-8 w-8 rounded-none border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center transition cursor-pointer"
             title="Permanently Delete Module from Database"
           >
             <i class="fa-solid fa-trash text-xs"></i>
@@ -257,7 +257,7 @@ function renderModulesTable(dataToRender = systemModules, resetPage = true) {
           <button 
             type="button" 
             onclick="openArchiveModal(${mod.id})" 
-            class="h-8 w-8 rounded-lg border border-slate-200 hover:bg-amber-50 text-slate-400 hover:text-amber-600 flex items-center justify-center transition cursor-pointer"
+            class="h-8 w-8 rounded-none border border-slate-200 hover:bg-amber-50 text-slate-400 hover:text-amber-600 flex items-center justify-center transition cursor-pointer"
             title="Archive Module"
           >
             <i class="fa-solid fa-box-archive text-xs"></i>
@@ -289,9 +289,9 @@ function renderModulesTable(dataToRender = systemModules, resetPage = true) {
     let numsHtml = '';
     for (let p = 1; p <= totalPages; p++) {
       if (p === currentModulePage) {
-        numsHtml += `<button type="button" onclick="goToModulePage(${p})" class="h-7 w-7 rounded-lg bg-[#86B6F6] text-slate-900 font-extrabold text-xs flex items-center justify-center cursor-pointer shadow-2xs">${p}</button>`;
+        numsHtml += `<button type="button" onclick="goToModulePage(${p})" class="h-7 w-7 rounded-none bg-[#86B6F6] text-slate-900 font-extrabold text-xs flex items-center justify-center cursor-pointer shadow-2xs">${p}</button>`;
       } else {
-        numsHtml += `<button type="button" onclick="goToModulePage(${p})" class="h-7 w-7 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold text-xs flex items-center justify-center cursor-pointer">${p}</button>`;
+        numsHtml += `<button type="button" onclick="goToModulePage(${p})" class="h-7 w-7 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold text-xs flex items-center justify-center cursor-pointer">${p}</button>`;
       }
     }
     pageNumsEl.innerHTML = numsHtml;

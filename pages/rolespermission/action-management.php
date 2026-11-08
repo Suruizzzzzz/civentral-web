@@ -11,19 +11,13 @@ include '../../includes/sidebar.php';
 
 <main class="flex-1 p-6 md:p-8 w-full space-y-6 overflow-y-auto relative pb-28 bg-[#F8FAFC]">
 
-  <!-- Breadcrumb & Page Header -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/60 pb-5">
+  <!-- Page Header -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/60 dark:border-slate-800 pb-5">
     <div class="space-y-1">
-      <div class="flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-slate-400">
-        <span>Role & Permissions</span>
-        <i class="fa-solid fa-chevron-right text-[8px] opacity-60"></i>
-        <span class="text-brand-dark">Action Operations</span>
-      </div>
-      <h1 class="text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2.5 mt-4">
-        <i class="fa-solid fa-bolt text-brand-dark"></i>
+      <h1 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
         System Action Operations Management
       </h1>
-      <p class="text-xs text-slate-500 max-w-2xl leading-relaxed">
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 font-normal max-w-2xl leading-relaxed">
         Define reusable operational verbs and system privileges that map onto resources to generate granular role permissions.
       </p>
     </div>
@@ -34,7 +28,7 @@ include '../../includes/sidebar.php';
       <button 
         type="button"
         onclick="openCreateActionModal()" 
-        class="bg-[#86B6F6] hover:bg-[#6FA4EE] text-slate-900 font-bold px-4.5 py-2.5 rounded-xl text-xs transition duration-200 shadow-xs flex items-center gap-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#86B6F6]/30"
+        class="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold tracking-wide rounded-none transition flex items-center space-x-2 shadow-xs cursor-pointer"
       >
         <i class="fa-solid fa-plus text-xs"></i>
         <span>Create New Action</span>
@@ -46,37 +40,37 @@ include '../../includes/sidebar.php';
   <!-- Action Overview Metric Cards (3 columns) -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
     <!-- Total Registered Actions -->
-    <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs flex items-center justify-between">
+    <div class="bg-white border border-slate-200/80 rounded-none p-5 shadow-xs flex items-center justify-between">
       <div class="space-y-1">
         <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Total Registered</span>
         <h3 id="metricTotalActions" class="text-2xl font-black text-slate-900 tracking-tight">9</h3>
         <p class="text-[11px] text-slate-500 font-medium">System Action Verbs</p>
       </div>
-      <div class="h-12 w-12 rounded-2xl bg-brand-light border border-brand-border/60 flex items-center justify-center text-brand-dark shrink-0">
+      <div class="h-12 w-12 rounded-none bg-brand-light border border-brand-border/60 flex items-center justify-center text-brand-dark shrink-0">
         <i class="fa-solid fa-bolt text-lg"></i>
       </div>
     </div>
 
     <!-- Active Actions -->
-    <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs flex items-center justify-between">
+    <div class="bg-white border border-slate-200/80 rounded-none p-5 shadow-xs flex items-center justify-between">
       <div class="space-y-1">
         <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Active Verbs</span>
         <h3 id="metricActiveActions" class="text-2xl font-black text-emerald-600 tracking-tight">7</h3>
         <p class="text-[11px] text-slate-500 font-medium">Active Action Privileges</p>
       </div>
-      <div class="h-12 w-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+      <div class="h-12 w-12 rounded-none bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
         <i class="fa-solid fa-circle-check text-lg"></i>
       </div>
     </div>
 
     <!-- Inactive & Archived Actions -->
-    <div class="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-xs flex items-center justify-between">
+    <div class="bg-white border border-slate-200/80 rounded-none p-5 shadow-xs flex items-center justify-between">
       <div class="space-y-1">
         <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Inactive / Archived</span>
         <h3 id="metricInactiveActions" class="text-2xl font-black text-amber-600 tracking-tight">2</h3>
         <p class="text-[11px] text-slate-500 font-medium">Disabled or Archived Actions</p>
       </div>
-      <div class="h-12 w-12 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shrink-0">
+      <div class="h-12 w-12 rounded-none bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shrink-0">
         <i class="fa-solid fa-box-archive text-lg"></i>
       </div>
     </div>
@@ -92,7 +86,7 @@ include '../../includes/sidebar.php';
     >
       <i class="fa-solid fa-list-check text-xs"></i>
       <span>Active Actions</span>
-      <span id="tabActiveActionsBadge" class="px-2 py-0.5 text-[10px] font-black rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">0</span>
+      <span id="tabActiveActionsBadge" class="px-2 py-0.5 text-[10px] font-black rounded-none bg-emerald-50 text-emerald-700 border border-emerald-200">0</span>
     </button>
     
     <button 
@@ -103,12 +97,12 @@ include '../../includes/sidebar.php';
     >
       <i class="fa-solid fa-box-archive text-xs"></i>
       <span>Archived Actions</span>
-      <span id="tabArchivedActionsBadge" class="px-2 py-0.5 text-[10px] font-black rounded-full bg-slate-100 text-slate-600 border border-slate-200">0</span>
+      <span id="tabArchivedActionsBadge" class="px-2 py-0.5 text-[10px] font-black rounded-none bg-slate-100 text-slate-600 border border-slate-200">0</span>
     </button>
   </div>
 
   <!-- Actions Directory Control Panel & Datatable Workspace -->
-  <div class="bg-white border border-slate-200/80 rounded-2xl shadow-xs overflow-hidden space-y-4">
+  <div class="bg-white border border-slate-200/80 rounded-none shadow-xs overflow-hidden space-y-4">
     
     <!-- Control Panel & Filters -->
     <div class="p-4 sm:p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-50/50">
@@ -120,7 +114,7 @@ include '../../includes/sidebar.php';
           id="actionSearchInput" 
           oninput="filterActions()" 
           placeholder="Search actions by Action Name or Description..." 
-          class="pl-9 pr-3 py-2 border border-slate-200 rounded-xl text-xs w-full bg-white focus:outline-none focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/10 transition"
+          class="pl-9 pr-3 py-2 border border-slate-200 rounded-none text-xs w-full bg-white focus:outline-none focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/10 transition"
         >
       </div>
 
@@ -130,7 +124,7 @@ include '../../includes/sidebar.php';
         <select 
           id="statusFilterSelect" 
           onchange="filterActions()" 
-          class="px-3 py-2 border border-slate-200 rounded-xl text-xs bg-white text-slate-700 focus:outline-none focus:border-brand-medium transition cursor-pointer"
+          class="px-3 py-2 border border-slate-200 rounded-none text-xs bg-white text-slate-700 focus:outline-none focus:border-brand-medium transition cursor-pointer"
         >
           <option value="ALL">All Statuses</option>
           <option value="Active">Active</option>
@@ -144,13 +138,13 @@ include '../../includes/sidebar.php';
     <div class="overflow-x-auto">
       <table class="w-full text-left border-collapse">
         <thead>
-          <tr class="bg-slate-50/80 border-b border-slate-200/80 text-[10px] font-black uppercase tracking-wider text-slate-400">
-            <th class="px-6 py-3.5">Action Name</th>
-            <th class="px-6 py-3.5">Description</th>
-            <th class="px-6 py-3.5 text-center">Status</th>
-            <th class="px-6 py-3.5">Created At</th>
-            <th class="px-6 py-3.5">Updated At</th>
-            <th class="px-6 py-3.5 text-right">Actions</th>
+          <tr class="bg-slate-50/70 dark:bg-slate-800/40 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <th class="py-3 px-4">Action Name</th>
+            <th class="py-3 px-4">Description</th>
+            <th class="py-3 px-4 text-center">Status</th>
+            <th class="py-3 px-4">Created At</th>
+            <th class="py-3 px-4">Updated At</th>
+            <th class="py-3 px-4 text-right">Actions</th>
           </tr>
         </thead>
         <tbody id="actionTableBody" class="divide-y divide-slate-100 text-xs font-medium">
@@ -172,13 +166,13 @@ include '../../includes/sidebar.php';
         Showing <span id="actionPaginationStart" class="font-bold text-brand-dark">0</span> to <span id="actionPaginationEnd" class="font-bold text-brand-dark">0</span> of <span id="actionPaginationTotal" class="font-bold text-brand-dark">0</span> actions
       </div>
       <div class="flex items-center gap-1.5" id="actionPaginationControls">
-        <button id="actionPrevPageBtn" onclick="changeActionPage(-1)" class="px-3 py-1.5 border border-slate-200 rounded-xl bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-2xs">
+        <button id="actionPrevPageBtn" onclick="changeActionPage(-1)" class="px-3 py-1.5 border border-slate-200 rounded-none bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-2xs">
           <i class="fa-solid fa-chevron-left text-[10px]"></i> Previous
         </button>
         <div id="actionPageNumbers" class="flex items-center gap-1 font-bold text-xs">
           <!-- Dynamic Page Numbers -->
         </div>
-        <button id="actionNextPageBtn" onclick="changeActionPage(1)" class="px-3 py-1.5 border border-slate-200 rounded-xl bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-2xs">
+        <button id="actionNextPageBtn" onclick="changeActionPage(1)" class="px-3 py-1.5 border border-slate-200 rounded-none bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-2xs">
           Next <i class="fa-solid fa-chevron-right text-[10px]"></i>
         </button>
       </div>
@@ -190,12 +184,12 @@ include '../../includes/sidebar.php';
 
 <!-- MODAL 1: CREATE / EDIT ACTION MODAL -->
 <div id="actionModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 bg-slate-900/70 backdrop-blur-sm hidden transition-opacity duration-200">
-  <div class="bg-white border border-slate-200 rounded-2xl shadow-xl w-full max-w-lg max-h-[85vh] my-auto overflow-hidden flex flex-col transform transition-all scale-95 opacity-0" id="actionModalCard">
+  <div class="bg-white border border-slate-200 rounded-none shadow-xl w-full max-w-lg max-h-[85vh] my-auto overflow-hidden flex flex-col transform transition-all scale-95 opacity-0" id="actionModalCard">
     
     <!-- Modal Header -->
     <div class="px-5 py-3.5 sm:px-6 sm:py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 shrink-0">
       <div class="flex items-center gap-2.5">
-        <div class="h-8 w-8 rounded-xl bg-brand-light border border-brand-border flex items-center justify-center text-brand-dark font-bold text-xs">
+        <div class="h-8 w-8 rounded-none bg-brand-light border border-brand-border flex items-center justify-center text-brand-dark font-bold text-xs">
           <i class="fa-solid fa-bolt"></i>
         </div>
         <div>
@@ -217,7 +211,7 @@ include '../../includes/sidebar.php';
           id="actionName" 
           required 
           placeholder="e.g. Approve" 
-          class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/10 transition"
+          class="w-full px-3.5 py-2.5 border border-slate-200 rounded-none text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/10 transition"
         >
       </div>
 
@@ -229,7 +223,7 @@ include '../../includes/sidebar.php';
           <select 
             id="actionStatus" 
             required 
-            class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs bg-white text-slate-800 focus:outline-none focus:border-brand-medium transition cursor-pointer"
+            class="w-full px-3.5 py-2.5 border border-slate-200 rounded-none text-xs bg-white text-slate-800 focus:outline-none focus:border-brand-medium transition cursor-pointer"
           >
             <option value="Active">Active</option>
             <option value="Inactive">Inactive</option>
@@ -245,7 +239,7 @@ include '../../includes/sidebar.php';
             readonly 
             disabled 
             placeholder="Auto-generated on save" 
-            class="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl text-xs text-slate-500 bg-slate-50 font-mono cursor-not-allowed"
+            class="w-full px-3.5 py-2.5 border border-slate-200 rounded-none text-xs text-slate-500 bg-slate-50 font-mono cursor-not-allowed"
           >
         </div>
       </div>
@@ -257,7 +251,7 @@ include '../../includes/sidebar.php';
           id="actionDesc" 
           rows="3" 
           placeholder="Grants privilege to validate and approve submitted citizen applications..." 
-          class="w-full p-3.5 border border-slate-200 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/10 transition leading-relaxed"
+          class="w-full p-3.5 border border-slate-200 rounded-none text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-medium focus:ring-2 focus:ring-brand-medium/10 transition leading-relaxed"
         ></textarea>
       </div>
 
@@ -266,13 +260,13 @@ include '../../includes/sidebar.php';
         <button 
           type="button" 
           onclick="closeActionModal()" 
-          class="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold rounded-xl text-xs transition cursor-pointer"
+          class="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold rounded-none text-xs transition cursor-pointer"
         >
           Cancel
         </button>
         <button 
           type="submit" 
-          class="px-5 py-2 bg-[#86B6F6] hover:bg-[#6FA4EE] text-slate-900 font-bold rounded-xl text-xs transition shadow-xs cursor-pointer flex items-center gap-1.5"
+          class="px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-none text-xs transition shadow-xs cursor-pointer flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-teal-500/40"
         >
           <i class="fa-solid fa-floppy-disk text-xs"></i>
           <span>Save Action</span>
@@ -286,11 +280,11 @@ include '../../includes/sidebar.php';
 
 <!-- MODAL 2: CONFIRM ARCHIVE MODAL -->
 <div id="archiveModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 bg-slate-900/70 backdrop-blur-sm hidden transition-opacity duration-200">
-  <div class="bg-white border border-slate-200 rounded-2xl shadow-xl w-full max-w-md max-h-[85vh] my-auto overflow-y-auto transform transition-all scale-95 opacity-0" id="archiveModalCard">
+  <div class="bg-white border border-slate-200 rounded-none shadow-xl w-full max-w-md max-h-[85vh] my-auto overflow-y-auto transform transition-all scale-95 opacity-0" id="archiveModalCard">
     <div class="p-6 space-y-4 text-center">
       
       <!-- Warning Icon -->
-      <div class="h-14 w-14 rounded-2xl bg-amber-50 border border-amber-100 text-amber-600 flex items-center justify-center mx-auto text-xl shadow-2xs">
+      <div class="h-14 w-14 rounded-none bg-amber-50 border border-amber-100 text-amber-600 flex items-center justify-center mx-auto text-xl shadow-2xs">
         <i class="fa-solid fa-triangle-exclamation"></i>
       </div>
 
@@ -300,9 +294,9 @@ include '../../includes/sidebar.php';
       </div>
 
       <!-- Warning Callout Box -->
-      <div class="bg-amber-50/80 border border-amber-200/80 rounded-xl p-3.5 text-left text-xs leading-relaxed text-amber-800 flex items-start gap-2.5">
+      <div class="bg-amber-50/80 border border-amber-200/80 rounded-none p-3.5 text-left text-xs leading-relaxed text-amber-800 flex items-start gap-2.5">
         <i class="fa-solid fa-circle-exclamation text-amber-600 text-sm mt-0.5 shrink-0"></i>
-        <span>Archiving this action operation will automatically strip this privilege from all active resource permissions across CIVENTRAL roles.</span>
+        <span>Archiving this action operation will automatically strip this privilege from all active resource permissions across Civentral roles.</span>
       </div>
 
       <!-- Action Buttons -->
@@ -310,14 +304,14 @@ include '../../includes/sidebar.php';
         <button 
           type="button" 
           onclick="closeArchiveModal()" 
-          class="w-1/2 py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold rounded-xl text-xs transition cursor-pointer"
+          class="w-1/2 py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold rounded-none text-xs transition cursor-pointer"
         >
           Cancel
         </button>
         <button 
           type="button" 
           onclick="confirmArchiveAction()" 
-          class="w-1/2 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-xs transition shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
+          class="w-1/2 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-none text-xs transition shadow-xs cursor-pointer flex items-center justify-center gap-1.5"
         >
           <i class="fa-solid fa-box-archive text-xs"></i>
           <span>Confirm Archive</span>
@@ -328,13 +322,6 @@ include '../../includes/sidebar.php';
   </div>
 </div>
 
-<!-- TOAST POPUP NOTIFICATION -->
-<div id="toast" class="fixed bottom-4 right-4 z-50 bg-slate-900 text-white text-xs font-bold px-4 py-3.5 rounded-xl shadow-lg flex items-center gap-3 transform translate-y-4 opacity-0 pointer-events-none transition-all duration-300">
-  <div class="h-5 w-5 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[10px]">
-    <i class="fa-solid fa-check"></i>
-  </div>
-  <span id="toastMsg" class="tracking-wide">Action executed successfully.</span>
-</div>
 
 <script>
 // INITIAL SYSTEM ACTION VERBS DATASTORE
@@ -439,27 +426,27 @@ function renderActionsTable(dataToRender = systemActions, resetPage = true) {
 
   pageItems.forEach(act => {
     const tr = document.createElement('tr');
-    tr.className = 'hover:bg-slate-50/60 transition group';
+    tr.className = 'hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition group';
 
     // Status Badge HTML
     let statusBadgeHtml = '';
     if (act.status === 'Active') {
       statusBadgeHtml = `
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-none text-[10px] font-black bg-emerald-50 text-emerald-700 border border-emerald-200">
           <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
           Active
         </span>
       `;
     } else if (act.status === 'Inactive') {
       statusBadgeHtml = `
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-slate-100 text-slate-600 border border-slate-200">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-none text-[10px] font-black bg-slate-100 text-slate-600 border border-slate-200">
           <span class="h-1.5 w-1.5 rounded-full bg-slate-400"></span>
           Inactive
         </span>
       `;
     } else {
       statusBadgeHtml = `
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-50 text-amber-700 border border-amber-200">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-none text-[10px] font-black bg-amber-50 text-amber-700 border border-amber-200">
           <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
           Archived
         </span>
@@ -470,27 +457,27 @@ function renderActionsTable(dataToRender = systemActions, resetPage = true) {
     const isArchived = act.status === 'Archived';
 
     tr.innerHTML = `
-      <td class="px-6 py-4">
-        <span class="font-extrabold text-slate-900 tracking-tight block text-xs">${act.name}</span>
+      <td class="py-3 px-4 border-b border-slate-100 dark:border-slate-800/60 align-middle">
+        <span class="font-semibold text-slate-900 dark:text-slate-100 text-xs tracking-tight block">${act.name}</span>
       </td>
 
-      <td class="px-6 py-4 max-w-xs">
-        <p class="text-xs text-slate-600 font-medium leading-relaxed">${act.desc || '<span class="text-slate-400 italic">No description</span>'}</p>
+      <td class="py-3 px-4 max-w-xs border-b border-slate-100 dark:border-slate-800/60 align-middle">
+        <p class="text-xs text-slate-600 dark:text-slate-300 font-normal leading-relaxed">${act.desc || '<span class="italic text-[11px] text-slate-400 dark:text-slate-500">No description</span>'}</p>
       </td>
 
-      <td class="px-6 py-4 text-center">
+      <td class="py-3 px-4 text-center border-b border-slate-100 dark:border-slate-800/60 align-middle">
         ${statusBadgeHtml}
       </td>
 
-      <td class="px-6 py-4 text-slate-500 font-mono text-[10px] font-bold">
+      <td class="py-3 px-4 text-[11px] font-normal text-slate-500 dark:text-slate-400 font-mono border-b border-slate-100 dark:border-slate-800/60 align-middle">
         ${act.created_at}
       </td>
 
-      <td class="px-6 py-4 text-slate-500 font-mono text-[10px] font-bold">
+      <td class="py-3 px-4 text-[11px] font-normal text-slate-500 dark:text-slate-400 font-mono border-b border-slate-100 dark:border-slate-800/60 align-middle">
         ${act.updated_at}
       </td>
 
-      <td class="px-6 py-4 text-right">
+      <td class="py-3 px-4 text-right border-b border-slate-100 dark:border-slate-800/60 align-middle">
         <div class="flex items-center justify-end gap-3">
           ${canEdit ? `
           <!-- iOS Toggle Switch -->
@@ -508,7 +495,7 @@ function renderActionsTable(dataToRender = systemActions, resetPage = true) {
           <button 
             type="button" 
             onclick="openEditActionModal(${act.id})" 
-            class="h-8 w-8 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-600 hover:text-brand-dark flex items-center justify-center transition cursor-pointer"
+            class="h-8 w-8 rounded-none border border-slate-200 hover:bg-slate-100 text-slate-600 hover:text-brand-dark flex items-center justify-center transition cursor-pointer"
             title="Edit Action Verb"
           >
             <i class="fa-solid fa-pen-to-square text-xs"></i>
@@ -519,7 +506,7 @@ function renderActionsTable(dataToRender = systemActions, resetPage = true) {
           <button 
             type="button" 
             onclick="restoreAction(${act.id})" 
-            class="px-2.5 py-1.5 rounded-lg border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-[11px] flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
+            class="px-2.5 py-1.5 rounded-none border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-[11px] flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
             title="Restore Action to Active Tab"
           >
             <i class="fa-solid fa-rotate-left text-xs"></i>
@@ -530,7 +517,7 @@ function renderActionsTable(dataToRender = systemActions, resetPage = true) {
           <button 
             type="button" 
             onclick="openArchiveActionModal(${act.id})" 
-            class="h-8 w-8 rounded-lg border border-slate-200 hover:bg-amber-50 text-slate-400 hover:text-amber-600 flex items-center justify-center transition cursor-pointer"
+            class="h-8 w-8 rounded-none border border-slate-200 hover:bg-amber-50 text-slate-400 hover:text-amber-600 flex items-center justify-center transition cursor-pointer"
             title="Archive Action"
           >
             <i class="fa-solid fa-box-archive text-xs"></i>
@@ -562,9 +549,9 @@ function renderActionsTable(dataToRender = systemActions, resetPage = true) {
     let numsHtml = '';
     for (let p = 1; p <= totalPages; p++) {
       if (p === currentActionPage) {
-        numsHtml += `<button type="button" onclick="goToActionPage(${p})" class="h-7 w-7 rounded-lg bg-[#86B6F6] text-slate-900 font-extrabold text-xs flex items-center justify-center cursor-pointer shadow-2xs">${p}</button>`;
+        numsHtml += `<button type="button" onclick="goToActionPage(${p})" class="h-7 w-7 rounded-none bg-[#86B6F6] text-slate-900 font-extrabold text-xs flex items-center justify-center cursor-pointer shadow-2xs">${p}</button>`;
       } else {
-        numsHtml += `<button type="button" onclick="goToActionPage(${p})" class="h-7 w-7 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold text-xs flex items-center justify-center cursor-pointer">${p}</button>`;
+        numsHtml += `<button type="button" onclick="goToActionPage(${p})" class="h-7 w-7 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold text-xs flex items-center justify-center cursor-pointer">${p}</button>`;
       }
     }
     pageNumsEl.innerHTML = numsHtml;
@@ -833,21 +820,59 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// TOAST NOTIFICATION
-function showToast(message) {
-  const toast = document.getElementById('toast');
-  const toastMsg = document.getElementById('toastMsg');
-  if (!toast || !toastMsg) return;
+// TOAST NOTIFICATION & SEMANTIC TITLE ENGINE
+function deriveModalTitle(msgStr, isErr, isWarn) {
+  if (isErr) {
+    if (/conflict|already exist|duplicate/i.test(msgStr)) return 'Conflict Detected';
+    if (/invalid|required|missing|provide/i.test(msgStr)) return 'Validation Error';
+    if (/unauthorized|forbidden|denied|permission/i.test(msgStr)) return 'Access Denied';
+    if (/not found/i.test(msgStr)) return 'Record Not Found';
+    return 'Action Failed';
+  }
 
-  toastMsg.innerText = message;
-  toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
-  toast.classList.add('opacity-100', 'translate-y-0');
+  if (isWarn) return 'Attention Required';
 
-  setTimeout(() => {
-    toast.classList.remove('opacity-100', 'translate-y-0');
-    toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
-  }, 3200);
+  // Contextual Success Titles based on action verb
+  if (/created|registered|added/i.test(msgStr)) return 'Successfully Created';
+  if (/updated|modified|saved|changes/i.test(msgStr)) return 'Successfully Updated';
+  if (/deleted|removed|purged|archived/i.test(msgStr)) return 'Successfully Removed';
+  if (/status|activated|deactivated|enabled|disabled|locked|unlocked/i.test(msgStr)) return 'Status Updated';
+  if (/password|credential|reset/i.test(msgStr)) return 'Security Updated';
+  if (/imported|exported|downloaded/i.test(msgStr)) return 'Data Transfer Complete';
+
+  return 'Action Completed';
 }
+
+function showToast(message, isError = false) {
+  const msgStr = String(message || '');
+  const isErr = isError === true || isError === 'error' || isError === 'danger' || 
+                /error|failed|invalid|required|denied|conflict|exist|already/i.test(msgStr);
+  const isWarn = isError === 'warning';
+  const modalTitle = deriveModalTitle(msgStr, isErr, isWarn);
+
+  if (window.Swal) {
+    Swal.fire({
+      icon: isErr ? 'error' : (isWarn ? 'warning' : 'success'),
+      title: modalTitle,
+      text: msgStr,
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#0D9488', // Vibrant Teal
+      customClass: {
+        confirmButton: 'rounded-none px-6 py-2 font-medium tracking-wide shadow-none'
+      }
+    });
+  } else if (typeof window.swal === 'function') {
+    window.swal({
+      title: modalTitle,
+      text: msgStr,
+      icon: isErr ? 'error' : 'success',
+      button: 'OK'
+    });
+  } else {
+    alert(modalTitle + ': ' + msgStr);
+  }
+}
+window.showToast = showToast;
 
 // INITIAL DOM READY BINDING
 document.addEventListener('DOMContentLoaded', () => {

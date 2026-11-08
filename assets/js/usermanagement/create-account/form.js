@@ -50,15 +50,15 @@ function handleRoleChange() {
 
   if (alertBox && alertTitle && alertText) {
     if (roleName.includes('Super') || roleName.includes('Superadmin')) {
-      alertBox.className = "bg-blue-50 border border-blue-200 text-blue-800 rounded-2xl p-4 flex items-start gap-3 shadow-xs transition duration-300";
+      alertBox.className = "bg-blue-50 border border-blue-200 text-blue-800 rounded-none p-4 flex items-start gap-3 shadow-xs transition duration-300";
       alertTitle.innerText = "System Role Scope Clearance Notice";
       alertText.innerText = "As a Superadmin, you can register users for all departments. Department Admins will be locked to their specific department scope.";
     } else if (roleName.includes('Admin')) {
-      alertBox.className = "bg-amber-50 border border-amber-250 text-amber-850 rounded-2xl p-4 flex items-start gap-3 shadow-xs transition duration-300";
+      alertBox.className = "bg-amber-50 border border-amber-250 text-amber-850 rounded-none p-4 flex items-start gap-3 shadow-xs transition duration-300";
       alertTitle.innerText = "Department Administrator Scope Alert";
       alertText.innerText = "Assigning Department Admin grants administrative credentials. Access rights will be restricted to the designated department scope only.";
     } else {
-      alertBox.className = "bg-slate-50 border border-slate-200 text-slate-700 rounded-2xl p-4 flex items-start gap-3 shadow-xs transition duration-300";
+      alertBox.className = "bg-slate-50 border border-slate-200 text-slate-700 rounded-none p-4 flex items-start gap-3 shadow-xs transition duration-300";
       alertTitle.innerText = "General Staff Account Profile";
       alertText.innerText = "Standard staff accounts operate with transactional module permissions depending on position designations and custom access overrides.";
     }

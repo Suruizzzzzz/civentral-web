@@ -2,21 +2,59 @@
 const deptsTbody = document.getElementById('deptsTableBody');
 const searchInput = document.getElementById('deptSearchInput');
 
-// Toast Popup
-function showToast(message) {
-  const toast = document.getElementById('toast');
-  const toastMsg = document.getElementById('toastMsg');
-  if (!toast || !toastMsg) return;
+// Toast Popup & Semantic Title Derivation
+function deriveModalTitle(msgStr, isErr, isWarn) {
+  if (isErr) {
+    if (/conflict|already exist|duplicate/i.test(msgStr)) return 'Conflict Detected';
+    if (/invalid|required|missing|provide/i.test(msgStr)) return 'Validation Error';
+    if (/unauthorized|forbidden|denied|permission/i.test(msgStr)) return 'Access Denied';
+    if (/not found/i.test(msgStr)) return 'Record Not Found';
+    return 'Action Failed';
+  }
 
-  toastMsg.innerText = message;
-  toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
-  toast.classList.add('opacity-100', 'translate-y-0');
+  if (isWarn) return 'Attention Required';
 
-  setTimeout(() => {
-    toast.classList.remove('opacity-100', 'translate-y-0');
-    toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
-  }, 3200);
+  // Contextual Success Titles based on action verb
+  if (/created|registered|added/i.test(msgStr)) return 'Successfully Created';
+  if (/updated|modified|saved|changes/i.test(msgStr)) return 'Successfully Updated';
+  if (/deleted|removed|purged|archived/i.test(msgStr)) return 'Successfully Removed';
+  if (/status|activated|deactivated|enabled|disabled|locked|unlocked/i.test(msgStr)) return 'Status Updated';
+  if (/password|credential|reset/i.test(msgStr)) return 'Security Updated';
+  if (/imported|exported|downloaded/i.test(msgStr)) return 'Data Transfer Complete';
+
+  return 'Action Completed';
 }
+
+function showToast(message, isError = false) {
+  const msgStr = String(message || '');
+  const isErr = isError === true || isError === 'error' || isError === 'danger' || 
+                /error|failed|invalid|required|denied|conflict|exist|already/i.test(msgStr);
+  const isWarn = isError === 'warning';
+  const modalTitle = deriveModalTitle(msgStr, isErr, isWarn);
+
+  if (window.Swal) {
+    Swal.fire({
+      icon: isErr ? 'error' : (isWarn ? 'warning' : 'success'),
+      title: modalTitle,
+      text: msgStr,
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#0D9488', // Vibrant Teal
+      customClass: {
+        confirmButton: 'rounded-none px-6 py-2 font-medium tracking-wide shadow-none'
+      }
+    });
+  } else if (typeof window.swal === 'function') {
+    window.swal({
+      title: modalTitle,
+      text: msgStr,
+      icon: isErr ? 'error' : 'success',
+      button: 'OK'
+    });
+  } else {
+    alert(modalTitle + ': ' + msgStr);
+  }
+}
+window.showToast = showToast;
 
 // Export CSV
 function exportDeptsCsv() {
@@ -43,7 +81,7 @@ function exportDeptsCsv() {
   const encodedUri = encodeURI(csvContent);
   const link = document.createElement("a");
   link.setAttribute("href", encodedUri);
-  link.setAttribute("download", `CIVENTRAL_Department_Directory_${new Date().toISOString().split('T')[0]}.csv`);
+  link.setAttribute("download", `Civentral_Department_Directory_${new Date().toISOString().split('T')[0]}.csv`);
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);

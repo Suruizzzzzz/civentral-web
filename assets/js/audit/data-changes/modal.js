@@ -62,9 +62,9 @@ window.civAudit.dataChanges.modal = {
     if (elNewV) {
       elNewV.innerText = newVal;
       if (newVal === 'Failed' || newVal === 'Archived' || newVal === 'Deleted') {
-        elNewV.className = 'text-xs font-bold text-rose-800 bg-rose-50 border border-rose-100 px-2 py-0.5 rounded';
+        elNewV.className = 'text-xs font-bold text-rose-800 bg-rose-50 border border-rose-100 px-2 py-0.5 rounded-none';
       } else {
-        elNewV.className = 'text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded';
+        elNewV.className = 'text-xs font-bold text-emerald-800 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-none';
       }
     }
     

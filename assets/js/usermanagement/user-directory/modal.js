@@ -199,12 +199,12 @@ function openHistoryModal(userId) {
     user.login_history.forEach(log => {
       const loginTime = log.login_time ? log.login_time.replace('T', ' ').substring(0, 19) : '—';
       hBody.innerHTML += `
-        <tr class="hover:bg-slate-50/50 transition">
-          <td class="px-4 py-3 font-medium text-slate-700">${loginTime}</td>
-          <td class="px-4 py-3 font-mono font-bold text-slate-500">${log.ip_address || '—'}</td>
-          <td class="px-4 py-3 text-slate-500">${log.browser || log.device_info || 'Browser Terminal'}</td>
-          <td class="px-4 py-3 text-right">
-            <span class="text-[9px] font-black uppercase ${log.login_status === 'Failed' ? 'bg-rose-50 border-rose-100 text-rose-700' : 'bg-emerald-50 border-emerald-100 text-emerald-700'} border px-1.5 py-0.5 rounded-md">
+        <tr class="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition">
+          <td class="py-3 px-4 text-xs font-normal text-slate-600 dark:text-slate-300 border-b border-slate-100 dark:border-slate-800/60 align-middle">${loginTime}</td>
+          <td class="py-3 px-4 font-mono text-[11px] font-normal text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800/60 align-middle">${log.ip_address || '—'}</td>
+          <td class="py-3 px-4 text-xs text-slate-500 dark:text-slate-400 border-b border-slate-100 dark:border-slate-800/60 align-middle">${log.browser || log.device_info || 'Browser Terminal'}</td>
+          <td class="py-3 px-4 text-right border-b border-slate-100 dark:border-slate-800/60 align-middle">
+            <span class="text-[9px] font-bold uppercase ${log.login_status === 'Failed' ? 'bg-rose-50 border-rose-100 text-rose-700' : 'bg-emerald-50 border-emerald-100 text-emerald-700'} border px-1.5 py-0.5 rounded-none">
               ${log.login_status || 'Success'}
             </span>
           </td>

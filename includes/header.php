@@ -20,6 +20,87 @@ require_once __DIR__ . '/../src/bootstrap.php';
   </style>
   <link rel="stylesheet" href="<?php echo $basePath ?? '../'; ?>assets/css/header.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    function deriveModalTitle(msgStr, isErr, isWarn) {
+      if (isErr) {
+        if (/conflict|already exist|duplicate/i.test(msgStr)) return 'Conflict Detected';
+        if (/invalid|required|missing|provide/i.test(msgStr)) return 'Validation Error';
+        if (/unauthorized|forbidden|denied|permission/i.test(msgStr)) return 'Access Denied';
+        if (/not found/i.test(msgStr)) return 'Record Not Found';
+        return 'Action Failed';
+      }
+
+      if (isWarn) return 'Attention Required';
+
+      // Contextual Success Titles based on action verb
+      if (/created|registered|added/i.test(msgStr)) return 'Successfully Created';
+      if (/updated|modified|saved|changes/i.test(msgStr)) return 'Successfully Updated';
+      if (/deleted|removed|purged|archived/i.test(msgStr)) return 'Successfully Removed';
+      if (/status|activated|deactivated|enabled|disabled|locked|unlocked/i.test(msgStr)) return 'Status Updated';
+      if (/password|credential|reset/i.test(msgStr)) return 'Security Updated';
+      if (/imported|exported|downloaded/i.test(msgStr)) return 'Data Transfer Complete';
+
+      return 'Action Completed';
+    }
+
+    function showToast(message, isError = false) {
+      const msgStr = String(message || '');
+      const isErr = isError === true || isError === 'error' || isError === 'danger' || 
+                    /error|failed|invalid|required|denied|conflict|exist|already/i.test(msgStr);
+      const isWarn = isError === 'warning';
+      const modalTitle = deriveModalTitle(msgStr, isErr, isWarn);
+
+      if (window.Swal) {
+        Swal.fire({
+          icon: isErr ? 'error' : (isWarn ? 'warning' : 'success'),
+          title: modalTitle,
+          text: msgStr,
+          confirmButtonText: 'OK',
+          confirmButtonColor: '#0D9488', // Vibrant Teal
+          customClass: {
+            confirmButton: 'rounded-none px-6 py-2 font-medium tracking-wide shadow-none'
+          }
+        });
+      } else if (typeof window.swal === 'function') {
+        window.swal({
+          title: modalTitle,
+          text: msgStr,
+          icon: isErr ? 'error' : 'success',
+          button: 'OK'
+        });
+      } else {
+        alert(modalTitle + ': ' + msgStr);
+      }
+    }
+    window.showToast = showToast;
+
+    // Compatibility mapping if scripts call swal() directly
+    window.swal = function(arg1, arg2, arg3) {
+      if (typeof arg1 === 'object') {
+        const iconType = arg1.icon || (arg1.type === 'error' ? 'error' : 'success');
+        const isErr = iconType === 'error';
+        const isWarn = iconType === 'warning';
+        const textMsg = arg1.text || '';
+        const derivedTitle = arg1.title || deriveModalTitle(textMsg, isErr, isWarn);
+        if (window.Swal) {
+          Swal.fire({
+            title: derivedTitle,
+            text: textMsg,
+            icon: iconType,
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#0D9488',
+            customClass: {
+              confirmButton: 'rounded-none px-6 py-2 font-medium tracking-wide shadow-none'
+            }
+          });
+        }
+      } else {
+        window.showToast(arg2 || arg1, arg3 || false);
+      }
+    };
+  </script>
   <script>
     window.civentralBasePath = '<?php echo $basePath ?? '../'; ?>';
     (function() {

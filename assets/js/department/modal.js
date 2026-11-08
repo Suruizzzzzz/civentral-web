@@ -97,7 +97,7 @@ function openViewModal(deptId) {
   document.getElementById('viewDeptStaffCount').innerText = `Admin: ${adminName}`;
 
   const scopesContainer = document.getElementById('viewDeptScopesContainer');
-  scopesContainer.innerHTML = `<span class="bg-slate-150 text-slate-700 px-2.5 py-1 rounded-lg text-[10px] font-black border border-slate-200/60 font-mono tracking-tight">${dept.department_code.toLowerCase()}_core</span>`;
+  scopesContainer.innerHTML = `<span class="bg-slate-150 text-slate-700 px-2.5 py-1 rounded-none text-[10px] font-black border border-slate-200/60 font-mono tracking-tight">${dept.department_code.toLowerCase()}_core</span>`;
 
   openModal('viewDeptModal');
 }

@@ -45,7 +45,7 @@ function openTimelineModal(citId) {
           </div>
           <div class="font-extrabold text-slate-800 tracking-tight text-[11px]">${log.action}</div>
           <div class="text-[10px] text-slate-400 font-medium mt-0.5">${log.date} by <span class="text-slate-600 font-bold">${log.admin}</span></div>
-          <p class="text-[11.5px] text-slate-500 mt-1.5 italic bg-slate-50 p-2 rounded-lg border border-slate-100">Reason: "${log.reason}"</p>
+          <p class="text-[11.5px] text-slate-500 mt-1.5 italic bg-slate-50 p-2 rounded-none border border-slate-100">Reason: "${log.reason}"</p>
         </div>
       `;
     });

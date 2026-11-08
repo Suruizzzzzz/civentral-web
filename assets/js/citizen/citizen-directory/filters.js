@@ -2,6 +2,9 @@
 
 // DYNAMIC ADVANCED FILTER CONTROLLER
 function filterCitizenTable() {
+  if (typeof window.resetCitizenPage === 'function') {
+    window.resetCitizenPage();
+  }
   const citizenSearchInput = document.getElementById('citizenSearch');
   const statusFilterSelect = document.getElementById('statusFilter');
   const barangayFilterSelect = document.getElementById('barangayFilter');

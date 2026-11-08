@@ -1,10 +1,12 @@
 function toggleDropdown(id, chevronId) {
+  if ((typeof isCollapsed !== 'undefined' && isCollapsed) || window.isCollapsed) return;
+
   const dropdown = document.getElementById(id);
   const chevron = document.getElementById(chevronId);
   if (!dropdown) return;
 
-  const allDropdowns = ['userDropdown', 'roleDropdown', 'deptDropdown', 'citizenDropdown', 'scholarshipDropdown', 'auditDropdown'];
-  const allChevrons = ['userChevron', 'roleChevron', 'deptChevron', 'citizenChevron', 'scholarshipChevron', 'auditChevron'];
+  const allDropdowns = ['userDropdown', 'roleDropdown', 'deptDropdown', 'citizenDropdown', 'auditDropdown'];
+  const allChevrons = ['userChevron', 'roleChevron', 'deptChevron', 'citizenChevron', 'auditChevron'];
 
   allDropdowns.forEach((d, i) => {
     if (d !== id) {

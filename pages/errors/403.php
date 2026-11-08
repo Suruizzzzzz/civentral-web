@@ -23,13 +23,13 @@ $basePath = $basePath ?? '../../';
 </head>
 <body class="bg-slate-50 font-sans antialiased text-slate-800 min-h-screen flex items-center justify-center p-6">
 
-  <div class="max-w-md w-full bg-white border border-slate-200/80 rounded-3xl p-8 shadow-xl text-center space-y-6">
-    <div class="h-20 w-20 rounded-2xl bg-rose-50 border border-rose-100 mx-auto flex items-center justify-center text-rose-500 shadow-sm">
+  <div class="max-w-md w-full bg-white border border-slate-200/80 rounded-none p-8 shadow-xl text-center space-y-6">
+    <div class="h-20 w-20 rounded-none bg-rose-50 border border-rose-100 mx-auto flex items-center justify-center text-rose-500 shadow-sm">
       <i class="fa-solid fa-shield-cat text-4xl"></i>
     </div>
 
     <div class="space-y-2">
-      <span class="inline-block px-3 py-1 bg-rose-100/60 text-rose-700 font-extrabold text-[10px] uppercase tracking-widest rounded-full">
+      <span class="inline-block px-3 py-1 bg-rose-100/60 text-rose-700 font-extrabold text-[10px] uppercase tracking-widest rounded-none">
         Error 403 • Access Denied
       </span>
       <h1 class="text-2xl font-black text-slate-900 tracking-tight">403 Forbidden</h1>
@@ -39,11 +39,11 @@ $basePath = $basePath ?? '../../';
     </div>
 
     <div class="pt-4 border-t border-slate-100 flex flex-col sm:flex-row gap-3">
-      <a href="<?php echo htmlspecialchars($basePath); ?>pages/dashboard.php" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-3 rounded-xl text-xs transition shadow-sm flex items-center justify-center gap-2">
+      <a href="<?php echo htmlspecialchars($basePath); ?>pages/dashboard.php" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-3 rounded-none text-xs transition shadow-sm flex items-center justify-center gap-2">
         <i class="fa-solid fa-house text-xs"></i>
         <span>Back to Dashboard</span>
       </a>
-      <button onclick="window.history.back()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-4 py-3 rounded-xl text-xs transition border border-slate-200 flex items-center justify-center gap-2 cursor-pointer">
+      <button onclick="window.history.back()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-4 py-3 rounded-none text-xs transition border border-slate-200 flex items-center justify-center gap-2 cursor-pointer">
         <i class="fa-solid fa-arrow-left text-xs"></i>
         <span>Previous Page</span>
       </button>
