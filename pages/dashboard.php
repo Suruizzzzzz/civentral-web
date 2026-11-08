@@ -67,7 +67,7 @@ include '../includes/sidebar.php';
           </div>
         </a>
 
-        <a href="modules/education/index.php" class="bg-white border border-slate-200 hover:border-brand-medium rounded-xl p-5 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-md group transition">
+        <a href="department-bridge.php?dept=education" target="_blank" rel="noopener noreferrer" class="bg-white border border-slate-200 hover:border-brand-medium rounded-xl p-5 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-md group transition">
           <div class="space-y-3">
             <div class="h-9 w-9 rounded-lg bg-brand-light border border-brand-border flex items-center justify-center text-brand-dark transition group-hover:bg-brand-medium group-hover:text-white">
               <i class="fa-solid fa-graduation-cap text-sm"></i>
