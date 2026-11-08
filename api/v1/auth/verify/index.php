@@ -100,12 +100,22 @@ try {
                 u.user_id,
                 u.employee_id,
                 u.role_id,
+                u.position_id,
+                u.first_name,
+                u.middle_name,
+                u.last_name,
+                u.email,
+                u.mobile_number,
+                u.profile_picture,
+                u.last_login,
                 u.status,
                 r.role_name,
                 r.role_prefix,
                 r.is_global_access,
                 r.is_superadmin,
+                p.position_name,
                 COALESCE(p.department_id, r.department_id) AS department_id,
+                d.department_name,
                 d.department_name AS department
             FROM users u
             LEFT JOIN roles r ON u.role_id = r.role_id
@@ -138,20 +148,51 @@ try {
 
     $roleName = $user['role_name'] ?? 'guest';
 
+    $firstName = trim((string) ($user['first_name'] ?? ''));
+    $middleName = trim((string) ($user['middle_name'] ?? ''));
+    $lastName = trim((string) ($user['last_name'] ?? ''));
+
+    $midPart = !empty($middleName) ? $middleName . ' ' : '';
+    $fullName = trim($firstName . ' ' . $midPart . $lastName);
+    if (empty($fullName)) {
+        $fullName = (string) $roleName;
+    }
+
+    $initialFirst = !empty($firstName) ? substr($firstName, 0, 1) : (!empty($roleName) ? substr($roleName, 0, 1) : 'U');
+    $initialLast = !empty($lastName) ? substr($lastName, 0, 1) : (!empty($roleName) ? substr($roleName, -1, 1) : 'S');
+    $initials = strtoupper($initialFirst . $initialLast);
+
+    $lastLoginFormatted = !empty($user['last_login']) 
+        ? date('F j, Y, g:i A', strtotime((string) $user['last_login'])) 
+        : 'Active Now';
+
     http_response_code(200);
     echo json_encode([
         'status' => 'success',
         'data' => [
             'user_id' => (int) $user['user_id'],
             'employee_id' => $user['employee_id'] !== null ? (string) $user['employee_id'] : null,
+            'first_name' => $firstName,
+            'middle_name' => !empty($middleName) ? $middleName : null,
+            'last_name' => $lastName,
+            'full_name' => $fullName,
+            'initials' => $initials,
+            'email' => $user['email'] !== null ? (string) $user['email'] : null,
+            'mobile_number' => $user['mobile_number'] !== null ? (string) $user['mobile_number'] : null,
             'role_id' => $user['role_id'] !== null ? (int) $user['role_id'] : null,
             'role' => (string) $roleName,
             'role_name' => (string) $roleName,
             'role_prefix' => $user['role_prefix'] !== null ? (string) $user['role_prefix'] : null,
+            'position_id' => isset($user['position_id']) && $user['position_id'] !== null ? (int) $user['position_id'] : null,
+            'position_name' => $user['position_name'] !== null ? (string) $user['position_name'] : null,
             'department_id' => $user['department_id'] !== null ? (int) $user['department_id'] : null,
             'department' => $user['department'] !== null ? (string) $user['department'] : null,
+            'department_name' => $user['department_name'] !== null ? (string) $user['department_name'] : ($user['department'] !== null ? (string) $user['department'] : null),
+            'profile_picture' => !empty($user['profile_picture']) ? (string) $user['profile_picture'] : 'default-avatar.png',
+            'last_login' => $lastLoginFormatted,
             'is_global_access' => isset($user['is_global_access']) ? (int) $user['is_global_access'] : 0,
-            'is_superadmin' => isset($user['is_superadmin']) ? (int) $user['is_superadmin'] : 0
+            'is_superadmin' => isset($user['is_superadmin']) ? (int) $user['is_superadmin'] : 0,
+            'status' => (string) ($user['status'] ?? 'Active')
         ]
     ]);
 } catch (\Throwable $e) {
