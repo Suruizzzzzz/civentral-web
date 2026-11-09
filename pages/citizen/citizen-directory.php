@@ -141,20 +141,28 @@ include '../../includes/sidebar.php';
       </table>
     </div>
 
-    <!-- Pagination -->
-    <div class="bg-slate-50 px-6 py-4 border-t border-slate-100 flex items-center justify-between text-[11px] font-bold text-slate-400">
-      <div id="citizenPaginationText">
-        Showing 0 to 0 of 0 accounts
+    <!-- Table Footer / Pagination -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+      <!-- Left Side: Record Counter -->
+      <div class="text-xs text-slate-500 dark:text-slate-400 font-medium" id="citizenPaginationText">
+        Showing <span class="font-semibold text-slate-700 dark:text-slate-200">0</span> to <span class="font-semibold text-slate-700 dark:text-slate-200">0</span> of <span class="font-semibold text-slate-700 dark:text-slate-200">0</span> records
       </div>
-      <div class="flex items-center space-x-1" id="citizenPaginationControls">
-        <button id="citizenPrevBtn" class="px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 cursor-not-allowed transition" disabled>
-          <i class="fa-solid fa-chevron-left text-[9px]"></i>
+
+      <!-- Right Side: Segmented Numbered Pagination Bar -->
+      <nav class="inline-flex -space-x-px border border-slate-200 dark:border-slate-700 rounded-none shadow-xs" aria-label="Pagination" id="citizenPaginationControls">
+        <!-- Previous Button -->
+        <button type="button" class="px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed" disabled>
+          <i class="fa-solid fa-chevron-left text-[10px]"></i>
         </button>
-        <div id="citizenPageNumbers" class="flex items-center space-x-1"></div>
-        <button id="citizenNextBtn" class="px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 cursor-not-allowed transition" disabled>
-          <i class="fa-solid fa-chevron-right text-[9px]"></i>
+
+        <!-- Page Number Sequence -->
+        <button type="button" class="px-3.5 py-1.5 text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50/80 dark:bg-sky-950/40 border border-sky-300 dark:border-sky-600/60 z-10 cursor-default">1</button>
+
+        <!-- Next Button -->
+        <button type="button" class="px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed border-l border-slate-200 dark:border-slate-700" disabled>
+          <i class="fa-solid fa-chevron-right text-[10px]"></i>
         </button>
-      </div>
+      </nav>
     </div>
   </div>
 
@@ -175,21 +183,21 @@ include '../../includes/sidebar.php';
       
       <div class="border-b border-slate-100 pb-3.5 flex items-center justify-between gap-4">
         <div class="space-y-1">
-          <h4 id="viewName" class="font-extrabold text-sm text-slate-950">Juan Dela Cruz</h4>
-          <span id="viewId" class="text-[10px] font-bold text-slate-400 font-mono">CIT-2026-8942</span>
+          <h4 id="viewName" class="font-extrabold text-sm text-slate-950">—</h4>
+          <span id="viewId" class="text-[10px] font-bold text-slate-400 font-mono">—</span>
         </div>
-        <span id="viewStatusBadge" class="text-[9px] font-black uppercase px-2.5 py-1 rounded-none border">Active</span>
+        <span id="viewStatusBadge" class="text-[9px] font-black uppercase px-2.5 py-1 rounded-none border">—</span>
       </div>
 
   
       <div class="grid grid-cols-2 gap-4">
         <div class="bg-slate-50 border border-slate-200/50 rounded-none p-3.5 space-y-1">
           <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider block">Registration Date</span>
-          <p id="viewRegDate" class="text-xs font-extrabold text-slate-800">Jan 12, 2026</p>
+          <p id="viewRegDate" class="text-xs font-extrabold text-slate-800">—</p>
         </div>
         <div class="bg-slate-50 border border-slate-200/50 rounded-none p-3.5 space-y-1">
           <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider block">Last Active Hub</span>
-          <p id="viewLastLogin" class="text-xs font-extrabold text-slate-800">2 hours ago</p>
+          <p id="viewLastLogin" class="text-xs font-extrabold text-slate-800">—</p>
         </div>
       </div>
 
@@ -202,17 +210,17 @@ include '../../includes/sidebar.php';
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div class="border border-slate-150 rounded-none p-3 space-y-2 bg-white flex flex-col justify-between">
             <span class="text-[10px] font-extrabold text-slate-700 leading-tight">Scholarship Portal</span>
-            <span id="serviceScholarship" class="text-[9px] font-black tracking-wide px-2 py-0.5 rounded-none border self-start">Active</span>
+            <span id="serviceScholarship" class="text-[9px] font-black tracking-wide px-2 py-0.5 rounded-none border self-start">—</span>
           </div>
 
           <div class="border border-slate-150 rounded-none p-3 space-y-2 bg-white flex flex-col justify-between">
             <span class="text-[10px] font-extrabold text-slate-700 leading-tight">Business Permit</span>
-            <span id="servicePermit" class="text-[9px] font-black tracking-wide px-2 py-0.5 rounded-none border self-start">No App</span>
+            <span id="servicePermit" class="text-[9px] font-black tracking-wide px-2 py-0.5 rounded-none border self-start">—</span>
           </div>
 
           <div class="border border-slate-150 rounded-none p-3 space-y-2 bg-white flex flex-col justify-between">
             <span class="text-[10px] font-extrabold text-slate-700 leading-tight">Social Services Aid</span>
-            <span id="serviceWelfare" class="text-[9px] font-black tracking-wide px-2 py-0.5 rounded-none border self-start">Pending</span>
+            <span id="serviceWelfare" class="text-[9px] font-black tracking-wide px-2 py-0.5 rounded-none border self-start">—</span>
           </div>
         </div>
       </div>
@@ -239,14 +247,14 @@ include '../../includes/sidebar.php';
         </div>
         <div class="space-y-1">
           <h4 class="font-bold text-slate-900 text-xs">Generate Recovery Key?</h4>
-          <p id="resetConfirmText" class="text-xs text-slate-500 leading-relaxed">Are you sure you want to reset the password for Juan Dela Cruz?</p>
+          <p id="resetConfirmText" class="text-xs text-slate-500 leading-relaxed">Are you sure you want to reset credentials for this citizen?</p>
         </div>
       </div>
 
       <div id="resetPasswordContainer" class="bg-slate-50 border border-slate-150 rounded-none p-4 space-y-3">
         <p class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Temporary Reset Credentials</p>
         <div class="flex items-stretch gap-2">
-          <input type="text" id="tempCitizenPass" readonly value="CaloocanCiv#2026" class="border border-slate-200 rounded-none px-3 py-2.5 text-xs w-full bg-white focus:outline-none font-mono font-bold text-slate-700 tracking-wide">
+          <input type="text" id="tempCitizenPass" readonly value="" placeholder="Click generate to create credentials" class="border border-slate-200 rounded-none px-3 py-2.5 text-xs w-full bg-white focus:outline-none font-mono font-bold text-slate-700 tracking-wide">
           <button onclick="copyCitizenPass()" class="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold px-4 py-2.5 rounded-none text-xs flex items-center gap-1.5 transition shadow-xs cursor-pointer">
             <i class="fa-solid fa-copy"></i>
             <span>Copy</span>
@@ -280,7 +288,7 @@ include '../../includes/sidebar.php';
           </div>
           <div class="space-y-1">
             <h4 id="lockModalHeader" class="font-bold text-slate-900 text-xs">Place Security Access Block?</h4>
-            <p id="lockModalText" class="text-xs text-slate-500 leading-relaxed">Confirm locking Juan Dela Cruz's account. This prevents citizen profile verification logins immediately.</p>
+            <p id="lockModalText" class="text-xs text-slate-500 leading-relaxed">Confirm modifying security access status for this citizen account.</p>
           </div>
         </div>
 

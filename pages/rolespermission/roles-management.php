@@ -216,19 +216,27 @@ include '../../includes/sidebar.php';
     </div>
 
     <!-- Table Footer / Pagination -->
-    <div class="bg-slate-50/80 px-6 py-4 border-t border-slate-100 flex items-center justify-between text-[11px] font-bold text-slate-500">
-      <div id="rolesPaginationText">
-        Showing 0 to 0 of 0 defined roles
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+      <!-- Left Side: Record Counter -->
+      <div class="text-xs text-slate-500 dark:text-slate-400 font-medium" id="rolesPaginationText">
+        Showing <span class="font-semibold text-slate-700 dark:text-slate-200">0</span> to <span class="font-semibold text-slate-700 dark:text-slate-200">0</span> of <span class="font-semibold text-slate-700 dark:text-slate-200">0</span> records
       </div>
-      <div class="flex items-center space-x-1" id="rolesPaginationControls">
-        <button id="rolesPrevBtn" class="px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-400 cursor-not-allowed transition" disabled>
-          <i class="fa-solid fa-chevron-left text-[9px]"></i>
+
+      <!-- Right Side: Segmented Numbered Pagination Bar -->
+      <nav class="inline-flex -space-x-px border border-slate-200 dark:border-slate-700 rounded-none shadow-xs" aria-label="Pagination" id="rolesPaginationControls">
+        <!-- Previous Button -->
+        <button type="button" class="px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed" disabled>
+          <i class="fa-solid fa-chevron-left text-[10px]"></i>
         </button>
-        <div id="rolesPageNumbers" class="flex items-center space-x-1"></div>
-        <button id="rolesNextBtn" class="px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-400 cursor-not-allowed transition" disabled>
-          <i class="fa-solid fa-chevron-right text-[9px]"></i>
+
+        <!-- Page Number Sequence -->
+        <button type="button" class="px-3.5 py-1.5 text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50/80 dark:bg-sky-950/40 border border-sky-300 dark:border-sky-600/60 z-10 cursor-default">1</button>
+
+        <!-- Next Button -->
+        <button type="button" class="px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed border-l border-slate-200 dark:border-slate-700" disabled>
+          <i class="fa-solid fa-chevron-right text-[10px]"></i>
         </button>
-      </div>
+      </nav>
     </div>
 
   </div>

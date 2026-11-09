@@ -43,7 +43,7 @@ include '../../includes/sidebar.php';
     <div class="bg-white border border-slate-200/80 rounded-none p-5 shadow-xs flex items-center justify-between">
       <div class="space-y-1">
         <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Total Registered</span>
-        <h3 id="metricTotalResources" class="text-2xl font-black text-slate-900 tracking-tight">12</h3>
+        <h3 id="metricTotalResources" class="text-2xl font-black text-slate-900 tracking-tight">—</h3>
         <p class="text-[11px] text-slate-500 font-medium">System Resources Mapped</p>
       </div>
       <div class="h-12 w-12 rounded-none bg-brand-light border border-brand-border/60 flex items-center justify-center text-brand-dark shrink-0">
@@ -55,7 +55,7 @@ include '../../includes/sidebar.php';
     <div class="bg-white border border-slate-200/80 rounded-none p-5 shadow-xs flex items-center justify-between">
       <div class="space-y-1">
         <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Active Resources</span>
-        <h3 id="metricActiveResources" class="text-2xl font-black text-emerald-600 tracking-tight">11</h3>
+        <h3 id="metricActiveResources" class="text-2xl font-black text-emerald-600 tracking-tight">—</h3>
         <p class="text-[11px] text-slate-500 font-medium">Active Endpoints & Features</p>
       </div>
       <div class="h-12 w-12 rounded-none bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
@@ -67,7 +67,7 @@ include '../../includes/sidebar.php';
     <div class="bg-white border border-slate-200/80 rounded-none p-5 shadow-xs flex items-center justify-between">
       <div class="space-y-1">
         <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Inactive / Archived</span>
-        <h3 id="metricInactiveResources" class="text-2xl font-black text-amber-600 tracking-tight">1</h3>
+        <h3 id="metricInactiveResources" class="text-2xl font-black text-amber-600 tracking-tight">—</h3>
         <p class="text-[11px] text-slate-500 font-medium">Disabled or Archived Resources</p>
       </div>
       <div class="h-12 w-12 rounded-none bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shrink-0">
@@ -195,21 +195,27 @@ include '../../includes/sidebar.php';
     </div>
 
     <!-- Pagination Footer Container -->
-    <div id="resourcePaginationFooter" class="px-5 py-3.5 bg-slate-50/50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-semibold select-none">
-      <div id="resourcePaginationInfo" class="text-xs text-slate-500 font-medium">
-        Showing <span id="resourcePaginationStart" class="font-bold text-brand-dark">0</span> to <span id="resourcePaginationEnd" class="font-bold text-brand-dark">0</span> of <span id="resourcePaginationTotal" class="font-bold text-brand-dark">0</span> resources
+    <div id="resourcePaginationFooter" class="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+      <!-- Left Side: Record Counter -->
+      <div id="resourcePaginationInfo" class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+        Showing <span id="resourcePaginationStart" class="font-semibold text-slate-700 dark:text-slate-200">0</span> to <span id="resourcePaginationEnd" class="font-semibold text-slate-700 dark:text-slate-200">0</span> of <span id="resourcePaginationTotal" class="font-semibold text-slate-700 dark:text-slate-200">0</span> records
       </div>
-      <div class="flex items-center gap-1.5" id="resourcePaginationControls">
-        <button id="resourcePrevPageBtn" onclick="changeResourcePage(-1)" class="px-3 py-1.5 border border-slate-200 rounded-none bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-2xs">
-          <i class="fa-solid fa-chevron-left text-[10px]"></i> Previous
+
+      <!-- Right Side: Segmented Numbered Pagination Bar -->
+      <nav class="inline-flex -space-x-px border border-slate-200 dark:border-slate-700 rounded-none shadow-xs" aria-label="Pagination" id="resourcePaginationControls">
+        <!-- Previous Button -->
+        <button type="button" class="px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed" disabled>
+          <i class="fa-solid fa-chevron-left text-[10px]"></i>
         </button>
-        <div id="resourcePageNumbers" class="flex items-center gap-1 font-bold text-xs">
-          <!-- Dynamic Page Numbers -->
-        </div>
-        <button id="resourceNextPageBtn" onclick="changeResourcePage(1)" class="px-3 py-1.5 border border-slate-200 rounded-none bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-2xs">
-          Next <i class="fa-solid fa-chevron-right text-[10px]"></i>
+
+        <!-- Page Number Sequence -->
+        <button type="button" class="px-3.5 py-1.5 text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50/80 dark:bg-sky-950/40 border border-sky-300 dark:border-sky-600/60 z-10 cursor-default">1</button>
+
+        <!-- Next Button -->
+        <button type="button" class="px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed border-l border-slate-200 dark:border-slate-700" disabled>
+          <i class="fa-solid fa-chevron-right text-[10px]"></i>
         </button>
-      </div>
+      </nav>
     </div>
 
   </div>

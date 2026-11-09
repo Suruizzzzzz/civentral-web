@@ -32,49 +32,49 @@ async function fetchUserProfile() {
       if (imgEl && initialsEl) {
         imgEl.classList.add('hidden');
         initialsEl.classList.remove('hidden');
-        initialsEl.textContent = u.initials || 'JS';
+        initialsEl.textContent = u.initials || '—';
       }
     }
 
     if (document.getElementById('profileNameHeading')) {
-      document.getElementById('profileNameHeading').textContent = u.full_name || 'Joshua Suruiz';
+      document.getElementById('profileNameHeading').textContent = u.full_name || '—';
     }
     if (document.getElementById('profileRoleHeading')) {
-      document.getElementById('profileRoleHeading').textContent = u.role_name || 'Superadmin';
+      document.getElementById('profileRoleHeading').textContent = u.role_name || 'Staff';
     }
     if (document.getElementById('profileDepartmentHeading')) {
-      document.getElementById('profileDepartmentHeading').textContent = u.department_name || 'ITD';
+      document.getElementById('profileDepartmentHeading').textContent = u.department_name || '—';
     }
 
     // Metrics & Sessions
     if (document.getElementById('profileLastLogin')) {
-      document.getElementById('profileLastLogin').textContent = u.last_login || 'Active Now';
+      document.getElementById('profileLastLogin').textContent = u.last_login || '—';
     }
     if (document.getElementById('profileTotalLogins')) {
-      document.getElementById('profileTotalLogins').textContent = (u.total_logins || 1) + ' Logins';
+      document.getElementById('profileTotalLogins').textContent = u.total_logins ? `${u.total_logins} Logins` : '—';
     }
 
     // Detailed Info Grid
     if (document.getElementById('profileFullName')) {
-      document.getElementById('profileFullName').textContent = u.full_name || 'Joshua Suruiz';
+      document.getElementById('profileFullName').textContent = u.full_name || '—';
     }
     if (document.getElementById('profileEmployeeId')) {
-      document.getElementById('profileEmployeeId').textContent = u.employee_id || 'SADM-2026-001';
+      document.getElementById('profileEmployeeId').textContent = u.employee_id || '—';
     }
     if (document.getElementById('profileEmail')) {
-      document.getElementById('profileEmail').textContent = u.email || 'superadmin@civentral.gov.ph';
+      document.getElementById('profileEmail').textContent = u.email || '—';
     }
     if (document.getElementById('profileMobile')) {
-      document.getElementById('profileMobile').textContent = u.mobile_number || '09123456789';
+      document.getElementById('profileMobile').textContent = u.mobile_number || '—';
     }
     if (document.getElementById('profileDepartment')) {
-      document.getElementById('profileDepartment').textContent = u.department_name || 'Information Technology Department';
+      document.getElementById('profileDepartment').textContent = u.department_name || '—';
     }
     if (document.getElementById('profilePosition')) {
-      document.getElementById('profilePosition').textContent = u.position_name || 'System Administrator';
+      document.getElementById('profilePosition').textContent = u.position_name || '—';
     }
     if (document.getElementById('profileRole')) {
-      document.getElementById('profileRole').textContent = u.role_name || 'Superadmin';
+      document.getElementById('profileRole').textContent = u.role_name || 'Staff';
     }
     if (document.getElementById('profileStatusBadge')) {
       document.getElementById('profileStatusBadge').innerHTML = `<i class="fa-solid fa-circle text-[6px] animate-pulse"></i> ${u.status || 'Active'}`;

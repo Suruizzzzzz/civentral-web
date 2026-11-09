@@ -225,19 +225,27 @@ $canDelete = $isSuperAdmin || in_array('DELETE', $grantedActions) || in_array('R
     </div>
 
     <!-- Table Footer / Pagination -->
-    <div class="bg-slate-50/80 dark:bg-slate-950/60 px-6 py-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] font-bold text-slate-500 dark:text-slate-400">
-      <div id="paginationText">
-        Showing 1 to 5 of 5 scholarship programs
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+      <!-- Left Side: Record Counter -->
+      <div class="text-xs text-slate-500 dark:text-slate-400 font-medium" id="paginationText">
+        Showing <span class="font-semibold text-slate-700 dark:text-slate-200">1</span> to <span class="font-semibold text-slate-700 dark:text-slate-200">5</span> of <span class="font-semibold text-slate-700 dark:text-slate-200">5</span> records
       </div>
-      <div class="flex items-center space-x-1">
-        <button class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-400 cursor-not-allowed transition" disabled>
-          <i class="fa-solid fa-chevron-left text-[9px]"></i>
+
+      <!-- Right Side: Segmented Numbered Pagination Bar -->
+      <nav class="inline-flex -space-x-px border border-slate-200 dark:border-slate-700 rounded-none shadow-xs" aria-label="Pagination">
+        <!-- Previous Button -->
+        <button class="px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed" disabled>
+          <i class="fa-solid fa-chevron-left text-[10px]"></i>
         </button>
-        <button class="px-3 py-1.5 rounded-lg bg-brand-light dark:bg-slate-800 border border-brand-border dark:border-slate-700 text-brand-dark dark:text-cyan-400 font-extrabold shadow-2xs">1</button>
-        <button class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-400 cursor-not-allowed transition" disabled>
-          <i class="fa-solid fa-chevron-right text-[9px]"></i>
+
+        <!-- Page Number Sequence -->
+        <button class="px-3.5 py-1.5 text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50/80 dark:bg-sky-950/40 border border-sky-300 dark:border-sky-600/60 z-10 cursor-default">1</button>
+
+        <!-- Next Button -->
+        <button class="px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed border-l border-slate-200 dark:border-slate-700" disabled>
+          <i class="fa-solid fa-chevron-right text-[10px]"></i>
         </button>
-      </div>
+      </nav>
     </div>
 
   </div>
@@ -567,7 +575,9 @@ function renderTable(data = scholarshipPrograms) {
       </tr>
     `;
     const pagEl = document.getElementById('paginationText');
-    if (pagEl) pagEl.innerText = "Showing 0 to 0 of 0 scholarship programs";
+    if (pagEl) {
+      pagEl.innerHTML = `Showing <span class="font-semibold text-slate-700 dark:text-slate-200">0</span> to <span class="font-semibold text-slate-700 dark:text-slate-200">0</span> of <span class="font-semibold text-slate-700 dark:text-slate-200">0</span> records`;
+    }
     updateMetrics();
     return;
   }
@@ -631,20 +641,20 @@ function renderTable(data = scholarshipPrograms) {
           ` : ''}
 
           <!-- View Details Icon Button -->
-          <button type="button" onclick="openViewModal(${item.id})" class="text-slate-400 hover:text-brand-dark dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 transition cursor-pointer" title="View Program Details">
+          <button type="button" onclick="openViewModal(${item.id})" class="w-7 h-7 flex items-center justify-center border rounded-none transition cursor-pointer shadow-2xs border-sky-300 bg-sky-50 text-sky-600 hover:bg-sky-100 hover:text-sky-700 dark:border-sky-800/80 dark:bg-sky-950/40 dark:text-sky-400 dark:hover:bg-sky-900/60 dark:hover:text-sky-300" title="View Program Details">
             <i class="fa-solid fa-eye text-xs"></i>
           </button>
 
           <!-- Edit Icon Button (Permission Controlled) -->
           ${userPermissions.canEdit ? `
-          <button type="button" onclick="openEditModal(${item.id})" class="text-slate-400 hover:text-brand-dark dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800 p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 transition cursor-pointer" title="Edit Program Parameters">
-            <i class="fa-solid fa-pen-to-square text-xs"></i>
+          <button type="button" onclick="openEditModal(${item.id})" class="w-7 h-7 flex items-center justify-center border rounded-none transition cursor-pointer shadow-2xs border-amber-300 bg-amber-50 text-amber-600 hover:bg-amber-100 hover:text-amber-700 dark:border-amber-800/80 dark:bg-amber-950/40 dark:text-amber-400 dark:hover:bg-amber-900/60 dark:hover:text-amber-300" title="Edit Program Parameters">
+            <i class="fa-solid fa-pen text-xs"></i>
           </button>
           ` : ''}
 
           <!-- Archive / Delete Button (Permission Controlled) -->
           ${userPermissions.canDelete ? `
-          <button type="button" onclick="openArchiveModal(${item.id})" class="text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40 p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 transition cursor-pointer" title="Archive Program">
+          <button type="button" onclick="openArchiveModal(${item.id})" class="w-7 h-7 flex items-center justify-center border rounded-none transition cursor-pointer shadow-2xs border-rose-300 bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 dark:border-rose-800/80 dark:bg-rose-950/40 dark:text-rose-400 dark:hover:bg-rose-900/60 dark:hover:text-rose-300" title="Archive Program">
             <i class="fa-solid fa-box-archive text-xs"></i>
           </button>
           ` : ''}
@@ -657,7 +667,7 @@ function renderTable(data = scholarshipPrograms) {
 
   const pagEl = document.getElementById('paginationText');
   if (pagEl) {
-    pagEl.innerText = `Showing 1 to ${data.length} of ${scholarshipPrograms.length} scholarship programs`;
+    pagEl.innerHTML = `Showing <span class="font-semibold text-slate-700 dark:text-slate-200">${data.length > 0 ? 1 : 0}</span> to <span class="font-semibold text-slate-700 dark:text-slate-200">${data.length}</span> of <span class="font-semibold text-slate-700 dark:text-slate-200">${scholarshipPrograms.length}</span> records`;
   }
 
   updateMetrics();

@@ -42,7 +42,9 @@ function renderControlTable(list = ctrlCitizens) {
       </tr>
     `;
     const pagText = document.getElementById('ctrlPaginationText');
-    if (pagText) pagText.innerText = "Showing 0 to 0 of 0 accounts";
+    if (pagText) {
+      pagText.innerHTML = `Showing <span class="font-semibold text-slate-700 dark:text-slate-200">0</span> to <span class="font-semibold text-slate-700 dark:text-slate-200">0</span> of <span class="font-semibold text-slate-700 dark:text-slate-200">0</span> records`;
+    }
     renderControlPaginationControls(0, 1, 1);
     return;
   }
@@ -104,9 +106,8 @@ function renderControlTable(list = ctrlCitizens) {
         <!-- State Controller Actions -->
         <td class="py-3 px-4 text-right whitespace-nowrap border-b border-slate-100 dark:border-slate-800/60 align-middle">
           <div class="inline-flex items-center space-x-2.5">
-            
             <!-- Quick Action Selector Dropdown -->
-            <select onchange="if(typeof triggerStateChange === 'function') triggerStateChange('${cit.id}', this)" class="border border-slate-200 rounded-none px-2 py-1 text-[11px] bg-slate-50 hover:bg-white text-slate-650 font-bold focus:outline-none transition cursor-pointer select-none">
+            <select onchange="if(typeof triggerStateChange === 'function') triggerStateChange('${cit.id}', this)" class="border border-slate-200 dark:border-slate-700 rounded-none px-2 py-1 text-[11px] bg-slate-50 dark:bg-slate-800 hover:bg-white dark:hover:bg-slate-700/60 text-slate-650 dark:text-slate-300 font-bold focus:outline-none transition cursor-pointer select-none">
               <option value="">Choose Action</option>
               <option value="Activate">Activate</option>
               <option value="Deactivate">Deactivate</option>
@@ -115,12 +116,6 @@ function renderControlTable(list = ctrlCitizens) {
               <option value="Suspend">Suspend Profile</option>
               <option value="Restore">Restore Defaults</option>
             </select>
-
-            <!-- Security Audit Timeline icon -->
-            <button onclick="if(typeof openTimelineModal === 'function') openTimelineModal('${cit.id}')" class="text-slate-400 hover:text-[#0f172a] hover:bg-slate-50 p-1.5 rounded-none border border-transparent hover:border-slate-150 transition cursor-pointer" title="View Security Audits">
-              <i class="fa-solid fa-clock-rotate-left text-xs"></i>
-            </button>
-
           </div>
         </td>
       </tr>
@@ -129,108 +124,65 @@ function renderControlTable(list = ctrlCitizens) {
   });
 
   const pagText = document.getElementById('ctrlPaginationText');
-  if (pagText) pagText.innerText = `Showing ${startIndex + 1} to ${endIndex} of ${totalItems} accounts`;
+  if (pagText) {
+    pagText.innerHTML = `Showing <span class="font-semibold text-slate-700 dark:text-slate-200">${startIndex + 1}</span> to <span class="font-semibold text-slate-700 dark:text-slate-200">${endIndex}</span> of <span class="font-semibold text-slate-700 dark:text-slate-200">${totalItems}</span> records`;
+  }
 
   renderControlPaginationControls(totalItems, totalPages, currentCtrlPage);
 }
 
 // RENDER CONTROL PAGINATION CONTROLS
 function renderControlPaginationControls(totalItems, totalPages, currentPage) {
-  const prevBtn = document.getElementById('ctrlPrevBtn');
-  const nextBtn = document.getElementById('ctrlNextBtn');
-  const pageNumbersContainer = document.getElementById('ctrlPageNumbers');
+  const container = document.getElementById('ctrlPaginationControls');
+  if (!container) return;
 
-  if (prevBtn) {
-    const isPrevDisabled = currentPage <= 1 || totalItems === 0;
-    prevBtn.disabled = isPrevDisabled;
-    if (isPrevDisabled) {
-      prevBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white text-slate-300 cursor-not-allowed transition";
+  const isPrevDisabled = currentPage <= 1 || totalItems === 0;
+  const isNextDisabled = currentPage >= totalPages || totalItems === 0;
+
+  let html = `
+    <!-- Previous Button -->
+    <button type="button" class="${isPrevDisabled ? 'px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed' : 'px-3 py-1.5 text-xs font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/60 transition cursor-pointer'}" 
+            ${isPrevDisabled ? 'disabled' : ''} onclick="window.changeControlPage(${currentPage - 1})" aria-label="Previous Page">
+      <i class="fa-solid fa-chevron-left text-[10px]"></i>
+    </button>
+  `;
+
+  if (totalItems === 0) {
+    html += `
+      <button type="button" class="px-3.5 py-1.5 text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50/80 dark:bg-sky-950/40 border border-sky-300 dark:border-sky-600/60 z-10 cursor-default" disabled>1</button>
+    `;
+  } else {
+    let pages = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else if (currentPage <= 4) {
+      pages = [1, 2, 3, 4, 5, '...', totalPages];
+    } else if (currentPage >= totalPages - 3) {
+      pages = [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
     } else {
-      prevBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 cursor-pointer transition";
-    }
-    prevBtn.onclick = () => {
-      if (!isPrevDisabled) window.changeControlPage(currentPage - 1);
-    };
-  }
-
-  if (nextBtn) {
-    const isNextDisabled = currentPage >= totalPages || totalItems === 0;
-    nextBtn.disabled = isNextDisabled;
-    if (isNextDisabled) {
-      nextBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white text-slate-300 cursor-not-allowed transition";
-    } else {
-      nextBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 cursor-pointer transition";
-    }
-    nextBtn.onclick = () => {
-      if (!isNextDisabled) window.changeControlPage(currentPage + 1);
-    };
-  }
-
-  if (pageNumbersContainer) {
-    pageNumbersContainer.innerHTML = '';
-    if (totalItems === 0) {
-      pageNumbersContainer.innerHTML = `<button class="px-3 py-1.5 rounded-none bg-brand-light border border-brand-border text-brand-dark font-extrabold shadow-2xs" disabled>1</button>`;
-      return;
+      pages = [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
     }
 
-    let startPage = 1;
-    let endPage = totalPages;
-
-    if (totalPages > 7) {
-      if (currentPage <= 4) {
-        startPage = 1;
-        endPage = 5;
-      } else if (currentPage >= totalPages - 3) {
-        startPage = totalPages - 4;
-        endPage = totalPages;
+    pages.forEach(p => {
+      if (p === '...') {
+        html += `<span class="px-3.5 py-1.5 text-xs font-medium text-slate-400 dark:text-slate-500 border-l border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 select-none">...</span>`;
+      } else if (p === currentPage) {
+        html += `<button type="button" class="px-3.5 py-1.5 text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50/80 dark:bg-sky-950/40 border border-sky-300 dark:border-sky-600/60 z-10 cursor-default" aria-current="page">${p}</button>`;
       } else {
-        startPage = currentPage - 2;
-        endPage = currentPage + 2;
+        html += `<button type="button" class="px-3.5 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/60 border-l border-slate-200 dark:border-slate-700 transition cursor-pointer" onclick="window.changeControlPage(${p})">${p}</button>`;
       }
-    }
-
-    if (startPage > 1) {
-      const firstBtn = document.createElement('button');
-      firstBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold cursor-pointer transition";
-      firstBtn.textContent = '1';
-      firstBtn.onclick = () => window.changeControlPage(1);
-      pageNumbersContainer.appendChild(firstBtn);
-
-      if (startPage > 2) {
-        const dots = document.createElement('span');
-        dots.className = "px-1.5 text-slate-400 font-bold select-none";
-        dots.textContent = '...';
-        pageNumbersContainer.appendChild(dots);
-      }
-    }
-
-    for (let p = startPage; p <= endPage; p++) {
-      const pageBtn = document.createElement('button');
-      if (p === currentPage) {
-        pageBtn.className = "px-3 py-1.5 rounded-none bg-brand-light border border-brand-border text-brand-dark font-extrabold shadow-2xs cursor-pointer";
-      } else {
-        pageBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold cursor-pointer transition";
-      }
-      pageBtn.textContent = p;
-      pageBtn.onclick = () => window.changeControlPage(p);
-      pageNumbersContainer.appendChild(pageBtn);
-    }
-
-    if (endPage < totalPages) {
-      if (endPage < totalPages - 1) {
-        const dots = document.createElement('span');
-        dots.className = "px-1.5 text-slate-400 font-bold select-none";
-        dots.textContent = '...';
-        pageNumbersContainer.appendChild(dots);
-      }
-
-      const lastBtn = document.createElement('button');
-      lastBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold cursor-pointer transition";
-      lastBtn.textContent = totalPages;
-      lastBtn.onclick = () => window.changeControlPage(totalPages);
-      pageNumbersContainer.appendChild(lastBtn);
-    }
+    });
   }
+
+  html += `
+    <!-- Next Button -->
+    <button type="button" class="${isNextDisabled ? 'px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed border-l border-slate-200 dark:border-slate-700' : 'px-3 py-1.5 text-xs font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/60 border-l border-slate-200 dark:border-slate-700 transition cursor-pointer'}" 
+            ${isNextDisabled ? 'disabled' : ''} onclick="window.changeControlPage(${currentPage + 1})" aria-label="Next Page">
+      <i class="fa-solid fa-chevron-right text-[10px]"></i>
+    </button>
+  `;
+
+  container.innerHTML = html;
 }
 
 // UPDATE STATUS RIBBON STATISTICS

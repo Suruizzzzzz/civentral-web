@@ -242,21 +242,27 @@ include '../../includes/sidebar.php';
     </div>
 
     <!-- Pagination Footer Container (50 per page) -->
-    <div id="paginationFooter" class="px-5 py-3.5 bg-[#EEF5FF]/60 border-t border-[#B4D4FF]/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-semibold select-none dark:bg-slate-800/60 dark:border-slate-700">
-      <div id="paginationInfo" class="text-xs text-slate-500 font-medium dark:text-slate-400">
-        Showing <span id="paginationStart" class="font-bold text-[#176B87] dark:text-[#86B6F6]">0</span> to <span id="paginationEnd" class="font-bold text-[#176B87] dark:text-[#86B6F6]">0</span> of <span id="paginationTotal" class="font-bold text-[#176B87] dark:text-[#86B6F6]">0</span> entries
+    <div id="paginationFooter" class="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+      <!-- Left Side: Record Counter -->
+      <div id="paginationInfo" class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+        Showing <span id="paginationStart" class="font-semibold text-slate-700 dark:text-slate-200">0</span> to <span id="paginationEnd" class="font-semibold text-slate-700 dark:text-slate-200">0</span> of <span id="paginationTotal" class="font-semibold text-slate-700 dark:text-slate-200">0</span> records
       </div>
-      <div class="flex items-center gap-1.5" id="paginationControls">
-        <button id="prevPageBtn" onclick="changePage(-1)" class="px-3 py-1.5 border border-[#B4D4FF] rounded-none bg-white hover:bg-[#EEF5FF] disabled:opacity-40 disabled:cursor-not-allowed text-[#176B87] font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-sm dark:bg-slate-800 dark:border-slate-600 dark:text-[#86B6F6] dark:hover:bg-slate-700">
-          <i class="fa-solid fa-chevron-left text-[10px]"></i> Previous
+
+      <!-- Right Side: Segmented Numbered Pagination Bar -->
+      <nav class="inline-flex -space-x-px border border-slate-200 dark:border-slate-700 rounded-none shadow-xs" aria-label="Pagination" id="paginationControls">
+        <!-- Previous Button -->
+        <button type="button" class="px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed" disabled>
+          <i class="fa-solid fa-chevron-left text-[10px]"></i>
         </button>
-        <div id="pageNumbers" class="flex items-center gap-1 font-bold text-xs">
-          <!-- Dynamic Page Numbers -->
-        </div>
-        <button id="nextPageBtn" onclick="changePage(1)" class="px-3 py-1.5 border border-[#B4D4FF] rounded-none bg-white hover:bg-[#EEF5FF] disabled:opacity-40 disabled:cursor-not-allowed text-[#176B87] font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-sm dark:bg-slate-800 dark:border-slate-600 dark:text-[#86B6F6] dark:hover:bg-slate-700">
-          Next <i class="fa-solid fa-chevron-right text-[10px]"></i>
+
+        <!-- Page Number Sequence -->
+        <button type="button" class="px-3.5 py-1.5 text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50/80 dark:bg-sky-950/40 border border-sky-300 dark:border-sky-600/60 z-10 cursor-default">1</button>
+
+        <!-- Next Button -->
+        <button type="button" class="px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed border-l border-slate-200 dark:border-slate-700" disabled>
+          <i class="fa-solid fa-chevron-right text-[10px]"></i>
         </button>
-      </div>
+      </nav>
     </div>
   </div>
 
@@ -272,7 +278,7 @@ include '../../includes/sidebar.php';
           </div>
           <div>
             <h3 class="text-sm font-black text-slate-900">Session Profile Inspector</h3>
-            <span id="modalLogId" class="font-mono text-[10px] font-black text-slate-400 uppercase">#LOG-45091</span>
+            <span id="modalLogId" class="font-mono text-[10px] font-black text-slate-400 uppercase">—</span>
           </div>
         </div>
       </div>
@@ -285,8 +291,8 @@ include '../../includes/sidebar.php';
             <!-- Dynamic Icon -->
           </div>
           <div>
-            <h4 id="modalStatusTitle" class="text-xs font-bold">Successful Login</h4>
-            <p id="modalStatusMsg" class="text-[10px] leading-relaxed font-semibold">Security token registered. Session initialized.</p>
+            <h4 id="modalStatusTitle" class="text-xs font-bold">—</h4>
+            <p id="modalStatusMsg" class="text-[10px] leading-relaxed font-semibold">—</p>
           </div>
         </div>
 
@@ -294,18 +300,18 @@ include '../../includes/sidebar.php';
         <div class="grid grid-cols-2 gap-y-4 gap-x-6 border-b border-slate-100 pb-5 text-xs">
           <div>
             <span class="text-[9px] font-black uppercase tracking-wider text-slate-400 block mb-1">Actor Account</span>
-            <div id="modalActorName" class="font-bold text-slate-900">joshua.suruiz</div>
-            <div id="modalActorEmail" class="text-[10px] text-slate-500 font-semibold mt-0.5">joshua@caloocan.gov.ph</div>
+            <div id="modalActorName" class="font-bold text-slate-900">—</div>
+            <div id="modalActorEmail" class="text-[10px] text-slate-500 font-semibold mt-0.5">—</div>
           </div>
           
           <div>
             <span class="text-[9px] font-black uppercase tracking-wider text-slate-400 block mb-1">Role / Department</span>
-            <div id="modalRoleDept" class="font-bold text-slate-900">Superadmin | Central IT</div>
+            <div id="modalRoleDept" class="font-bold text-slate-900">—</div>
           </div>
 
           <div>
             <span class="text-[9px] font-black uppercase tracking-wider text-slate-400 block mb-1">Login Time</span>
-            <div id="modalLoginTime" class="font-bold text-slate-900">Jul 18, 2026, 08:30 AM</div>
+            <div id="modalLoginTime" class="font-bold text-slate-900">—</div>
           </div>
 
           <div>
@@ -315,7 +321,7 @@ include '../../includes/sidebar.php';
 
           <div>
             <span class="text-[9px] font-black uppercase tracking-wider text-slate-400 block mb-1">Session Lifespan</span>
-            <div id="modalLifespan" class="font-bold text-slate-900">Active</div>
+            <div id="modalLifespan" class="font-bold text-slate-900">—</div>
           </div>
 
           <div>
@@ -327,21 +333,21 @@ include '../../includes/sidebar.php';
 
           <div class="col-span-2 bg-slate-50 border border-slate-200/60 p-3.5 rounded-none space-y-2">
             <span class="text-[9px] font-black uppercase tracking-wider text-slate-400 block mb-0.5">Access Log Details</span>
-            <p id="modalLogDetails" class="text-[10px] font-semibold text-slate-700 leading-relaxed">Successful MFA challenge verified using hardware security key (YubiKey 5C).</p>
+            <p id="modalLogDetails" class="text-[10px] font-semibold text-slate-700 leading-relaxed">—</p>
           </div>
 
           <div class="col-span-2 grid grid-cols-3 gap-4 bg-slate-50 border border-slate-200/60 p-3.5 rounded-none font-mono text-[10px]">
             <div>
               <span class="text-[8px] font-black uppercase tracking-wider text-slate-400 block mb-0.5">IP Address</span>
-              <span id="modalIp" class="font-bold text-slate-700">192.168.1.12</span>
+              <span id="modalIp" class="font-bold text-slate-700">—</span>
             </div>
             <div>
               <span class="text-[8px] font-black uppercase tracking-wider text-slate-400 block mb-0.5">Device Platform</span>
-              <span id="modalDevice" class="font-bold text-slate-700">Desktop - Chrome</span>
+              <span id="modalDevice" class="font-bold text-slate-700">—</span>
             </div>
             <div>
               <span class="text-[8px] font-black uppercase tracking-wider text-slate-400 block mb-0.5">Approx. Location</span>
-              <span id="modalLocation" class="font-bold text-slate-700">Caloocan City, PH</span>
+              <span id="modalLocation" class="font-bold text-slate-700">—</span>
             </div>
           </div>
         </div>

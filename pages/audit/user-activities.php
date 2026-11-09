@@ -90,7 +90,7 @@ include '../../includes/sidebar.php';
           <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
             <i class="fa-solid fa-magnifying-glass text-xs"></i>
           </span>
-          <input type="text" id="filterSearch" oninput="applyFilters()" placeholder="e.g. Joshua Suruiz, #ACT-90812..."
+          <input type="text" id="filterSearch" oninput="applyFilters()" placeholder="Search by user, action, or log ID..."
             class="w-full bg-white border border-slate-200 text-slate-700 font-semibold text-xs rounded-none pl-10 pr-4 py-2.5 focus:outline-none focus:border-[#0f172a] focus:ring-2 focus:ring-[#0f172a]/10 transition placeholder-slate-400">
         </div>
       </div>
@@ -210,21 +210,27 @@ include '../../includes/sidebar.php';
     </div>
 
     <!-- Pagination Footer Container (50 per page) -->
-    <div id="paginationFooter" class="px-5 py-3.5 bg-[#EEF5FF]/60 border-t border-[#B4D4FF]/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-semibold select-none dark:bg-slate-800/60 dark:border-slate-700">
-      <div id="paginationInfo" class="text-xs text-slate-500 font-medium dark:text-slate-400">
-        Showing <span id="paginationStart" class="font-bold text-[#176B87] dark:text-[#86B6F6]">0</span> to <span id="paginationEnd" class="font-bold text-[#176B87] dark:text-[#86B6F6]">0</span> of <span id="paginationTotal" class="font-bold text-[#176B87] dark:text-[#86B6F6]">0</span> entries
+    <div id="paginationFooter" class="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+      <!-- Left Side: Record Counter -->
+      <div id="paginationInfo" class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+        Showing <span id="paginationStart" class="font-semibold text-slate-700 dark:text-slate-200">0</span> to <span id="paginationEnd" class="font-semibold text-slate-700 dark:text-slate-200">0</span> of <span id="paginationTotal" class="font-semibold text-slate-700 dark:text-slate-200">0</span> records
       </div>
-      <div class="flex items-center gap-1.5" id="paginationControls">
-        <button id="prevPageBtn" onclick="window.civAudit.userActivities.ui.changePage(-1)" class="px-3 py-1.5 border border-[#B4D4FF] rounded-none bg-white hover:bg-[#EEF5FF] disabled:opacity-40 disabled:cursor-not-allowed text-[#176B87] font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-sm dark:bg-slate-800 dark:border-slate-600 dark:text-[#86B6F6] dark:hover:bg-slate-700">
-          <i class="fa-solid fa-chevron-left text-[10px]"></i> Previous
+
+      <!-- Right Side: Segmented Numbered Pagination Bar -->
+      <nav class="inline-flex -space-x-px border border-slate-200 dark:border-slate-700 rounded-none shadow-xs" aria-label="Pagination" id="paginationControls">
+        <!-- Previous Button -->
+        <button type="button" class="px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed" disabled>
+          <i class="fa-solid fa-chevron-left text-[10px]"></i>
         </button>
-        <div id="pageNumbers" class="flex items-center gap-1 font-bold text-xs">
-          <!-- Dynamic Page Numbers -->
-        </div>
-        <button id="nextPageBtn" onclick="window.civAudit.userActivities.ui.changePage(1)" class="px-3 py-1.5 border border-[#B4D4FF] rounded-none bg-white hover:bg-[#EEF5FF] disabled:opacity-40 disabled:cursor-not-allowed text-[#176B87] font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-sm dark:bg-slate-800 dark:border-slate-600 dark:text-[#86B6F6] dark:hover:bg-slate-700">
-          Next <i class="fa-solid fa-chevron-right text-[10px]"></i>
+
+        <!-- Page Number Sequence -->
+        <button type="button" class="px-3.5 py-1.5 text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50/80 dark:bg-sky-950/40 border border-sky-300 dark:border-sky-600/60 z-10 cursor-default">1</button>
+
+        <!-- Next Button -->
+        <button type="button" class="px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed border-l border-slate-200 dark:border-slate-700" disabled>
+          <i class="fa-solid fa-chevron-right text-[10px]"></i>
         </button>
-      </div>
+      </nav>
     </div>
   </div>
 
@@ -240,7 +246,7 @@ include '../../includes/sidebar.php';
           </div>
           <div>
             <h3 class="text-sm font-black text-slate-900">Audit Log Details</h3>
-            <span id="modalActId" class="font-mono text-[10px] font-black text-slate-400 uppercase">#ACT-90812</span>
+            <span id="modalActId" class="font-mono text-[10px] font-black text-slate-400 uppercase">—</span>
           </div>
         </div>
       </div>
@@ -253,8 +259,8 @@ include '../../includes/sidebar.php';
             <!-- Dynamic Icon -->
           </div>
           <div>
-            <h4 id="modalStatusTitle" class="text-xs font-bold">Transaction Success</h4>
-            <p id="modalStatusMsg" class="text-[10px] leading-relaxed font-semibold">The action was verified and committed successfully in the municipal portal.</p>
+            <h4 id="modalStatusTitle" class="text-xs font-bold">—</h4>
+            <p id="modalStatusMsg" class="text-[10px] leading-relaxed font-semibold">—</p>
           </div>
         </div>
 
@@ -262,7 +268,7 @@ include '../../includes/sidebar.php';
         <div class="grid grid-cols-2 gap-y-4 gap-x-6 border-b border-slate-100 pb-5 text-xs">
           <div>
             <span class="text-[9px] font-black uppercase tracking-wider text-slate-400 block mb-1">Actor Identity</span>
-            <div id="modalActorName" class="font-bold text-slate-900">Joshua Suruiz</div>
+            <div id="modalActorName" class="font-bold text-slate-900">—</div>
             <div id="modalActorRole" class="mt-1">
               <!-- Dynamic badge -->
             </div>
@@ -270,36 +276,36 @@ include '../../includes/sidebar.php';
           
           <div>
             <span class="text-[9px] font-black uppercase tracking-wider text-slate-400 block mb-1">Date & Time</span>
-            <div id="modalDateTime" class="font-bold text-slate-900">Jul 18, 2026 at 09:20 AM</div>
+            <div id="modalDateTime" class="font-bold text-slate-900">—</div>
             <div class="text-[10px] text-slate-400 font-semibold mt-1">LGU Caloocan Local Time</div>
           </div>
 
           <div>
             <span class="text-[9px] font-black uppercase tracking-wider text-slate-400 block mb-1">Department Branch</span>
-            <div id="modalDepartment" class="font-bold text-slate-900">Education & Scholarship</div>
+            <div id="modalDepartment" class="font-bold text-slate-900">—</div>
           </div>
 
           <div>
             <span class="text-[9px] font-black uppercase tracking-wider text-slate-400 block mb-1">Module Target</span>
-            <div id="modalModule" class="font-bold text-slate-900">User Management</div>
+            <div id="modalModule" class="font-bold text-slate-900">—</div>
           </div>
 
           <div class="col-span-2">
             <span class="text-[9px] font-black uppercase tracking-wider text-slate-400 block mb-1">Action Performed</span>
             <div class="flex items-center gap-2 mt-1">
-              <span id="modalActionBadge" class="inline-flex items-center px-1.5 py-0.5 rounded-none text-[9px] font-black uppercase">Create</span>
-              <span id="modalActionDesc" class="font-extrabold text-slate-900 leading-snug">Created Department Admin Account</span>
+              <span id="modalActionBadge" class="inline-flex items-center px-1.5 py-0.5 rounded-none text-[9px] font-black uppercase">—</span>
+              <span id="modalActionDesc" class="font-extrabold text-slate-900 leading-snug">—</span>
             </div>
           </div>
 
           <div class="col-span-2 grid grid-cols-2 gap-4 bg-slate-50 border border-slate-200/60 p-3.5 rounded-none">
             <div>
               <span class="text-[9px] font-black uppercase tracking-wider text-slate-400 block mb-0.5">IP Address</span>
-              <span id="modalIp" class="font-mono font-bold text-slate-700 text-xs">192.168.1.45</span>
+              <span id="modalIp" class="font-mono font-bold text-slate-700 text-xs">—</span>
             </div>
             <div>
               <span class="text-[9px] font-black uppercase tracking-wider text-slate-400 block mb-0.5">Device & Browser</span>
-              <span id="modalDevice" class="font-bold text-slate-700 text-xs">Chrome - Windows</span>
+              <span id="modalDevice" class="font-bold text-slate-700 text-xs">—</span>
             </div>
           </div>
         </div>

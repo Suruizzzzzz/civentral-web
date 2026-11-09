@@ -1361,7 +1361,7 @@ function handleGetNotifications(array $input, $db): void {
             'data' => [
                 [
                     'notification_id' => 'ALT-1001',
-                    'title' => 'Welcome to CIVentral',
+                    'title' => 'Welcome to Civentral',
                     'body' => 'Your municipal portal account is active. Access city services seamlessly.',
                     'category' => 'Broadcast',
                     'timestamp' => 'Just now',

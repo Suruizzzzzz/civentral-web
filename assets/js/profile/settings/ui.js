@@ -36,7 +36,7 @@ function populateProfileUI() {
   if (sumDept) sumDept.innerText = userProfile.department_name || '';
 
   const sumMemberSince = document.getElementById('summaryMemberSince');
-  if (sumMemberSince) sumMemberSince.innerText = userProfile.created_date || 'Jan 2026';
+  if (sumMemberSince) sumMemberSince.innerText = userProfile.created_date || userProfile.created_at || '—';
 
   // Editable input fields
   const fName = document.getElementById('fieldFullName');

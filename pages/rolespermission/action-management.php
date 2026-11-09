@@ -43,7 +43,7 @@ include '../../includes/sidebar.php';
     <div class="bg-white border border-slate-200/80 rounded-none p-5 shadow-xs flex items-center justify-between">
       <div class="space-y-1">
         <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Total Registered</span>
-        <h3 id="metricTotalActions" class="text-2xl font-black text-slate-900 tracking-tight">9</h3>
+        <h3 id="metricTotalActions" class="text-2xl font-black text-slate-900 tracking-tight">—</h3>
         <p class="text-[11px] text-slate-500 font-medium">System Action Verbs</p>
       </div>
       <div class="h-12 w-12 rounded-none bg-brand-light border border-brand-border/60 flex items-center justify-center text-brand-dark shrink-0">
@@ -55,7 +55,7 @@ include '../../includes/sidebar.php';
     <div class="bg-white border border-slate-200/80 rounded-none p-5 shadow-xs flex items-center justify-between">
       <div class="space-y-1">
         <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Active Verbs</span>
-        <h3 id="metricActiveActions" class="text-2xl font-black text-emerald-600 tracking-tight">7</h3>
+        <h3 id="metricActiveActions" class="text-2xl font-black text-emerald-600 tracking-tight">—</h3>
         <p class="text-[11px] text-slate-500 font-medium">Active Action Privileges</p>
       </div>
       <div class="h-12 w-12 rounded-none bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
@@ -67,7 +67,7 @@ include '../../includes/sidebar.php';
     <div class="bg-white border border-slate-200/80 rounded-none p-5 shadow-xs flex items-center justify-between">
       <div class="space-y-1">
         <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Inactive / Archived</span>
-        <h3 id="metricInactiveActions" class="text-2xl font-black text-amber-600 tracking-tight">2</h3>
+        <h3 id="metricInactiveActions" class="text-2xl font-black text-amber-600 tracking-tight">—</h3>
         <p class="text-[11px] text-slate-500 font-medium">Disabled or Archived Actions</p>
       </div>
       <div class="h-12 w-12 rounded-none bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shrink-0">
@@ -161,21 +161,27 @@ include '../../includes/sidebar.php';
     </div>
 
     <!-- Pagination Footer Container -->
-    <div id="actionPaginationFooter" class="px-5 py-3.5 bg-slate-50/50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-semibold select-none">
-      <div id="actionPaginationInfo" class="text-xs text-slate-500 font-medium">
-        Showing <span id="actionPaginationStart" class="font-bold text-brand-dark">0</span> to <span id="actionPaginationEnd" class="font-bold text-brand-dark">0</span> of <span id="actionPaginationTotal" class="font-bold text-brand-dark">0</span> actions
+    <div id="actionPaginationFooter" class="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+      <!-- Left Side: Record Counter -->
+      <div id="actionPaginationInfo" class="text-xs text-slate-500 dark:text-slate-400 font-medium">
+        Showing <span id="actionPaginationStart" class="font-semibold text-slate-700 dark:text-slate-200">0</span> to <span id="actionPaginationEnd" class="font-semibold text-slate-700 dark:text-slate-200">0</span> of <span id="actionPaginationTotal" class="font-semibold text-slate-700 dark:text-slate-200">0</span> records
       </div>
-      <div class="flex items-center gap-1.5" id="actionPaginationControls">
-        <button id="actionPrevPageBtn" onclick="changeActionPage(-1)" class="px-3 py-1.5 border border-slate-200 rounded-none bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-2xs">
-          <i class="fa-solid fa-chevron-left text-[10px]"></i> Previous
+
+      <!-- Right Side: Segmented Numbered Pagination Bar -->
+      <nav class="inline-flex -space-x-px border border-slate-200 dark:border-slate-700 rounded-none shadow-xs" aria-label="Pagination" id="actionPaginationControls">
+        <!-- Previous Button -->
+        <button type="button" class="px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed" disabled>
+          <i class="fa-solid fa-chevron-left text-[10px]"></i>
         </button>
-        <div id="actionPageNumbers" class="flex items-center gap-1 font-bold text-xs">
-          <!-- Dynamic Page Numbers -->
-        </div>
-        <button id="actionNextPageBtn" onclick="changeActionPage(1)" class="px-3 py-1.5 border border-slate-200 rounded-none bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 font-bold transition flex items-center gap-1 text-xs cursor-pointer shadow-2xs">
-          Next <i class="fa-solid fa-chevron-right text-[10px]"></i>
+
+        <!-- Page Number Sequence -->
+        <button type="button" class="px-3.5 py-1.5 text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50/80 dark:bg-sky-950/40 border border-sky-300 dark:border-sky-600/60 z-10 cursor-default">1</button>
+
+        <!-- Next Button -->
+        <button type="button" class="px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed border-l border-slate-200 dark:border-slate-700" disabled>
+          <i class="fa-solid fa-chevron-right text-[10px]"></i>
         </button>
-      </div>
+      </nav>
     </div>
 
   </div>
@@ -339,7 +345,7 @@ function getNowTimestamp() {
 
 // INITIAL SYSTEM ACTION VERBS DATASTORE CONNECTED TO DATABASE
 let systemActions = [];
-let currentUserScope = null;
+window.currentUserScope = window.currentUserScope || 'Global';
 let archiveTargetActionId = null;
 
 // FETCH ACTIONS FROM Database API
@@ -356,7 +362,7 @@ async function fetchActions() {
         created_at: a.created_at ? a.created_at.replace('T', ' ').substring(0, 19) : '',
         updated_at: a.updated_at ? a.updated_at.replace('T', ' ').substring(0, 19) : ''
       }));
-      currentUserScope = result.current_user || null;
+      window.currentUserScope = result.current_user || null;
       filterActions();
     } else {
       console.warn('Actions fetch notice:', result.message);
@@ -420,8 +426,8 @@ function renderActionsTable(dataToRender = systemActions, resetPage = true) {
   const endIdx = Math.min(startIdx + actionPageSize, dataToRender.length);
   const pageItems = dataToRender.slice(startIdx, endIdx);
 
-  const isSuperAdmin = currentUserScope ? !!currentUserScope.is_superadmin : false;
-  const grantedActions = currentUserScope ? (currentUserScope.granted_actions || []) : [];
+  const isSuperAdmin = window.currentUserScope ? !!window.currentUserScope.is_superadmin : false;
+  const grantedActions = window.currentUserScope ? (window.currentUserScope.granted_actions || []) : [];
   const canEdit = isSuperAdmin || grantedActions.includes('EDIT');
 
   pageItems.forEach(act => {
@@ -495,10 +501,10 @@ function renderActionsTable(dataToRender = systemActions, resetPage = true) {
           <button 
             type="button" 
             onclick="openEditActionModal(${act.id})" 
-            class="h-8 w-8 rounded-none border border-slate-200 hover:bg-slate-100 text-slate-600 hover:text-brand-dark flex items-center justify-center transition cursor-pointer"
+            class="w-7 h-7 flex items-center justify-center border rounded-none transition cursor-pointer shadow-2xs border-amber-300 bg-amber-50 text-amber-600 hover:bg-amber-100 hover:text-amber-700 dark:border-amber-800/80 dark:bg-amber-950/40 dark:text-amber-400 dark:hover:bg-amber-900/60 dark:hover:text-amber-300"
             title="Edit Action Verb"
           >
-            <i class="fa-solid fa-pen-to-square text-xs"></i>
+            <i class="fa-solid fa-pen text-xs"></i>
           </button>
 
           ${isArchived ? `
@@ -506,18 +512,17 @@ function renderActionsTable(dataToRender = systemActions, resetPage = true) {
           <button 
             type="button" 
             onclick="restoreAction(${act.id})" 
-            class="px-2.5 py-1.5 rounded-none border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-[11px] flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
+            class="w-7 h-7 flex items-center justify-center border rounded-none transition cursor-pointer shadow-2xs border-emerald-300 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 hover:text-emerald-700 dark:border-emerald-800/80 dark:bg-emerald-950/40 dark:text-emerald-400 dark:hover:bg-emerald-900/60 dark:hover:text-emerald-300"
             title="Restore Action to Active Tab"
           >
             <i class="fa-solid fa-rotate-left text-xs"></i>
-            <span>Restore</span>
           </button>
           ` : `
           <!-- Archive Button -->
           <button 
             type="button" 
             onclick="openArchiveActionModal(${act.id})" 
-            class="h-8 w-8 rounded-none border border-slate-200 hover:bg-amber-50 text-slate-400 hover:text-amber-600 flex items-center justify-center transition cursor-pointer"
+            class="w-7 h-7 flex items-center justify-center border rounded-none transition cursor-pointer shadow-2xs border-rose-300 bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 dark:border-rose-800/80 dark:bg-rose-950/40 dark:text-rose-400 dark:hover:bg-rose-900/60 dark:hover:text-rose-300"
             title="Archive Action"
           >
             <i class="fa-solid fa-box-archive text-xs"></i>
@@ -534,27 +539,60 @@ function renderActionsTable(dataToRender = systemActions, resetPage = true) {
   const startEl = document.getElementById('actionPaginationStart');
   const endEl = document.getElementById('actionPaginationEnd');
   const totalEl = document.getElementById('actionPaginationTotal');
-  const prevBtn = document.getElementById('actionPrevPageBtn');
-  const nextBtn = document.getElementById('actionNextPageBtn');
-  const pageNumsEl = document.getElementById('actionPageNumbers');
+  const container = document.getElementById('actionPaginationControls');
 
   if (startEl) startEl.textContent = dataToRender.length > 0 ? (startIdx + 1) : 0;
   if (endEl) endEl.textContent = endIdx;
   if (totalEl) totalEl.textContent = dataToRender.length;
 
-  if (prevBtn) prevBtn.disabled = (currentActionPage <= 1);
-  if (nextBtn) nextBtn.disabled = (currentActionPage >= totalPages);
+  if (container) {
+    const isPrevDisabled = currentActionPage <= 1 || dataToRender.length === 0;
+    const isNextDisabled = currentActionPage >= totalPages || dataToRender.length === 0;
 
-  if (pageNumsEl) {
-    let numsHtml = '';
-    for (let p = 1; p <= totalPages; p++) {
-      if (p === currentActionPage) {
-        numsHtml += `<button type="button" onclick="goToActionPage(${p})" class="h-7 w-7 rounded-none bg-[#86B6F6] text-slate-900 font-extrabold text-xs flex items-center justify-center cursor-pointer shadow-2xs">${p}</button>`;
+    let html = `
+      <!-- Previous Button -->
+      <button type="button" class="${isPrevDisabled ? 'px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed' : 'px-3 py-1.5 text-xs font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/60 transition cursor-pointer'}" 
+              ${isPrevDisabled ? 'disabled' : ''} onclick="goToActionPage(${currentActionPage - 1})" aria-label="Previous Page">
+        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+      </button>
+    `;
+
+    if (dataToRender.length === 0) {
+      html += `
+        <button type="button" class="px-3.5 py-1.5 text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50/80 dark:bg-sky-950/40 border border-sky-300 dark:border-sky-600/60 z-10 cursor-default" disabled>1</button>
+      `;
+    } else {
+      let pages = [];
+      if (totalPages <= 7) {
+        for (let i = 1; i <= totalPages; i++) pages.push(i);
+      } else if (currentActionPage <= 4) {
+        pages = [1, 2, 3, 4, 5, '...', totalPages];
+      } else if (currentActionPage >= totalPages - 3) {
+        pages = [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
       } else {
-        numsHtml += `<button type="button" onclick="goToActionPage(${p})" class="h-7 w-7 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold text-xs flex items-center justify-center cursor-pointer">${p}</button>`;
+        pages = [1, '...', currentActionPage - 1, currentActionPage, currentActionPage + 1, '...', totalPages];
       }
+
+      pages.forEach(p => {
+        if (p === '...') {
+          html += `<span class="px-3.5 py-1.5 text-xs font-medium text-slate-400 dark:text-slate-500 border-l border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 select-none">...</span>`;
+        } else if (p === currentActionPage) {
+          html += `<button type="button" class="px-3.5 py-1.5 text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50/80 dark:bg-sky-950/40 border border-sky-300 dark:border-sky-600/60 z-10 cursor-default" aria-current="page">${p}</button>`;
+        } else {
+          html += `<button type="button" class="px-3.5 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/60 border-l border-slate-200 dark:border-slate-700 transition cursor-pointer" onclick="goToActionPage(${p})">${p}</button>`;
+        }
+      });
     }
-    pageNumsEl.innerHTML = numsHtml;
+
+    html += `
+      <!-- Next Button -->
+      <button type="button" class="${isNextDisabled ? 'px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed border-l border-slate-200 dark:border-slate-700' : 'px-3 py-1.5 text-xs font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/60 border-l border-slate-200 dark:border-slate-700 transition cursor-pointer'}" 
+              ${isNextDisabled ? 'disabled' : ''} onclick="goToActionPage(${currentActionPage + 1})" aria-label="Next Page">
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+      </button>
+    `;
+
+    container.innerHTML = html;
   }
 
   updateActionMetrics();
@@ -670,8 +708,8 @@ async function toggleActionStatus(id) {
 
 // MODAL CONTROLS - CREATE / EDIT
 function openCreateActionModal() {
-  const isSuperAdmin = currentUserScope ? !!currentUserScope.is_superadmin : false;
-  const grantedActions = currentUserScope ? (currentUserScope.granted_actions || []) : [];
+  const isSuperAdmin = window.currentUserScope ? !!window.currentUserScope.is_superadmin : false;
+  const grantedActions = window.currentUserScope ? (window.currentUserScope.granted_actions || []) : [];
   const canCreate = isSuperAdmin || grantedActions.includes('CREATE');
 
   if (!canCreate) {
@@ -689,8 +727,8 @@ function openCreateActionModal() {
 }
 
 function openEditActionModal(id) {
-  const isSuperAdmin = currentUserScope ? !!currentUserScope.is_superadmin : false;
-  const grantedActions = currentUserScope ? (currentUserScope.granted_actions || []) : [];
+  const isSuperAdmin = window.currentUserScope ? !!window.currentUserScope.is_superadmin : false;
+  const grantedActions = window.currentUserScope ? (window.currentUserScope.granted_actions || []) : [];
   const canEdit = isSuperAdmin || grantedActions.includes('EDIT');
 
   if (!canEdit) {

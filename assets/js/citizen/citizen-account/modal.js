@@ -31,24 +31,28 @@ function openTimelineModal(citId) {
 
   const mName = document.getElementById('timelineCitizenName');
   const mId = document.getElementById('timelineCitizenId');
-  if (mName) mName.innerText = cit.name;
-  if (mId) mId.innerText = cit.id;
+  if (mName) mName.innerText = cit.name || 'Citizen Account';
+  if (mId) mId.innerText = cit.id || '—';
 
   const tContainer = document.getElementById('timelineContainer');
   if (tContainer) {
     tContainer.innerHTML = '';
-    cit.timeline.forEach(log => {
-      tContainer.innerHTML += `
-        <div class="relative pl-5 pb-3.5">
-          <div class="absolute -left-[21px] top-1.5 h-3.5 w-3.5 rounded-full border bg-white border-slate-300 flex items-center justify-center text-[7px] font-black text-slate-400">
-            <i class="fa-solid fa-circle text-[5px]"></i>
+    if (cit.timeline && cit.timeline.length > 0) {
+      cit.timeline.forEach(log => {
+        tContainer.innerHTML += `
+          <div class="relative pl-5 pb-3.5">
+            <div class="absolute -left-[21px] top-1.5 h-3.5 w-3.5 rounded-full border bg-white border-slate-300 flex items-center justify-center text-[7px] font-black text-slate-400">
+              <i class="fa-solid fa-circle text-[5px]"></i>
+            </div>
+            <div class="font-extrabold text-slate-800 tracking-tight text-[11px]">${log.action || 'Event Logged'}</div>
+            <div class="text-[10px] text-slate-400 font-medium mt-0.5">${log.date || '—'} by <span class="text-slate-600 font-bold">${log.admin || 'System Admin'}</span></div>
+            <p class="text-[11.5px] text-slate-500 mt-1.5 italic bg-slate-50 p-2 rounded-none border border-slate-100">Reason: "${log.reason || 'Standard operational verification'}"</p>
           </div>
-          <div class="font-extrabold text-slate-800 tracking-tight text-[11px]">${log.action}</div>
-          <div class="text-[10px] text-slate-400 font-medium mt-0.5">${log.date} by <span class="text-slate-600 font-bold">${log.admin}</span></div>
-          <p class="text-[11.5px] text-slate-500 mt-1.5 italic bg-slate-50 p-2 rounded-none border border-slate-100">Reason: "${log.reason}"</p>
-        </div>
-      `;
-    });
+        `;
+      });
+    } else {
+      tContainer.innerHTML = '<p class="text-xs text-slate-400 py-3 italic">No security audit trail records found.</p>';
+    }
   }
 
   openModal('timelineModal');

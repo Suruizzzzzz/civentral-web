@@ -19,7 +19,7 @@ include '../includes/sidebar.php';
 
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         
-        <a href="modules/citizen_info/index.php" class="bg-white border border-slate-200 hover:border-brand-medium rounded-none p-5 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-md group transition">
+        <a href="javascript:void(0)" onclick="Swal.fire({ title: 'Module Standby', text: 'Departmental subsystem integration is currently in progress.', icon: 'info', confirmButtonColor: '#0D9488' })" class="bg-white border border-slate-200 hover:border-brand-medium rounded-none p-5 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-md group transition cursor-pointer">
           <div class="space-y-3">
             <div class="h-9 w-9 rounded-none bg-brand-light border border-brand-border flex items-center justify-center text-brand-dark transition group-hover:bg-brand-medium group-hover:text-white">
               <i class="fa-solid fa-users text-sm"></i>
@@ -31,7 +31,7 @@ include '../includes/sidebar.php';
           </div>
         </a>
 
-        <a href="modules/permits/index.php" class="bg-white border border-slate-200 hover:border-brand-medium rounded-none p-5 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-md group transition">
+        <a href="javascript:void(0)" onclick="Swal.fire({ title: 'Module Standby', text: 'Departmental subsystem integration is currently in progress.', icon: 'info', confirmButtonColor: '#0D9488' })" class="bg-white border border-slate-200 hover:border-brand-medium rounded-none p-5 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-md group transition cursor-pointer">
           <div class="space-y-3">
             <div class="h-9 w-9 rounded-none bg-brand-light border border-brand-border flex items-center justify-center text-brand-dark transition group-hover:bg-brand-medium group-hover:text-white">
               <i class="fa-solid fa-file-signature text-sm"></i>
@@ -43,7 +43,7 @@ include '../includes/sidebar.php';
           </div>
         </a>
 
-        <a href="modules/social_services/index.php" class="bg-white border border-slate-200 hover:border-brand-medium rounded-none p-5 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-md group transition">
+        <a href="javascript:void(0)" onclick="Swal.fire({ title: 'Module Standby', text: 'Departmental subsystem integration is currently in progress.', icon: 'info', confirmButtonColor: '#0D9488' })" class="bg-white border border-slate-200 hover:border-brand-medium rounded-none p-5 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-md group transition cursor-pointer">
           <div class="space-y-3">
             <div class="h-9 w-9 rounded-none bg-brand-light border border-brand-border flex items-center justify-center text-brand-dark transition group-hover:bg-brand-medium group-hover:text-white">
               <i class="fa-solid fa-hand-holding-heart text-sm"></i>
@@ -55,7 +55,7 @@ include '../includes/sidebar.php';
           </div>
         </a>
 
-        <a href="modules/health/index.php" class="bg-white border border-slate-200 hover:border-brand-medium rounded-none p-5 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-md group transition">
+        <a href="javascript:void(0)" onclick="Swal.fire({ title: 'Module Standby', text: 'Departmental subsystem integration is currently in progress.', icon: 'info', confirmButtonColor: '#0D9488' })" class="bg-white border border-slate-200 hover:border-brand-medium rounded-none p-5 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-md group transition cursor-pointer">
           <div class="space-y-3">
             <div class="h-9 w-9 rounded-none bg-brand-light border border-brand-border flex items-center justify-center text-brand-dark transition group-hover:bg-brand-medium group-hover:text-white">
               <i class="fa-solid fa-heart-pulse text-sm"></i>
@@ -79,7 +79,7 @@ include '../includes/sidebar.php';
           </div>
         </a>
 
-        <a href="modules/drrm/index.php" class="bg-white border border-slate-200 hover:border-brand-medium rounded-none p-5 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-md group transition">
+        <a href="javascript:void(0)" onclick="Swal.fire({ title: 'Module Standby', text: 'Departmental subsystem integration is currently in progress.', icon: 'info', confirmButtonColor: '#0D9488' })" class="bg-white border border-slate-200 hover:border-brand-medium rounded-none p-5 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-md group transition cursor-pointer">
           <div class="space-y-3">
             <div class="h-9 w-9 rounded-none bg-brand-light border border-brand-border flex items-center justify-center text-brand-dark transition group-hover:bg-brand-medium group-hover:text-white">
               <i class="fa-solid fa-triangle-exclamation text-sm"></i>
@@ -91,7 +91,7 @@ include '../includes/sidebar.php';
           </div>
         </a>
 
-        <a href="modules/urban_planning/index.php" class="bg-white border border-slate-200 hover:border-brand-medium rounded-none p-5 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-md group transition">
+        <a href="javascript:void(0)" onclick="Swal.fire({ title: 'Module Standby', text: 'Departmental subsystem integration is currently in progress.', icon: 'info', confirmButtonColor: '#0D9488' })" class="bg-white border border-slate-200 hover:border-brand-medium rounded-none p-5 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-md group transition cursor-pointer">
           <div class="space-y-3">
             <div class="h-9 w-9 rounded-none bg-brand-light border border-brand-border flex items-center justify-center text-brand-dark transition group-hover:bg-brand-medium group-hover:text-white">
               <i class="fa-solid fa-map-location-dot text-sm"></i>
@@ -103,7 +103,7 @@ include '../includes/sidebar.php';
           </div>
         </a>
 
-        <a href="modules/treasury/index.php" class="bg-white border border-slate-200 hover:border-brand-medium rounded-none p-5 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-md group transition">
+        <a href="javascript:void(0)" onclick="Swal.fire({ title: 'Module Standby', text: 'Departmental subsystem integration is currently in progress.', icon: 'info', confirmButtonColor: '#0D9488' })" class="bg-white border border-slate-200 hover:border-brand-medium rounded-none p-5 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-md group transition cursor-pointer">
           <div class="space-y-3">
             <div class="h-9 w-9 rounded-none bg-brand-light border border-brand-border flex items-center justify-center text-brand-dark transition group-hover:bg-brand-medium group-hover:text-white">
               <i class="fa-solid fa-cash-register text-sm"></i>
@@ -115,7 +115,7 @@ include '../includes/sidebar.php';
           </div>
         </a>
 
-        <a href="modules/transport/index.php" class="bg-white border border-slate-200 hover:border-brand-medium rounded-none p-5 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-md group transition">
+        <a href="javascript:void(0)" onclick="Swal.fire({ title: 'Module Standby', text: 'Departmental subsystem integration is currently in progress.', icon: 'info', confirmButtonColor: '#0D9488' })" class="bg-white border border-slate-200 hover:border-brand-medium rounded-none p-5 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-md group transition cursor-pointer">
           <div class="space-y-3">
             <div class="h-9 w-9 rounded-none bg-brand-light border border-brand-border flex items-center justify-center text-brand-dark transition group-hover:bg-brand-medium group-hover:text-white">
               <i class="fa-solid fa-bus text-sm"></i>
@@ -127,7 +127,7 @@ include '../includes/sidebar.php';
           </div>
         </a>
 
-        <a href="modules/assets/index.php" class="bg-white border border-slate-200 hover:border-brand-medium rounded-none p-5 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-md group transition">
+        <a href="javascript:void(0)" onclick="Swal.fire({ title: 'Module Standby', text: 'Departmental subsystem integration is currently in progress.', icon: 'info', confirmButtonColor: '#0D9488' })" class="bg-white border border-slate-200 hover:border-brand-medium rounded-none p-5 flex flex-col justify-between space-y-6 shadow-xs hover:shadow-md group transition cursor-pointer">
           <div class="space-y-3">
             <div class="h-9 w-9 rounded-none bg-brand-light border border-brand-border flex items-center justify-center text-brand-dark transition group-hover:bg-brand-medium group-hover:text-white">
               <i class="fa-solid fa-warehouse text-sm"></i>

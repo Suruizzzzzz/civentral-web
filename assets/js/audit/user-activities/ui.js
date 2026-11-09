@@ -73,40 +73,60 @@ window.civAudit.userActivities.ui = {
     const startEl = document.getElementById('paginationStart');
     const endEl = document.getElementById('paginationEnd');
     const totalEl = document.getElementById('paginationTotal');
-    const prevBtn = document.getElementById('prevPageBtn');
-    const nextBtn = document.getElementById('nextPageBtn');
-    const pageNumbersEl = document.getElementById('pageNumbers');
+    const container = document.getElementById('paginationControls');
 
     if (startEl) startEl.innerText = total > 0 ? startIdx + 1 : 0;
     if (endEl) endEl.innerText = endIdx;
     if (totalEl) totalEl.innerText = total;
 
-    if (prevBtn) prevBtn.disabled = (this.currentPage <= 1);
-    if (nextBtn) nextBtn.disabled = (this.currentPage >= totalPages);
+    if (container) {
+      const isPrevDisabled = this.currentPage <= 1 || total === 0;
+      const isNextDisabled = this.currentPage >= totalPages || total === 0;
 
-    if (pageNumbersEl) {
-      pageNumbersEl.innerHTML = '';
-      let maxVisible = 5;
-      let startP = Math.max(1, this.currentPage - 2);
-      let endP = Math.min(totalPages, startP + maxVisible - 1);
-      if (endP - startP + 1 < maxVisible) {
-        startP = Math.max(1, endP - maxVisible + 1);
+      let html = `
+        <!-- Previous Button -->
+        <button type="button" class="${isPrevDisabled ? 'px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed' : 'px-3 py-1.5 text-xs font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/60 transition cursor-pointer'}" 
+                ${isPrevDisabled ? 'disabled' : ''} onclick="window.civAudit.userActivities.ui.goToPage(${this.currentPage - 1})" aria-label="Previous Page">
+          <i class="fa-solid fa-chevron-left text-[10px]"></i>
+        </button>
+      `;
+
+      if (total === 0) {
+        html += `
+          <button type="button" class="px-3.5 py-1.5 text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50/80 dark:bg-sky-950/40 border border-sky-300 dark:border-sky-600/60 z-10 cursor-default" disabled>1</button>
+        `;
+      } else {
+        let pages = [];
+        if (totalPages <= 7) {
+          for (let i = 1; i <= totalPages; i++) pages.push(i);
+        } else if (this.currentPage <= 4) {
+          pages = [1, 2, 3, 4, 5, '...', totalPages];
+        } else if (this.currentPage >= totalPages - 3) {
+          pages = [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+        } else {
+          pages = [1, '...', this.currentPage - 1, this.currentPage, this.currentPage + 1, '...', totalPages];
+        }
+
+        pages.forEach(p => {
+          if (p === '...') {
+            html += `<span class="px-3.5 py-1.5 text-xs font-medium text-slate-400 dark:text-slate-500 border-l border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 select-none">...</span>`;
+          } else if (p === this.currentPage) {
+            html += `<button type="button" class="px-3.5 py-1.5 text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50/80 dark:bg-sky-950/40 border border-sky-300 dark:border-sky-600/60 z-10 cursor-default" aria-current="page">${p}</button>`;
+          } else {
+            html += `<button type="button" class="px-3.5 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/60 border-l border-slate-200 dark:border-slate-700 transition cursor-pointer" onclick="window.civAudit.userActivities.ui.goToPage(${p})">${p}</button>`;
+          }
+        });
       }
 
-      for (let p = startP; p <= endP; p++) {
-        const isDark = document.documentElement.classList.contains('dark');
-        const btn = document.createElement('button');
-        btn.onclick = () => this.goToPage(p);
-        btn.className = `h-7 min-w-[28px] px-2 rounded-none text-xs font-bold transition cursor-pointer ${
-          p === this.currentPage
-            ? 'bg-[#86B6F6] text-white shadow-sm ring-2 ring-[#86B6F6]/30'
-            : isDark
-              ? 'bg-slate-700 border border-slate-600 text-[#86B6F6] hover:bg-slate-600'
-              : 'bg-white border border-[#B4D4FF] text-[#176B87] hover:bg-[#EEF5FF]'
-        }`;
-        btn.innerText = p;
-        pageNumbersEl.appendChild(btn);
-      }
+      html += `
+        <!-- Next Button -->
+        <button type="button" class="${isNextDisabled ? 'px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed border-l border-slate-200 dark:border-slate-700' : 'px-3 py-1.5 text-xs font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/60 border-l border-slate-200 dark:border-slate-700 transition cursor-pointer'}" 
+                ${isNextDisabled ? 'disabled' : ''} onclick="window.civAudit.userActivities.ui.goToPage(${this.currentPage + 1})" aria-label="Next Page">
+          <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        </button>
+      `;
+
+      container.innerHTML = html;
     }
 
     if (total === 0) {

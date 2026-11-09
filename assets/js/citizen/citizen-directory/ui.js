@@ -56,7 +56,9 @@ function renderCitizens(list = mockCitizens) {
       </tr>
     `;
     const pagText = document.getElementById('citizenPaginationText');
-    if (pagText) pagText.innerText = "Showing 0 to 0 of 0 accounts";
+    if (pagText) {
+      pagText.innerHTML = `Showing <span class="font-semibold text-slate-700 dark:text-slate-200">0</span> to <span class="font-semibold text-slate-700 dark:text-slate-200">0</span> of <span class="font-semibold text-slate-700 dark:text-slate-200">0</span> records`;
+    }
     renderCitizenPaginationControls(0, 1, 1);
     return;
   }
@@ -128,19 +130,19 @@ function renderCitizens(list = mockCitizens) {
 
         <!-- Actions -->
         <td class="py-3 px-4 text-right whitespace-nowrap border-b border-slate-100 dark:border-slate-800/60 align-middle">
-          <div class="inline-flex items-center space-x-3">
+          <div class="inline-flex items-center space-x-1.5">
             <!-- View Details icon -->
-            <button onclick="if(typeof openViewModal === 'function') openViewModal('${cit.id}')" class="text-slate-400 hover:text-[#0f172a] hover:bg-slate-50 p-1.5 rounded-none border border-transparent hover:border-slate-150 transition cursor-pointer" title="View Portal Profile">
-              <i class="fa-solid fa-circle-info text-xs"></i>
+            <button onclick="if(typeof openViewModal === 'function') openViewModal('${cit.id}')" class="w-7 h-7 flex items-center justify-center border rounded-none transition cursor-pointer shadow-2xs border-sky-300 bg-sky-50 text-sky-600 hover:bg-sky-100 hover:text-sky-700 dark:border-sky-800/80 dark:bg-sky-950/40 dark:text-sky-400 dark:hover:bg-sky-900/60 dark:hover:text-sky-300" title="View Portal Profile">
+              <i class="fa-solid fa-eye text-xs"></i>
             </button>
 
             <!-- Lock/Unlock button -->
-            <button onclick="if(typeof openLockModal === 'function') openLockModal('${cit.id}')" class="border p-1.5 rounded-none transition cursor-pointer flex items-center justify-center ${lockIcon}" title="${lockTitle}">
+            <button onclick="if(typeof openLockModal === 'function') openLockModal('${cit.id}')" class="w-7 h-7 flex items-center justify-center border rounded-none transition cursor-pointer shadow-2xs ${cit.status === 'Locked' ? 'border-emerald-300 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 hover:text-emerald-700 dark:border-emerald-800/80 dark:bg-emerald-950/40 dark:text-emerald-400 dark:hover:bg-emerald-900/60 dark:hover:text-emerald-300' : 'border-rose-300 bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 dark:border-rose-800/80 dark:bg-rose-950/40 dark:text-rose-400 dark:hover:bg-rose-900/60 dark:hover:text-rose-300'}" title="${lockTitle}">
               <i class="fa-solid ${cit.status === 'Locked' ? 'fa-lock' : 'fa-lock-open'} text-xs"></i>
             </button>
 
             <!-- Reset password key icon -->
-            <button onclick="if(typeof openResetModal === 'function') openResetModal('${cit.id}')" class="text-slate-400 hover:text-[#0f172a] hover:bg-slate-50 p-1.5 rounded-none border border-transparent hover:border-slate-150 transition cursor-pointer" title="Reset Password Access">
+            <button onclick="if(typeof openResetModal === 'function') openResetModal('${cit.id}')" class="w-7 h-7 flex items-center justify-center border rounded-none transition cursor-pointer shadow-2xs border-amber-300 bg-amber-50 text-amber-600 hover:bg-amber-100 hover:text-amber-700 dark:border-amber-800/80 dark:bg-amber-950/40 dark:text-amber-400 dark:hover:bg-amber-900/60 dark:hover:text-amber-300" title="Reset Password Access">
               <i class="fa-solid fa-key text-xs"></i>
             </button>
           </div>
@@ -151,106 +153,63 @@ function renderCitizens(list = mockCitizens) {
   });
 
   const pagText = document.getElementById('citizenPaginationText');
-  if (pagText) pagText.innerText = `Showing ${startIndex + 1} to ${endIndex} of ${totalItems} accounts`;
+  if (pagText) {
+    pagText.innerHTML = `Showing <span class="font-semibold text-slate-700 dark:text-slate-200">${startIndex + 1}</span> to <span class="font-semibold text-slate-700 dark:text-slate-200">${endIndex}</span> of <span class="font-semibold text-slate-700 dark:text-slate-200">${totalItems}</span> records`;
+  }
 
   renderCitizenPaginationControls(totalItems, totalPages, currentCitizenPage);
 }
 
 // RENDER CITIZEN PAGINATION CONTROLS
 function renderCitizenPaginationControls(totalItems, totalPages, currentPage) {
-  const prevBtn = document.getElementById('citizenPrevBtn');
-  const nextBtn = document.getElementById('citizenNextBtn');
-  const pageNumbersContainer = document.getElementById('citizenPageNumbers');
+  const container = document.getElementById('citizenPaginationControls');
+  if (!container) return;
 
-  if (prevBtn) {
-    const isPrevDisabled = currentPage <= 1 || totalItems === 0;
-    prevBtn.disabled = isPrevDisabled;
-    if (isPrevDisabled) {
-      prevBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white text-slate-300 cursor-not-allowed transition";
+  const isPrevDisabled = currentPage <= 1 || totalItems === 0;
+  const isNextDisabled = currentPage >= totalPages || totalItems === 0;
+
+  let html = `
+    <!-- Previous Button -->
+    <button type="button" class="${isPrevDisabled ? 'px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed' : 'px-3 py-1.5 text-xs font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/60 transition cursor-pointer'}" 
+            ${isPrevDisabled ? 'disabled' : ''} onclick="window.changeCitizenPage(${currentPage - 1})" aria-label="Previous Page">
+      <i class="fa-solid fa-chevron-left text-[10px]"></i>
+    </button>
+  `;
+
+  if (totalItems === 0) {
+    html += `
+      <button type="button" class="px-3.5 py-1.5 text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50/80 dark:bg-sky-950/40 border border-sky-300 dark:border-sky-600/60 z-10 cursor-default" disabled>1</button>
+    `;
+  } else {
+    let pages = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else if (currentPage <= 4) {
+      pages = [1, 2, 3, 4, 5, '...', totalPages];
+    } else if (currentPage >= totalPages - 3) {
+      pages = [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
     } else {
-      prevBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 cursor-pointer transition";
-    }
-    prevBtn.onclick = () => {
-      if (!isPrevDisabled) window.changeCitizenPage(currentPage - 1);
-    };
-  }
-
-  if (nextBtn) {
-    const isNextDisabled = currentPage >= totalPages || totalItems === 0;
-    nextBtn.disabled = isNextDisabled;
-    if (isNextDisabled) {
-      nextBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white text-slate-300 cursor-not-allowed transition";
-    } else {
-      nextBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 cursor-pointer transition";
-    }
-    nextBtn.onclick = () => {
-      if (!isNextDisabled) window.changeCitizenPage(currentPage + 1);
-    };
-  }
-
-  if (pageNumbersContainer) {
-    pageNumbersContainer.innerHTML = '';
-    if (totalItems === 0) {
-      pageNumbersContainer.innerHTML = `<button class="px-3 py-1.5 rounded-none bg-brand-light border border-brand-border text-brand-dark font-extrabold shadow-2xs" disabled>1</button>`;
-      return;
+      pages = [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
     }
 
-    let startPage = 1;
-    let endPage = totalPages;
-
-    if (totalPages > 7) {
-      if (currentPage <= 4) {
-        startPage = 1;
-        endPage = 5;
-      } else if (currentPage >= totalPages - 3) {
-        startPage = totalPages - 4;
-        endPage = totalPages;
+    pages.forEach(p => {
+      if (p === '...') {
+        html += `<span class="px-3.5 py-1.5 text-xs font-medium text-slate-400 dark:text-slate-500 border-l border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 select-none">...</span>`;
+      } else if (p === currentPage) {
+        html += `<button type="button" class="px-3.5 py-1.5 text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50/80 dark:bg-sky-950/40 border border-sky-300 dark:border-sky-600/60 z-10 cursor-default" aria-current="page">${p}</button>`;
       } else {
-        startPage = currentPage - 2;
-        endPage = currentPage + 2;
+        html += `<button type="button" class="px-3.5 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/60 border-l border-slate-200 dark:border-slate-700 transition cursor-pointer" onclick="window.changeCitizenPage(${p})">${p}</button>`;
       }
-    }
-
-    if (startPage > 1) {
-      const firstBtn = document.createElement('button');
-      firstBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold cursor-pointer transition";
-      firstBtn.textContent = '1';
-      firstBtn.onclick = () => window.changeCitizenPage(1);
-      pageNumbersContainer.appendChild(firstBtn);
-
-      if (startPage > 2) {
-        const dots = document.createElement('span');
-        dots.className = "px-1.5 text-slate-400 font-bold select-none";
-        dots.textContent = '...';
-        pageNumbersContainer.appendChild(dots);
-      }
-    }
-
-    for (let p = startPage; p <= endPage; p++) {
-      const pageBtn = document.createElement('button');
-      if (p === currentPage) {
-        pageBtn.className = "px-3 py-1.5 rounded-none bg-brand-light border border-brand-border text-brand-dark font-extrabold shadow-2xs cursor-pointer";
-      } else {
-        pageBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold cursor-pointer transition";
-      }
-      pageBtn.textContent = p;
-      pageBtn.onclick = () => window.changeCitizenPage(p);
-      pageNumbersContainer.appendChild(pageBtn);
-    }
-
-    if (endPage < totalPages) {
-      if (endPage < totalPages - 1) {
-        const dots = document.createElement('span');
-        dots.className = "px-1.5 text-slate-400 font-bold select-none";
-        dots.textContent = '...';
-        pageNumbersContainer.appendChild(dots);
-      }
-
-      const lastBtn = document.createElement('button');
-      lastBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold cursor-pointer transition";
-      lastBtn.textContent = totalPages;
-      lastBtn.onclick = () => window.changeCitizenPage(totalPages);
-      pageNumbersContainer.appendChild(lastBtn);
-    }
+    });
   }
+
+  html += `
+    <!-- Next Button -->
+    <button type="button" class="${isNextDisabled ? 'px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed border-l border-slate-200 dark:border-slate-700' : 'px-3 py-1.5 text-xs font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/60 border-l border-slate-200 dark:border-slate-700 transition cursor-pointer'}" 
+            ${isNextDisabled ? 'disabled' : ''} onclick="window.changeCitizenPage(${currentPage + 1})" aria-label="Next Page">
+      <i class="fa-solid fa-chevron-right text-[10px]"></i>
+    </button>
+  `;
+
+  container.innerHTML = html;
 }

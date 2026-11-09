@@ -44,7 +44,7 @@ include '../../includes/sidebar.php';
                title="Click to change photo">
             <img
               id="avatarPreview"
-              src="https://ui-avatars.com/api/?name=Joshua+Suruiz&background=EEF5FF&color=176B87&bold=true&size=128&font-size=0.42"
+              src="https://ui-avatars.com/api/?name=User&background=EEF5FF&color=176B87&bold=true&size=128&font-size=0.42"
               alt="Profile Avatar"
               class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg ring-2 ring-brand-border transition-all duration-300 group-hover:ring-brand-medium"
             >
@@ -151,7 +151,7 @@ include '../../includes/sidebar.php';
             </div>
             <div class="relative">
               <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-300"><i class="fa-solid fa-user-tie text-sm"></i></span>
-              <input type="text" id="fieldFullName" value="Joshua Suruiz" readonly disabled
+              <input type="text" id="fieldFullName" value="" placeholder="Staff Account" readonly disabled
                 class="pl-10 pr-10 py-3 border border-slate-200 bg-slate-50/70 rounded-none text-xs w-full font-bold text-slate-400 cursor-not-allowed select-none">
               <span class="absolute right-3.5 top-1/2 -translate-y-1/2"><i class="fa-solid fa-lock text-slate-300 text-xs"></i></span>
             </div>
@@ -166,7 +166,7 @@ include '../../includes/sidebar.php';
             <label for="fieldPhone" class="text-[10px] font-black text-slate-400 uppercase tracking-wider block">Contact Number</label>
             <div class="relative">
               <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"><i class="fa-solid fa-phone text-sm"></i></span>
-              <input type="tel" id="fieldPhone" value="+63 917 123 4567" placeholder="+63 9XX XXX XXXX"
+              <input type="tel" id="fieldPhone" value="" placeholder="Enter contact number (e.g. +63 9XX XXX XXXX)"
                 class="pl-10 pr-4 py-3 border border-slate-200 bg-white rounded-none text-xs w-full font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition placeholder:text-slate-300">
             </div>
             <p class="text-[10px] text-slate-400 font-medium">Enter your active mobile number for official system notifications and recovery.</p>
@@ -181,7 +181,7 @@ include '../../includes/sidebar.php';
             </div>
             <div class="relative">
               <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"><i class="fa-solid fa-envelope text-sm"></i></span>
-              <input type="email" id="fieldEmail" value="joshua.suruiz@caloocan.gov.ph" placeholder="name@caloocan.gov.ph"
+              <input type="email" id="fieldEmail" value="" placeholder="Enter official email (e.g. name@caloocan.gov.ph)"
                 class="pl-10 pr-12 py-3 border border-slate-200 bg-white rounded-none text-xs w-full font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition placeholder:text-slate-300">
               <span class="absolute right-3.5 top-1/2 -translate-y-1/2"><i class="fa-solid fa-shield-halved text-blue-400 text-xs"></i></span>
             </div>
@@ -199,7 +199,7 @@ include '../../includes/sidebar.php';
             <label for="fieldPosition" class="text-[10px] font-black text-slate-400 uppercase tracking-wider block">Job Title / Position</label>
             <div class="relative">
               <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"><i class="fa-solid fa-briefcase text-sm"></i></span>
-              <input type="text" id="fieldPosition" value="IT Systems Administrator" placeholder="e.g. Department Head, IT Officer"
+              <input type="text" id="fieldPosition" value="" placeholder="Enter official position (e.g. Department Head, IT Officer)"
                 class="pl-10 pr-4 py-3 border border-slate-200 bg-white rounded-none text-xs w-full font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition placeholder:text-slate-300">
             </div>
           </div>

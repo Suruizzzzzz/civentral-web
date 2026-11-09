@@ -30,20 +30,20 @@ function openViewModal(citId) {
 
   const viewName = document.getElementById('viewName');
   const viewId = document.getElementById('viewId');
-  if (viewName) viewName.innerText = cit.name;
-  if (viewId) viewId.innerText = cit.id;
+  if (viewName) viewName.innerText = cit.name || '—';
+  if (viewId) viewId.innerText = cit.id || '—';
 
-  const rawDate = new Date(cit.regDate);
+  const rawDate = cit.regDate ? new Date(cit.regDate) : null;
   const options = { month: 'short', day: 'numeric', year: 'numeric' };
   
   const viewRegDate = document.getElementById('viewRegDate');
   const viewLastLogin = document.getElementById('viewLastLogin');
-  if (viewRegDate) viewRegDate.innerText = rawDate.toLocaleDateString('en-US', options);
-  if (viewLastLogin) viewLastLogin.innerText = cit.lastLogin;
+  if (viewRegDate) viewRegDate.innerText = (rawDate && !isNaN(rawDate)) ? rawDate.toLocaleDateString('en-US', options) : (cit.regDate || '—');
+  if (viewLastLogin) viewLastLogin.innerText = cit.lastLogin || '—';
 
   const sBadge = document.getElementById('viewStatusBadge');
   if (sBadge) {
-    sBadge.innerText = cit.status;
+    sBadge.innerText = cit.status || 'Active';
     if (cit.status === 'Active') {
       sBadge.className = 'text-[9px] font-black uppercase px-2.5 py-1 rounded-full border bg-emerald-50 text-emerald-700 border-emerald-150';
     } else if (cit.status === 'Inactive') {
@@ -64,19 +64,20 @@ function openViewModal(citId) {
   const cardPermit = document.getElementById('servicePermit');
   const cardWelfare = document.getElementById('serviceWelfare');
 
+  const services = cit.services || {};
   if (cardScholarship) {
-    cardScholarship.innerText = cit.services.scholarship;
-    cardScholarship.className = `text-[9px] font-black tracking-wide px-2 py-0.5 rounded border self-start ${styleService(cit.services.scholarship)}`;
+    cardScholarship.innerText = services.scholarship || 'No App';
+    cardScholarship.className = `text-[9px] font-black tracking-wide px-2 py-0.5 rounded border self-start ${styleService(services.scholarship)}`;
   }
 
   if (cardPermit) {
-    cardPermit.innerText = cit.services.permit;
-    cardPermit.className = `text-[9px] font-black tracking-wide px-2 py-0.5 rounded border self-start ${styleService(cit.services.permit)}`;
+    cardPermit.innerText = services.permit || 'No App';
+    cardPermit.className = `text-[9px] font-black tracking-wide px-2 py-0.5 rounded border self-start ${styleService(services.permit)}`;
   }
 
   if (cardWelfare) {
-    cardWelfare.innerText = cit.services.welfare;
-    cardWelfare.className = `text-[9px] font-black tracking-wide px-2 py-0.5 rounded border self-start ${styleService(cit.services.welfare)}`;
+    cardWelfare.innerText = services.welfare || 'No App';
+    cardWelfare.className = `text-[9px] font-black tracking-wide px-2 py-0.5 rounded border self-start ${styleService(services.welfare)}`;
   }
 
   openModal('viewCitizenModal');
@@ -90,7 +91,9 @@ function openResetModal(citId) {
   const resetConfirmText = document.getElementById('resetConfirmText');
   const tempCitizenPass = document.getElementById('tempCitizenPass');
 
-  if (resetConfirmText) resetConfirmText.innerText = `Are you sure you want to reset the password for ${cit.name}?`;
+  const citizenName = cit.name || 'this citizen';
+  const citizenId = cit.id || citId;
+  if (resetConfirmText) resetConfirmText.innerText = `Are you sure you want to reset credentials for ${citizenName} (${citizenId})?`;
   if (tempCitizenPass) tempCitizenPass.value = ''; // Clear box
 
   openModal('resetCitizenModal');
@@ -131,10 +134,13 @@ function openLockModal(citId) {
   const iconBox = document.getElementById('lockIconBox');
   const reasonContainer = document.getElementById('lockReasonContainer');
 
+  const citizenName = cit.name || 'this citizen';
+  const citizenId = cit.id || citId;
+
   if (cit.status === 'Locked') {
     if (mTitle) mTitle.innerText = "Unlock Citizen Credentials";
     if (mHeader) mHeader.innerText = `Place Access Clearance?`;
-    if (mText) mText.innerText = `Confirm unlocking ${cit.name}'s profile. This immediately clears verification blocks.`;
+    if (mText) mText.innerText = `Confirm unlocking ${citizenName} (${citizenId})'s profile. This immediately clears verification blocks.`;
     if (mConfirm) {
       mConfirm.innerText = "Unlock Account";
       mConfirm.className = "bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-none text-xs font-medium transition cursor-pointer shadow-xs focus:outline-none focus:ring-2 focus:ring-teal-500/40";
@@ -147,10 +153,10 @@ function openLockModal(citId) {
   } else {
     if (mTitle) mTitle.innerText = "Lock Citizen Credentials";
     if (mHeader) mHeader.innerText = `Place Security Access Block?`;
-    if (mText) mText.innerText = `Confirm locking ${cit.name}'s profile. This prevents verification logins immediately.`;
+    if (mText) mText.innerText = `Confirm locking ${citizenName} (${citizenId})'s profile. This prevents verification logins immediately.`;
     if (mConfirm) {
       mConfirm.innerText = "Lock Account";
-      mConfirm.className = "bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer shadow-xs";
+      mConfirm.className = "bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-none text-xs font-bold transition cursor-pointer shadow-xs";
     }
     if (iconBox) {
       iconBox.className = "h-10 w-10 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-500 shrink-0";

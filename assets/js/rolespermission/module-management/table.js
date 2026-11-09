@@ -222,10 +222,10 @@ function renderModulesTable(dataToRender = systemModules, resetPage = true) {
           <button 
             type="button" 
             onclick="openEditModal(${mod.id})" 
-            class="h-8 w-8 rounded-none border border-slate-200 hover:bg-slate-100 text-slate-600 hover:text-brand-dark flex items-center justify-center transition cursor-pointer"
+            class="w-7 h-7 flex items-center justify-center border rounded-none transition cursor-pointer shadow-2xs border-amber-300 bg-amber-50 text-amber-600 hover:bg-amber-100 hover:text-amber-700 dark:border-amber-800/80 dark:bg-amber-950/40 dark:text-amber-400 dark:hover:bg-amber-900/60 dark:hover:text-amber-300"
             title="Edit Module Parameters"
           >
-            <i class="fa-solid fa-pen-to-square text-xs"></i>
+            <i class="fa-solid fa-pen text-xs"></i>
           </button>
           ` : ''}
 
@@ -234,11 +234,10 @@ function renderModulesTable(dataToRender = systemModules, resetPage = true) {
           <button 
             type="button" 
             onclick="restoreModule(${mod.id})" 
-            class="px-2.5 py-1.5 rounded-none border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-[11px] flex items-center gap-1.5 transition cursor-pointer shadow-2xs"
+            class="w-7 h-7 flex items-center justify-center border rounded-none transition cursor-pointer shadow-2xs border-emerald-300 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 hover:text-emerald-700 dark:border-emerald-800/80 dark:bg-emerald-950/40 dark:text-emerald-400 dark:hover:bg-emerald-900/60 dark:hover:text-emerald-300"
             title="Restore Module to Active Tab"
           >
             <i class="fa-solid fa-rotate-left text-xs"></i>
-            <span>Restore</span>
           </button>
 
           ${canDelete ? `
@@ -246,7 +245,7 @@ function renderModulesTable(dataToRender = systemModules, resetPage = true) {
           <button 
             type="button" 
             onclick="openDeleteConfirmModal(${mod.id})" 
-            class="h-8 w-8 rounded-none border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center transition cursor-pointer"
+            class="w-7 h-7 flex items-center justify-center border rounded-none transition cursor-pointer shadow-2xs border-rose-300 bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 dark:border-rose-800/80 dark:bg-rose-950/40 dark:text-rose-400 dark:hover:bg-rose-900/60 dark:hover:text-rose-300"
             title="Permanently Delete Module from Database"
           >
             <i class="fa-solid fa-trash text-xs"></i>
@@ -257,7 +256,7 @@ function renderModulesTable(dataToRender = systemModules, resetPage = true) {
           <button 
             type="button" 
             onclick="openArchiveModal(${mod.id})" 
-            class="h-8 w-8 rounded-none border border-slate-200 hover:bg-amber-50 text-slate-400 hover:text-amber-600 flex items-center justify-center transition cursor-pointer"
+            class="w-7 h-7 flex items-center justify-center border rounded-none transition cursor-pointer shadow-2xs border-rose-300 bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 dark:border-rose-800/80 dark:bg-rose-950/40 dark:text-rose-400 dark:hover:bg-rose-900/60 dark:hover:text-rose-300"
             title="Archive Module"
           >
             <i class="fa-solid fa-box-archive text-xs"></i>
@@ -274,27 +273,60 @@ function renderModulesTable(dataToRender = systemModules, resetPage = true) {
   const startEl = document.getElementById('modulePaginationStart');
   const endEl = document.getElementById('modulePaginationEnd');
   const totalEl = document.getElementById('modulePaginationTotal');
-  const prevBtn = document.getElementById('modulePrevPageBtn');
-  const nextBtn = document.getElementById('moduleNextPageBtn');
-  const pageNumsEl = document.getElementById('modulePageNumbers');
+  const container = document.getElementById('modulePaginationControls');
 
   if (startEl) startEl.textContent = dataToRender.length > 0 ? (startIdx + 1) : 0;
   if (endEl) endEl.textContent = endIdx;
   if (totalEl) totalEl.textContent = dataToRender.length;
 
-  if (prevBtn) prevBtn.disabled = (currentModulePage <= 1);
-  if (nextBtn) nextBtn.disabled = (currentModulePage >= totalPages);
+  if (container) {
+    const isPrevDisabled = currentModulePage <= 1 || dataToRender.length === 0;
+    const isNextDisabled = currentModulePage >= totalPages || dataToRender.length === 0;
 
-  if (pageNumsEl) {
-    let numsHtml = '';
-    for (let p = 1; p <= totalPages; p++) {
-      if (p === currentModulePage) {
-        numsHtml += `<button type="button" onclick="goToModulePage(${p})" class="h-7 w-7 rounded-none bg-[#86B6F6] text-slate-900 font-extrabold text-xs flex items-center justify-center cursor-pointer shadow-2xs">${p}</button>`;
+    let html = `
+      <!-- Previous Button -->
+      <button type="button" class="${isPrevDisabled ? 'px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed' : 'px-3 py-1.5 text-xs font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/60 transition cursor-pointer'}" 
+              ${isPrevDisabled ? 'disabled' : ''} onclick="goToModulePage(${currentModulePage - 1})" aria-label="Previous Page">
+        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+      </button>
+    `;
+
+    if (dataToRender.length === 0) {
+      html += `
+        <button type="button" class="px-3.5 py-1.5 text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50/80 dark:bg-sky-950/40 border border-sky-300 dark:border-sky-600/60 z-10 cursor-default" disabled>1</button>
+      `;
+    } else {
+      let pages = [];
+      if (totalPages <= 7) {
+        for (let i = 1; i <= totalPages; i++) pages.push(i);
+      } else if (currentModulePage <= 4) {
+        pages = [1, 2, 3, 4, 5, '...', totalPages];
+      } else if (currentModulePage >= totalPages - 3) {
+        pages = [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
       } else {
-        numsHtml += `<button type="button" onclick="goToModulePage(${p})" class="h-7 w-7 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold text-xs flex items-center justify-center cursor-pointer">${p}</button>`;
+        pages = [1, '...', currentModulePage - 1, currentModulePage, currentModulePage + 1, '...', totalPages];
       }
+
+      pages.forEach(p => {
+        if (p === '...') {
+          html += `<span class="px-3.5 py-1.5 text-xs font-medium text-slate-400 dark:text-slate-500 border-l border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 select-none">...</span>`;
+        } else if (p === currentModulePage) {
+          html += `<button type="button" class="px-3.5 py-1.5 text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50/80 dark:bg-sky-950/40 border border-sky-300 dark:border-sky-600/60 z-10 cursor-default" aria-current="page">${p}</button>`;
+        } else {
+          html += `<button type="button" class="px-3.5 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/60 border-l border-slate-200 dark:border-slate-700 transition cursor-pointer" onclick="goToModulePage(${p})">${p}</button>`;
+        }
+      });
     }
-    pageNumsEl.innerHTML = numsHtml;
+
+    html += `
+      <!-- Next Button -->
+      <button type="button" class="${isNextDisabled ? 'px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed border-l border-slate-200 dark:border-slate-700' : 'px-3 py-1.5 text-xs font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/60 border-l border-slate-200 dark:border-slate-700 transition cursor-pointer'}" 
+              ${isNextDisabled ? 'disabled' : ''} onclick="goToModulePage(${currentModulePage + 1})" aria-label="Next Page">
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+      </button>
+    `;
+
+    container.innerHTML = html;
   }
 
   updateMetrics();

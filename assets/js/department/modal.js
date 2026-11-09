@@ -91,13 +91,35 @@ function openViewModal(deptId) {
   const adminObj = dept.users || null;
   const adminName = adminObj ? `${adminObj.first_name} ${adminObj.last_name}` : 'Unassigned';
 
-  document.getElementById('viewDeptCodeBadge').innerText = dept.department_code;
-  document.getElementById('viewDeptName').innerText = dept.department_name;
-  document.getElementById('viewDeptDesc').innerText = dept.description || "No description provided.";
-  document.getElementById('viewDeptStaffCount').innerText = `Admin: ${adminName}`;
+  const codeEl = document.getElementById('viewDeptCodeBadge');
+  const nameEl = document.getElementById('viewDeptName');
+  const descEl = document.getElementById('viewDeptDesc');
+  const staffCountEl = document.getElementById('viewDeptStaffCount');
+  const adminNameEl = document.getElementById('viewDeptAdminName');
+
+  if (codeEl) codeEl.innerText = dept.department_code || '—';
+  if (nameEl) nameEl.innerText = dept.department_name || '—';
+  if (descEl) descEl.innerText = dept.description || "No description provided.";
+  
+  // Resolve staff count properly
+  const staffCount = dept.staff_count !== undefined ? dept.staff_count : (dept.users_count !== undefined ? dept.users_count : 0);
+  if (staffCountEl) staffCountEl.innerText = `${staffCount} registered staff`;
+  if (adminNameEl) adminNameEl.innerText = `Head: ${adminName}`;
 
   const scopesContainer = document.getElementById('viewDeptScopesContainer');
-  scopesContainer.innerHTML = `<span class="bg-slate-150 text-slate-700 px-2.5 py-1 rounded-none text-[10px] font-black border border-slate-200/60 font-mono tracking-tight">${dept.department_code.toLowerCase()}_core</span>`;
+  if (scopesContainer) {
+    scopesContainer.innerHTML = `<span class="bg-slate-150 text-slate-700 px-2.5 py-1 rounded-none text-[10px] font-black border border-slate-200/60 font-mono tracking-tight">${(dept.department_code || 'dept').toLowerCase()}_core</span>`;
+  }
+
+  // Reset Recent Admin Logs to clean empty state
+  const logsBody = document.getElementById('recentAdminLogsBody');
+  if (logsBody) {
+    logsBody.innerHTML = `
+      <tr>
+        <td colspan="3" class="text-center py-4 text-slate-400 text-xs">No recent admin actions recorded.</td>
+      </tr>
+    `;
+  }
 
   openModal('viewDeptModal');
 }

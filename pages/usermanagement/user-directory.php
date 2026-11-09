@@ -198,19 +198,27 @@ include '../../includes/sidebar.php';
     </div>
 
     <!-- Table Footer / Pagination -->
-    <div class="bg-slate-50 px-6 py-4 border-t border-slate-100 flex items-center justify-between text-[11px] font-bold text-slate-400">
-      <div id="paginationText">
-        Showing 0 to 0 of 0 profiles
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+      <!-- Left Side: Record Counter -->
+      <div class="text-xs text-slate-500 dark:text-slate-400 font-medium" id="paginationText">
+        Showing <span class="font-semibold text-slate-700 dark:text-slate-200">0</span> to <span class="font-semibold text-slate-700 dark:text-slate-200">0</span> of <span class="font-semibold text-slate-700 dark:text-slate-200">0</span> records
       </div>
-      <div class="flex items-center space-x-1" id="paginationControls">
-        <button id="userPrevBtn" class="px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 cursor-not-allowed transition" disabled>
-          <i class="fa-solid fa-chevron-left text-[9px]"></i>
+
+      <!-- Right Side: Segmented Numbered Pagination Bar -->
+      <nav class="inline-flex -space-x-px border border-slate-200 dark:border-slate-700 rounded-none shadow-xs" aria-label="Pagination" id="paginationControls">
+        <!-- Previous Button -->
+        <button type="button" class="px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed" disabled>
+          <i class="fa-solid fa-chevron-left text-[10px]"></i>
         </button>
-        <div id="userPageNumbers" class="flex items-center space-x-1"></div>
-        <button id="userNextBtn" class="px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 cursor-not-allowed transition" disabled>
-          <i class="fa-solid fa-chevron-right text-[9px]"></i>
+
+        <!-- Page Number Sequence -->
+        <button type="button" class="px-3.5 py-1.5 text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50/80 dark:bg-sky-950/40 border border-sky-300 dark:border-sky-600/60 z-10 cursor-default">1</button>
+
+        <!-- Next Button -->
+        <button type="button" class="px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed border-l border-slate-200 dark:border-slate-700" disabled>
+          <i class="fa-solid fa-chevron-right text-[10px]"></i>
         </button>
-      </div>
+      </nav>
     </div>
   </div>
 
@@ -220,7 +228,7 @@ include '../../includes/sidebar.php';
 
 <!--  VIEW PROFILE MODAL -->
 <div id="viewModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto p-4 sm:p-6 opacity-0 pointer-events-none transition-all duration-300 bg-slate-900/70 backdrop-blur-sm">
-  <div class="bg-white rounded-none shadow-xl w-full max-w-lg max-h-[85vh] my-auto overflow-hidden flex flex-col transform scale-95 transition-all duration-300">
+  <div class="bg-white dark:bg-slate-900 rounded-none shadow-xl w-full max-w-lg max-h-[85vh] my-auto overflow-hidden flex flex-col transform scale-95 transition-all duration-300 border border-slate-200 dark:border-slate-800">
     <div class="bg-slate-900 text-white px-5 py-3.5 sm:px-6 sm:py-4 flex items-center justify-between shrink-0">
       <div class="flex items-center space-x-2">
         <i class="fa-solid fa-id-card text-brand-medium"></i>
@@ -229,48 +237,48 @@ include '../../includes/sidebar.php';
     </div>
     <div class="p-4 sm:p-6 space-y-5 flex-1 overflow-y-auto custom-scrollbar">
       <!-- Profile -->
-      <div class="flex items-center space-x-4 bg-slate-50 p-4 border border-slate-150 rounded-none">
+      <div class="bg-slate-50/70 dark:bg-slate-800/40 p-5 rounded-none flex items-center space-x-4 mb-6">
         <div id="viewInitialsBox" class="h-16 w-16 rounded-none bg-brand-light text-brand-dark flex items-center justify-center font-black text-xl border border-brand-border shrink-0 overflow-hidden relative">
-          <span id="viewInitialsText">JS</span>
+          <span id="viewInitialsText">—</span>
           <img id="viewAvatarImg" src="" alt="Profile Photo" class="hidden w-full h-full object-cover">
         </div>
         <div class="flex-1 space-y-1">
-          <h4 id="viewName" class="text-base font-black text-slate-900 leading-snug">Joshua Suruiz</h4>
-          <p id="viewEmail" class="text-xs font-medium text-slate-500">joshua.suruiz@caloocancity.gov.ph</p>
+          <h4 id="viewName" class="text-base font-black text-slate-900 dark:text-slate-100 leading-snug">—</h4>
+          <p id="viewEmail" class="text-xs font-medium text-slate-500 dark:text-slate-400">—</p>
           <div class="flex items-center space-x-2 mt-1">
-            <span id="viewRoleBadge" class="text-[9px] font-black uppercase px-2 py-0.5 rounded-none border">Superadmin</span>
-            <span id="viewStatusBadge" class="text-[9px] font-black uppercase px-2 py-0.5 rounded-none border">Active</span>
+            <span id="viewRoleBadge" class="text-[9px] font-black uppercase px-2 py-0.5 rounded-none border">—</span>
+            <span id="viewStatusBadge" class="text-[9px] font-black uppercase px-2 py-0.5 rounded-none border">—</span>
           </div>
         </div>
       </div>
 
       <!-- Info Details -->
-      <div class="grid grid-cols-2 gap-y-4 gap-x-2 border-b border-slate-100 pb-5">
+      <div class="grid grid-cols-2 gap-y-4 gap-x-2 border-b border-slate-100 dark:border-slate-800 pb-5">
         <div>
           <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider block">Employee ID</span>
-          <span id="viewEmpId" class="text-xs font-mono font-bold text-slate-700">EMP-2026-0001</span>
+          <span id="viewEmpId" class="text-xs font-mono font-bold text-slate-700 dark:text-slate-200">—</span>
         </div>
         <div>
           <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider block">Contact Phone</span>
-          <span id="viewPhone" class="text-xs font-semibold text-slate-700">+63 917 123 4567</span>
+          <span id="viewPhone" class="text-xs font-semibold text-slate-700 dark:text-slate-200">—</span>
         </div>
         <div>
           <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider block">Department Assignment</span>
-          <span id="viewDept" class="text-xs font-bold text-slate-700">ICT Department</span>
+          <span id="viewDept" class="text-xs font-bold text-slate-700 dark:text-slate-200">—</span>
         </div>
         <div>
           <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider block">Official Designation</span>
-          <span id="viewPosition" class="text-xs font-semibold text-slate-700">Chief Technology Officer</span>
+          <span id="viewPosition" class="text-xs font-semibold text-slate-700 dark:text-slate-200">—</span>
         </div>
         <div>
           <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider block">Profile Generated On</span>
-          <span id="viewCreated" class="text-xs font-semibold text-slate-700">2026-01-10</span>
+          <span id="viewCreated" class="text-xs font-semibold text-slate-700 dark:text-slate-200">—</span>
         </div>
       </div>
 
       <!-- System Permissions -->
       <div class="space-y-3">
-        <div class="flex items-center space-x-2 text-slate-700">
+        <div class="flex items-center space-x-2 text-slate-700 dark:text-slate-300">
           <i class="fa-solid fa-shield-halved text-xs text-brand-dark"></i>
           <span class="text-xs font-black uppercase tracking-wider">Access Permissions Matrix</span>
         </div>
@@ -278,7 +286,7 @@ include '../../includes/sidebar.php';
         </div>
       </div>
     </div>
-    <div class="bg-slate-50 border-t border-slate-100 px-6 py-4 flex items-center justify-end shrink-0">
+    <div class="bg-slate-50 dark:bg-slate-900/60 border-t border-slate-100 dark:border-slate-800 px-6 py-4 flex items-center justify-end shrink-0">
       <button onclick="closeModal('viewModal')" class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2 rounded-none text-xs font-bold cursor-pointer transition">Close Profile</button>
     </div>
   </div>
@@ -440,7 +448,7 @@ include '../../includes/sidebar.php';
     </div>
     <div class="p-4 sm:p-6 space-y-4 flex-1 overflow-y-auto custom-scrollbar">
       <div class="space-y-1">
-        <h4 id="historyStaffName" class="text-sm font-bold text-slate-900">Joshua Suruiz</h4>
+        <h4 id="historyStaffName" class="text-sm font-bold text-slate-900">—</h4>
         <p class="text-xs text-slate-500">Security history audits log all credentials verification attempts across active terminal hubs.</p>
       </div>
 

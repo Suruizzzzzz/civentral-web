@@ -143,7 +143,9 @@ function renderTable(usersList = systemUsers) {
       </tr>
     `;
     const pagEl = document.getElementById('paginationText');
-    if (pagEl) pagEl.innerText = "Showing 0 to 0 of 0 profiles";
+    if (pagEl) {
+      pagEl.innerHTML = `Showing <span class="font-semibold text-slate-700 dark:text-slate-200">0</span> to <span class="font-semibold text-slate-700 dark:text-slate-200">0</span> of <span class="font-semibold text-slate-700 dark:text-slate-200">0</span> records`;
+    }
     renderUserPaginationControls(0, 1, 1);
     return;
   }
@@ -237,19 +239,16 @@ function renderTable(usersList = systemUsers) {
         </span>
       </td>
       <td class="py-3 px-4 text-right whitespace-nowrap border-b border-slate-100 dark:border-slate-800/60 align-middle">
-        <div class="inline-flex items-center space-x-1">
-          <button onclick="if(typeof openViewModal === 'function') openViewModal(${user.user_id})" class="text-slate-400 hover:text-brand-dark hover:bg-brand-light hover:border-brand-border/40 p-1.5 rounded-none border border-transparent transition cursor-pointer" title="View Profile">
+        <div class="inline-flex items-center space-x-1.5">
+          <button onclick="if(typeof openViewModal === 'function') openViewModal(${user.user_id})" class="w-7 h-7 flex items-center justify-center border rounded-none transition cursor-pointer shadow-2xs border-sky-300 bg-sky-50 text-sky-600 hover:bg-sky-100 hover:text-sky-700 dark:border-sky-800/80 dark:bg-sky-950/40 dark:text-sky-400 dark:hover:bg-sky-900/60 dark:hover:text-sky-300" title="View Profile">
             <i class="fa-solid fa-eye text-xs"></i>
           </button>
           ${canEdit ? `
-          <button onclick="if(typeof openEditModal === 'function') openEditModal(${user.user_id})" class="text-slate-400 hover:text-amber-600 hover:bg-amber-50 hover:border-amber-100 p-1.5 rounded-none border border-transparent transition cursor-pointer" title="Edit Profile">
+          <button onclick="if(typeof openEditModal === 'function') openEditModal(${user.user_id})" class="w-7 h-7 flex items-center justify-center border rounded-none transition cursor-pointer shadow-2xs border-amber-300 bg-amber-50 text-amber-600 hover:bg-amber-100 hover:text-amber-700 dark:border-amber-800/80 dark:bg-amber-950/40 dark:text-amber-400 dark:hover:bg-amber-900/60 dark:hover:text-amber-300" title="Edit Profile">
             <i class="fa-solid fa-pen text-xs"></i>
           </button>` : ''}
-          <button onclick="if(typeof openHistoryModal === 'function') openHistoryModal(${user.user_id})" class="text-slate-400 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-100 p-1.5 rounded-none border border-transparent transition cursor-pointer" title="Security Audit Log">
-            <i class="fa-solid fa-clock-rotate-left text-xs"></i>
-          </button>
           ${canDelete ? `
-          <button onclick="if(typeof openArchiveUserModal === 'function') openArchiveUserModal(${user.user_id})" class="text-slate-400 hover:text-amber-600 hover:bg-amber-50 hover:border-amber-100 p-1.5 rounded-none border border-transparent transition cursor-pointer ${user.status === 'Archived' ? 'opacity-40 cursor-not-allowed' : ''}" ${user.status === 'Archived' ? 'disabled' : ''} title="Archive User Account">
+          <button onclick="if(typeof openArchiveUserModal === 'function') openArchiveUserModal(${user.user_id})" class="w-7 h-7 flex items-center justify-center border rounded-none transition cursor-pointer shadow-2xs border-rose-300 bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 dark:border-rose-800/80 dark:bg-rose-950/40 dark:text-rose-400 dark:hover:bg-rose-900/60 dark:hover:text-rose-300 ${user.status === 'Archived' ? 'opacity-40 cursor-not-allowed' : ''}" ${user.status === 'Archived' ? 'disabled' : ''} title="Archive User Account">
             <i class="fa-solid fa-box-archive text-xs"></i>
           </button>` : ''}
         </div>
@@ -260,108 +259,63 @@ function renderTable(usersList = systemUsers) {
 
   const pagEl = document.getElementById('paginationText');
   if (pagEl) {
-    pagEl.innerText = `Showing ${startIndex + 1} to ${endIndex} of ${totalItems} profiles`;
+    pagEl.innerHTML = `Showing <span class="font-semibold text-slate-700 dark:text-slate-200">${startIndex + 1}</span> to <span class="font-semibold text-slate-700 dark:text-slate-200">${endIndex}</span> of <span class="font-semibold text-slate-700 dark:text-slate-200">${totalItems}</span> records`;
   }
   renderUserPaginationControls(totalItems, totalPages, currentUserPage);
 }
 
 // RENDER USER DIRECTORY PAGINATION CONTROLS
 function renderUserPaginationControls(totalItems, totalPages, currentPage) {
-  const prevBtn = document.getElementById('userPrevBtn');
-  const nextBtn = document.getElementById('userNextBtn');
-  const pageNumbersContainer = document.getElementById('userPageNumbers');
+  const container = document.getElementById('paginationControls');
+  if (!container) return;
 
-  if (prevBtn) {
-    const isPrevDisabled = currentPage <= 1 || totalItems === 0;
-    prevBtn.disabled = isPrevDisabled;
-    if (isPrevDisabled) {
-      prevBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white text-slate-300 cursor-not-allowed transition";
+  const isPrevDisabled = currentPage <= 1 || totalItems === 0;
+  const isNextDisabled = currentPage >= totalPages || totalItems === 0;
+
+  let html = `
+    <!-- Previous Button -->
+    <button type="button" class="${isPrevDisabled ? 'px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed' : 'px-3 py-1.5 text-xs font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/60 transition cursor-pointer'}" 
+            ${isPrevDisabled ? 'disabled' : ''} onclick="window.changeUserDirectoryPage(${currentPage - 1})" aria-label="Previous Page">
+      <i class="fa-solid fa-chevron-left text-[10px]"></i>
+    </button>
+  `;
+
+  if (totalItems === 0) {
+    html += `
+      <button type="button" class="px-3.5 py-1.5 text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50/80 dark:bg-sky-950/40 border border-sky-300 dark:border-sky-600/60 z-10 cursor-default" disabled>1</button>
+    `;
+  } else {
+    let pages = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else if (currentPage <= 4) {
+      pages = [1, 2, 3, 4, 5, '...', totalPages];
+    } else if (currentPage >= totalPages - 3) {
+      pages = [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
     } else {
-      prevBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 cursor-pointer transition";
-    }
-    prevBtn.onclick = () => {
-      if (!isPrevDisabled) window.changeUserDirectoryPage(currentPage - 1);
-    };
-  }
-
-  if (nextBtn) {
-    const isNextDisabled = currentPage >= totalPages || totalItems === 0;
-    nextBtn.disabled = isNextDisabled;
-    if (isNextDisabled) {
-      nextBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white text-slate-300 cursor-not-allowed transition";
-    } else {
-      nextBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 cursor-pointer transition";
-    }
-    nextBtn.onclick = () => {
-      if (!isNextDisabled) window.changeUserDirectoryPage(currentPage + 1);
-    };
-  }
-
-  if (pageNumbersContainer) {
-    pageNumbersContainer.innerHTML = '';
-    if (totalItems === 0) {
-      pageNumbersContainer.innerHTML = `<button class="px-3 py-1.5 rounded-none bg-brand-light border border-brand-border text-brand-dark font-extrabold shadow-2xs" disabled>1</button>`;
-      return;
+      pages = [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
     }
 
-    let startPage = 1;
-    let endPage = totalPages;
-
-    if (totalPages > 7) {
-      if (currentPage <= 4) {
-        startPage = 1;
-        endPage = 5;
-      } else if (currentPage >= totalPages - 3) {
-        startPage = totalPages - 4;
-        endPage = totalPages;
+    pages.forEach(p => {
+      if (p === '...') {
+        html += `<span class="px-3.5 py-1.5 text-xs font-medium text-slate-400 dark:text-slate-500 border-l border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 select-none">...</span>`;
+      } else if (p === currentPage) {
+        html += `<button type="button" class="px-3.5 py-1.5 text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50/80 dark:bg-sky-950/40 border border-sky-300 dark:border-sky-600/60 z-10 cursor-default" aria-current="page">${p}</button>`;
       } else {
-        startPage = currentPage - 2;
-        endPage = currentPage + 2;
+        html += `<button type="button" class="px-3.5 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/60 border-l border-slate-200 dark:border-slate-700 transition cursor-pointer" onclick="window.changeUserDirectoryPage(${p})">${p}</button>`;
       }
-    }
-
-    if (startPage > 1) {
-      const firstBtn = document.createElement('button');
-      firstBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold cursor-pointer transition";
-      firstBtn.textContent = '1';
-      firstBtn.onclick = () => window.changeUserDirectoryPage(1);
-      pageNumbersContainer.appendChild(firstBtn);
-
-      if (startPage > 2) {
-        const dots = document.createElement('span');
-        dots.className = "px-1.5 text-slate-400 font-bold select-none";
-        dots.textContent = '...';
-        pageNumbersContainer.appendChild(dots);
-      }
-    }
-
-    for (let p = startPage; p <= endPage; p++) {
-      const pageBtn = document.createElement('button');
-      if (p === currentPage) {
-        pageBtn.className = "px-3 py-1.5 rounded-none bg-brand-light border border-brand-border text-brand-dark font-extrabold shadow-2xs cursor-pointer";
-      } else {
-        pageBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold cursor-pointer transition";
-      }
-      pageBtn.textContent = p;
-      pageBtn.onclick = () => window.changeUserDirectoryPage(p);
-      pageNumbersContainer.appendChild(pageBtn);
-    }
-
-    if (endPage < totalPages) {
-      if (endPage < totalPages - 1) {
-        const dots = document.createElement('span');
-        dots.className = "px-1.5 text-slate-400 font-bold select-none";
-        dots.textContent = '...';
-        pageNumbersContainer.appendChild(dots);
-      }
-
-      const lastBtn = document.createElement('button');
-      lastBtn.className = "px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 font-bold cursor-pointer transition";
-      lastBtn.textContent = totalPages;
-      lastBtn.onclick = () => window.changeUserDirectoryPage(totalPages);
-      pageNumbersContainer.appendChild(lastBtn);
-    }
+    });
   }
+
+  html += `
+    <!-- Next Button -->
+    <button type="button" class="${isNextDisabled ? 'px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed border-l border-slate-200 dark:border-slate-700' : 'px-3 py-1.5 text-xs font-medium text-slate-500 hover:text-slate-700 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800/60 border-l border-slate-200 dark:border-slate-700 transition cursor-pointer'}" 
+            ${isNextDisabled ? 'disabled' : ''} onclick="window.changeUserDirectoryPage(${currentPage + 1})" aria-label="Next Page">
+      <i class="fa-solid fa-chevron-right text-[10px]"></i>
+    </button>
+  `;
+
+  container.innerHTML = html;
 }
 
 // UPDATE METRICS BOARD

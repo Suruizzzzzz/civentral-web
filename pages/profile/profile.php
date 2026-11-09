@@ -30,7 +30,7 @@ include '../../includes/sidebar.php';
       <!-- Profile Photo Avatar container -->
       <div class="relative w-32 h-32 mx-auto">
         <div class="w-full h-full rounded-full bg-brand-light border-2 border-brand-border flex items-center justify-center text-brand-dark font-black text-3xl select-none group cursor-pointer overflow-hidden relative">
-          <span id="profileAvatarInitials">JS</span>
+          <span id="profileAvatarInitials">—</span>
           <img id="profileAvatarImg" src="" alt="Profile Photo" class="hidden w-full h-full object-cover">
           <!-- Subtle Hover Overlay -->
           <div class="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-[10px] font-bold uppercase tracking-wider transition-opacity duration-300">
@@ -45,9 +45,9 @@ include '../../includes/sidebar.php';
       <div class="space-y-1.5">
         <h3 id="profileNameHeading" class="text-lg font-black text-slate-900 tracking-tight">Loading Profile...</h3>
         <div class="flex items-center justify-center gap-1.5">
-          <span id="profileRoleHeading" class="bg-slate-900 text-white text-[9px] font-black uppercase px-2 py-0.5 rounded-none tracking-wide border border-slate-950">Superadmin</span>
+          <span id="profileRoleHeading" class="bg-slate-900 text-white text-[9px] font-black uppercase px-2 py-0.5 rounded-none tracking-wide border border-slate-950">—</span>
           <span class="text-slate-300">|</span>
-          <span id="profileDepartmentHeading" class="text-[11px] font-bold text-slate-400">Caloocan Central IT</span>
+          <span id="profileDepartmentHeading" class="text-[11px] font-bold text-slate-400">—</span>
         </div>
       </div>
 
@@ -65,7 +65,7 @@ include '../../includes/sidebar.php';
         <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider block">Total Logins</span>
         <div class="flex items-center gap-2 text-xs font-extrabold text-slate-800">
           <i class="fa-solid fa-right-to-bracket text-emerald-600 text-xs"></i>
-          <span id="profileTotalLogins">1 Successful Login</span>
+          <span id="profileTotalLogins">—</span>
         </div>
       </div>
 

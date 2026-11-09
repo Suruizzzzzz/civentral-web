@@ -30,19 +30,31 @@ function openViewModal(userId) {
   const user = systemUsers.find(u => u.user_id === userId);
   if (!user) return;
 
-  const fullName = typeof getUserFullName === 'function' ? getUserFullName(user) : '';
-  const initials = typeof getUserInitials === 'function' ? getUserInitials(user) : '';
-  const roleName = user.roles ? user.roles.role_name : 'Staff';
-  const posName = user.positions ? user.positions.position_name : 'Unassigned';
-  const deptName = (user.positions && user.positions.departments) ? user.positions.departments.department_name : 'Unassigned';
+  const rawFullName = typeof getUserFullName === 'function' ? getUserFullName(user) : '';
+  const fullName = (rawFullName && rawFullName.trim()) ? rawFullName.trim() : '—';
+  const rawInitials = typeof getUserInitials === 'function' ? getUserInitials(user) : '';
+  const initials = (rawInitials && rawInitials.trim()) ? rawInitials.trim() : '—';
+  const roleName = (user.roles && user.roles.role_name) ? user.roles.role_name : (user.role || 'Staff');
+  const posName = (user.positions && user.positions.position_name) ? user.positions.position_name : 'Unassigned';
+  const deptName = (user.positions && user.positions.departments && user.positions.departments.department_name)
+    ? user.positions.departments.department_name
+    : (user.department_name || 'Unassigned');
 
-  document.getElementById('viewName').innerText = fullName;
-  document.getElementById('viewEmail').innerText = user.email;
-  document.getElementById('viewEmpId').innerText = user.employee_id;
-  document.getElementById('viewPhone').innerText = user.mobile_number || 'N/A';
-  document.getElementById('viewDept').innerText = deptName;
-  document.getElementById('viewPosition').innerText = posName;
-  document.getElementById('viewCreated').innerText = user.created_at ? user.created_at.split('T')[0] : 'N/A';
+  const elName = document.getElementById('viewName');
+  const elEmail = document.getElementById('viewEmail');
+  const elEmpId = document.getElementById('viewEmpId');
+  const elPhone = document.getElementById('viewPhone');
+  const elDept = document.getElementById('viewDept');
+  const elPos = document.getElementById('viewPosition');
+  const elCreated = document.getElementById('viewCreated');
+
+  if (elName) elName.innerText = fullName;
+  if (elEmail) elEmail.innerText = user.email || '—';
+  if (elEmpId) elEmpId.innerText = user.employee_id || '—';
+  if (elPhone) elPhone.innerText = user.mobile_number || '—';
+  if (elDept) elDept.innerText = deptName;
+  if (elPos) elPos.innerText = posName;
+  if (elCreated) elCreated.innerText = user.created_at ? user.created_at.split('T')[0] : '—';
 
   const imgEl = document.getElementById('viewAvatarImg');
   const textEl = document.getElementById('viewInitialsText');
@@ -64,30 +76,30 @@ function openViewModal(userId) {
   const roleBadge = document.getElementById('viewRoleBadge');
   if (roleBadge) {
     roleBadge.innerText = roleName;
-    roleBadge.className = "text-[9px] font-black uppercase px-2 py-0.5 rounded-full border ";
-    if (roleName === 'Super Admin' || roleName === 'Superadmin') roleBadge.classList.add('bg-purple-50', 'text-purple-700', 'border-purple-100');
-    else if (roleName.includes('Admin')) roleBadge.classList.add('bg-blue-50', 'text-blue-700', 'border-blue-100');
-    else roleBadge.classList.add('bg-slate-50', 'text-slate-600', 'border-slate-200');
+    roleBadge.className = "text-[9px] font-black uppercase px-2 py-0.5 rounded-none border ";
+    if (roleName === 'Super Admin' || roleName === 'Superadmin') roleBadge.classList.add('bg-purple-50', 'text-purple-700', 'border-purple-100', 'dark:bg-purple-950/40', 'dark:text-purple-300', 'dark:border-purple-800/60');
+    else if (roleName.includes('Admin')) roleBadge.classList.add('bg-blue-50', 'text-blue-700', 'border-blue-100', 'dark:bg-blue-950/40', 'dark:text-blue-300', 'dark:border-blue-800/60');
+    else roleBadge.classList.add('bg-slate-50', 'text-slate-600', 'border-slate-200', 'dark:bg-slate-800', 'dark:text-slate-300', 'dark:border-slate-700');
   }
 
   const statusBadge = document.getElementById('viewStatusBadge');
   if (statusBadge) {
-    statusBadge.innerText = user.status;
-    statusBadge.className = "text-[9px] font-black uppercase px-2 py-0.5 rounded-full border ";
-    if (user.status === 'Active') statusBadge.classList.add('bg-emerald-50', 'text-emerald-700', 'border-emerald-100');
-    else statusBadge.classList.add('bg-rose-50', 'text-rose-600', 'border-rose-100');
+    statusBadge.innerText = user.status || 'Active';
+    statusBadge.className = "text-[9px] font-black uppercase px-2 py-0.5 rounded-none border ";
+    if (user.status === 'Active') statusBadge.classList.add('bg-emerald-50', 'text-emerald-700', 'border-emerald-100', 'dark:bg-emerald-950/40', 'dark:text-emerald-300', 'dark:border-emerald-800/60');
+    else statusBadge.classList.add('bg-rose-50', 'text-rose-600', 'border-rose-100', 'dark:bg-rose-950/40', 'dark:text-rose-300', 'dark:border-rose-800/60');
   }
 
   const permList = document.getElementById('viewPermissionsList');
   if (permList) {
     permList.innerHTML = `
-      <div class="flex items-center space-x-2 bg-slate-50 p-2 border border-slate-100 rounded-lg">
+      <div class="flex items-center space-x-2 bg-slate-50 dark:bg-slate-800/50 p-2 border border-slate-100 dark:border-slate-700/60 rounded-none">
         <i class="fa-solid fa-circle-check text-emerald-500 shrink-0 text-[10px]"></i>
-        <span class="text-[11px] font-semibold text-slate-600">Employee Role Access Granted</span>
+        <span class="text-[11px] font-semibold text-slate-600 dark:text-slate-300">Employee Role Access Granted</span>
       </div>
-      <div class="flex items-center space-x-2 bg-slate-50 p-2 border border-slate-100 rounded-lg">
+      <div class="flex items-center space-x-2 bg-slate-50 dark:bg-slate-800/50 p-2 border border-slate-100 dark:border-slate-700/60 rounded-none">
         <i class="fa-solid fa-circle-check text-emerald-500 shrink-0 text-[10px]"></i>
-        <span class="text-[11px] font-semibold text-slate-600">${user.roles && user.roles.is_global_access ? 'Global Access Scope' : 'Department Access Scope'}</span>
+        <span class="text-[11px] font-semibold text-slate-600 dark:text-slate-300">${user.roles && user.roles.is_global_access ? 'Global Access Scope' : 'Department Access Scope'}</span>
       </div>
     `;
   }
@@ -189,8 +201,11 @@ function openHistoryModal(userId) {
   const user = systemUsers.find(u => u.user_id === userId);
   if (!user) return;
 
-  const fullName = typeof getUserFullName === 'function' ? getUserFullName(user) : '';
-  document.getElementById('historyStaffName').innerText = `${fullName} (${user.employee_id})`;
+  const rawFullName = typeof getUserFullName === 'function' ? getUserFullName(user) : '';
+  const fullName = (rawFullName && rawFullName.trim()) ? rawFullName.trim() : 'Staff Account';
+  const empId = user.employee_id ? ` (${user.employee_id})` : '';
+  const historyStaffName = document.getElementById('historyStaffName');
+  if (historyStaffName) historyStaffName.innerText = `${fullName}${empId}`;
   
   const hBody = document.getElementById('historyTableBody');
   hBody.innerHTML = '';

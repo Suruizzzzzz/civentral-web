@@ -52,7 +52,7 @@ include '../../includes/sidebar.php';
       <div class="absolute top-0 left-0 w-1.5 h-full bg-emerald-500"></div>
       <div class="space-y-1">
         <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 block">System Integrations</span>
-        <h3 id="statIntegrations" class="text-2xl font-black text-slate-900 tracking-tight">100% Core Connected</h3>
+        <h3 id="statIntegrations" class="text-lg font-bold text-slate-900 dark:text-white">Active</h3>
       </div>
       <div class="h-10 w-10 rounded-none bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-450 group-hover:bg-emerald-50 group-hover:text-emerald-700 transition duration-350">
         <i class="fa-solid fa-link text-sm"></i>
@@ -107,19 +107,27 @@ include '../../includes/sidebar.php';
     </div>
 
     <!-- Table Footer / Pagination -->
-    <div class="bg-slate-50 px-6 py-4 border-t border-slate-100 flex items-center justify-between text-[11px] font-bold text-slate-400">
-      <div id="deptsPaginationText">
-        Showing 0 to 0 of 0 departments
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+      <!-- Left Side: Record Counter -->
+      <div class="text-xs text-slate-500 dark:text-slate-400 font-medium" id="deptsPaginationText">
+        Showing <span class="font-semibold text-slate-700 dark:text-slate-200">0</span> to <span class="font-semibold text-slate-700 dark:text-slate-200">0</span> of <span class="font-semibold text-slate-700 dark:text-slate-200">0</span> records
       </div>
-      <div class="flex items-center space-x-1" id="deptsPaginationControls">
-        <button id="deptsPrevBtn" class="px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 cursor-not-allowed transition" disabled>
-          <i class="fa-solid fa-chevron-left text-[9px]"></i>
+
+      <!-- Right Side: Segmented Numbered Pagination Bar -->
+      <nav class="inline-flex -space-x-px border border-slate-200 dark:border-slate-700 rounded-none shadow-xs" aria-label="Pagination" id="deptsPaginationControls">
+        <!-- Previous Button -->
+        <button type="button" class="px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed" disabled>
+          <i class="fa-solid fa-chevron-left text-[10px]"></i>
         </button>
-        <div id="deptsPageNumbers" class="flex items-center space-x-1"></div>
-        <button id="deptsNextBtn" class="px-3 py-1.5 rounded-none border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 cursor-not-allowed transition" disabled>
-          <i class="fa-solid fa-chevron-right text-[9px]"></i>
+
+        <!-- Page Number Sequence -->
+        <button type="button" class="px-3.5 py-1.5 text-xs font-bold text-sky-600 dark:text-sky-400 bg-sky-50/80 dark:bg-sky-950/40 border border-sky-300 dark:border-sky-600/60 z-10 cursor-default">1</button>
+
+        <!-- Next Button -->
+        <button type="button" class="px-3 py-1.5 text-xs font-medium text-slate-300 dark:text-slate-600 bg-slate-50/50 dark:bg-slate-800/30 cursor-not-allowed border-l border-slate-200 dark:border-slate-700" disabled>
+          <i class="fa-solid fa-chevron-right text-[10px]"></i>
         </button>
-      </div>
+      </nav>
     </div>
   </div>
 
@@ -184,17 +192,18 @@ include '../../includes/sidebar.php';
       <!-- Primary Title Header -->
       <div class="border-b border-slate-100 pb-3 space-y-1">
         <div class="flex items-center gap-2">
-          <span id="viewDeptCodeBadge" class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded-none text-[10px] font-black border border-slate-200">EDU</span>
-          <h4 id="viewDeptName" class="font-extrabold text-sm text-slate-900">Education & Scholarship Management</h4>
+          <span id="viewDeptCodeBadge" class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded-none text-[10px] font-black border border-slate-200">—</span>
+          <h4 id="viewDeptName" class="font-extrabold text-sm text-slate-900">—</h4>
         </div>
-        <p id="viewDeptDesc" class="text-xs text-slate-500 leading-relaxed">System department managing city scholars, school distributions, and educational activities.</p>
+        <p id="viewDeptAdminName" class="text-xs font-semibold text-brand-dark">Head: Unassigned</p>
+        <p id="viewDeptDesc" class="text-xs text-slate-500 leading-relaxed">—</p>
       </div>
 
       <!-- Quick Metadata Grid -->
       <div class="grid grid-cols-2 gap-4">
         <div class="bg-slate-50 border border-slate-200/40 rounded-none p-3.5 space-y-1">
           <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider block">Connected Staff</span>
-          <p id="viewDeptStaffCount" class="text-sm font-extrabold text-slate-800">12 registered staff</p>
+          <p id="viewDeptStaffCount" class="text-sm font-extrabold text-slate-800">0 registered staff</p>
         </div>
         <div class="bg-slate-50 border border-slate-200/40 rounded-none p-3.5 space-y-1">
           <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider block">Integration Port</span>
@@ -209,20 +218,19 @@ include '../../includes/sidebar.php';
       <div class="space-y-3">
         <h5 class="text-[10px] font-black text-slate-400 uppercase tracking-wider block">Recent Admin Logs</h5>
         <div class="border border-slate-200/60 rounded-none overflow-hidden text-xs">
-          <div class="bg-slate-50 border-b border-slate-100 px-4 py-2.5 flex items-center justify-between font-bold text-slate-500">
-            <span>Action Taken</span>
-            <span>Date & Time</span>
-          </div>
-          <div class="divide-y divide-slate-100 text-slate-650">
-            <div class="px-4 py-2.5 flex justify-between">
-              <span>Admin credentials profile assigned</span>
-              <span class="text-slate-450 font-medium">2026-07-15 14:02:10</span>
-            </div>
-            <div class="px-4 py-2.5 flex justify-between">
-              <span>Scopes synchronized to SSO Token</span>
-              <span class="text-slate-450 font-medium">2026-07-12 09:30:45</span>
-            </div>
-          </div>
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-100 font-bold text-slate-500 text-[11px]">
+                <th class="px-4 py-2.5">Action Taken</th>
+                <th class="px-4 py-2.5 text-right">Date & Time</th>
+              </tr>
+            </thead>
+            <tbody id="recentAdminLogsBody" class="divide-y divide-slate-100 text-slate-650">
+              <tr>
+                <td colspan="3" class="text-center py-4 text-slate-400 text-xs">No recent admin actions recorded.</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
