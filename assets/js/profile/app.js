@@ -1,7 +1,10 @@
 
 (function() {
-    
-    if (document.getElementById('saveSettingsBtn')) {
+    if (document.getElementById('saveSettingsBtn') && document.getElementById('savePasswordBtn')) {
+        window.loadCiventralScript('assets/js/profile/settings/app.js');
+        window.loadCiventralScript('assets/js/profile/change-password/app.js');
+    }
+    else if (document.getElementById('saveSettingsBtn')) {
         window.loadCiventralScript('assets/js/profile/settings/app.js');
     } 
     else if (document.getElementById('savePasswordBtn')) {

@@ -50,6 +50,13 @@ function populateProfileUI() {
 
   const fPosition = document.getElementById('fieldPosition');
   if (fPosition) fPosition.value = userProfile.position_name || '';
+
+  // Security metrics
+  const pLastLogin = document.getElementById('profileLastLogin');
+  if (pLastLogin) pLastLogin.innerText = userProfile.last_login || '—';
+
+  const pTotalLogins = document.getElementById('profileTotalLogins');
+  if (pTotalLogins) pTotalLogins.innerText = userProfile.total_logins ? `${userProfile.total_logins} Logins` : '—';
 }
 
 function discardChanges() {
@@ -60,4 +67,36 @@ function discardChanges() {
   showToast('Changes discarded.', 'info', 'All fields restored to last saved values.');
 }
 
+function switchSettingsTab(tabName) {
+  const tabs = ['account', 'security', 'preferences'];
+  if (!tabs.includes(tabName)) tabName = 'account';
 
+  tabs.forEach(tab => {
+    const pane = document.getElementById('tab-' + tab);
+    const navBtn = document.getElementById('navTab' + tab.charAt(0).toUpperCase() + tab.slice(1));
+
+    if (pane) {
+      if (tab === tabName) {
+        pane.classList.remove('hidden');
+      } else {
+        pane.classList.add('hidden');
+      }
+    }
+
+    if (navBtn) {
+      if (tab === tabName) {
+        navBtn.className = 'settings-nav-item w-full text-left px-4 py-3 flex items-start gap-3 transition cursor-pointer rounded-none border-l-2 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-400 border-l-teal-600 dark:border-l-teal-400 font-bold';
+      } else {
+        navBtn.className = 'settings-nav-item w-full text-left px-4 py-3 flex items-start gap-3 transition cursor-pointer rounded-none border-l-2 border-l-transparent text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white';
+      }
+    }
+  });
+
+  try {
+    const url = new URL(window.location);
+    url.searchParams.set('tab', tabName);
+    window.history.replaceState({}, '', url);
+  } catch (e) {}
+}
+
+window.switchSettingsTab = switchSettingsTab;

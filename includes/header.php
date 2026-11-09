@@ -218,15 +218,15 @@ require_once __DIR__ . '/../src/bootstrap.php';
            
            <!-- Dropdown Items -->
            <div class="py-1">
-             <a href="<?php echo $basePath ?? '../'; ?>pages/profile/profile.php" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition font-medium">
+             <a href="<?php echo $basePath ?? '../'; ?>pages/profile/settings.php?tab=account" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition font-medium">
                <i class="fa-solid fa-user-circle text-slate-400 text-[13px]"></i>
                <span>My Profile</span>
              </a>
-             <a href="<?php echo $basePath ?? '../'; ?>pages/profile/settings.php" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition font-medium">
+             <a href="<?php echo $basePath ?? '../'; ?>pages/profile/settings.php?tab=preferences" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition font-medium">
                <i class="fa-solid fa-gears text-slate-400 text-[13px]"></i>
                <span>System Settings</span>
              </a>
-             <a href="<?php echo $basePath ?? '../'; ?>pages/profile/change-password.php" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition font-medium">
+             <a href="<?php echo $basePath ?? '../'; ?>pages/profile/settings.php?tab=security" class="flex items-center gap-2.5 px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 transition font-medium">
                <i class="fa-solid fa-lock text-slate-400 text-[13px]"></i>
                <span>Change Password</span>
              </a>
